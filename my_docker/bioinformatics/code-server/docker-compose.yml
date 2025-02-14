@@ -1,0 +1,12 @@
+services:
+  code-server:
+    build: .
+       # image: autumnusomega/bioinformatics:code-server
+    working_dir: /zata/zippy/$USER
+    container_name: code-server
+    environment:
+      - TZ="America/New_York"
+    volumes:
+      - /data:/data
+      - /zata:/zata
+    restart: unless-stopped

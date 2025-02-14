@@ -1,0 +1,11 @@
+
+# Top level folders
+scratch/
+greg_task/
+docker/
+Bai_2024/
+
+
+# Types of files
+*/.ipynb_checkpoints/
+

@@ -1,0 +1,8 @@
+# Fast and stupid way to add what I need to Christian's bioinformatics image
+FROM clarity001/bioinformatics:base
+
+RUN pip install --upgrade pip && pip install --no-cache-dir \
+	squidpy 
+
+# Needed, otherwise importing squidpy gives errors
+RUN pip install --upgrade spatialdata

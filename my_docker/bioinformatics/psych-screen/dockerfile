@@ -1,0 +1,18 @@
+FROM autumnusomega/bioinformatics:base
+
+RUN apt update && apt install -y \
+    # Seems to be needed for vitessceR
+    libsodium-dev \
+    libmagick++-dev
+
+
+RUN pip install --upgrade pip && pip install --no-cache-dir \
+    anndata \
+    zarr \
+    vitessce
+
+# R libraries that are needed for paper data conversion
+RUN R -e "options(warn=2); install.packages(c('magick'))"
+RUN R -e "BiocManager::install(c('zellkonverter', 'SpatialExperiment', 'spatialLIBD'))"
+RUN R -e "options(warn=2); devtools::install_github('vitessce/vitessceR')"
+

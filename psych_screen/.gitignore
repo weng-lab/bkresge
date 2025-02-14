@@ -1,0 +1,4 @@
+*.h5ad
+*.h5ad.zarr
+data-test.R
+test.ipynb
