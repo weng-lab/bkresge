@@ -38,7 +38,11 @@
             ],
             "obsSets": [
               {
-                "name": "Leiden Cluster",
+                "name": "BayesSpace Clusters",
+                "path": "obs/bayes_space"
+              },
+              {
+                "name": "Leiden Clusters",
                 "path": "obs/leiden"
               }
             ]

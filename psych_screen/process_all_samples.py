@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 import squidpy as sq
 import scanpy as sc
 import multiprocessing
@@ -15,6 +16,7 @@ from vitessce.data_utils import (
 SPACERANGER_SOURCE_DIR = '/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger'
 OUTPUT_DIR = '/zata/public_html/users/kresgeb/psych_encode_spatialDLPFC'
 TEMPLATE_CONFIG_PATH = '/zata/zippy/kresgeb/psych_screen/template_config.json'
+BAYESSPACE_CLUSTERS_DIR = '/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rdata/spe/clustering_results'
 WHITELIST_PATH = '/zata/zippy/kresgeb/psych_screen/whitelist.txt'
 
 # Suppress the specific UserWarning about unique names
@@ -69,11 +71,14 @@ def process_sample(sample_name):
     # Genes of Interest are all the highly variable genes and any additional ones in the whitelist provided
     set_genes_of_interest(adata, WHITELIST_PATH)
 
-    # Dimensionality reduction and clustering
+    # Dimensionality reduction
     sc.pp.pca(adata, mask_var='genes_of_interest')
     sc.pp.neighbors(adata)
     sc.tl.umap(adata)
+
+    # Clustering
     sc.tl.leiden(adata, key_added="leiden", flavor="igraph", n_iterations=2)
+    add_cluster_data(adata, sample_name)
 
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var['genes_of_interest']].X.toarray()
@@ -115,7 +120,7 @@ def process_sample(sample_name):
     # Optimize and write anndata
     adata = optimize_adata(
         adata,
-        obs_cols=["leiden"],
+        obs_cols=["leiden", "bayes_space"],
         var_cols=["highly_variable", "genes_of_interest"],
         obsm_keys=["X_goi", "spatial", "segmentations", "X_umap", "X_pca"],
         optimize_X=True,
@@ -143,6 +148,33 @@ def create_configuration_file(sample_name):
     # Write the updated data to a new JSON file
     with open(output_file_path, 'w') as file:
         json.dump(data, file, indent=2)
+
+# TODO improve efficiency, currently opens and searches the clusters.csv once for EACH sample--despite having the data for ALL samples
+# This compounds for more entries in k_tuple
+# TODO add functionality: multiple k-values
+def add_cluster_data(adata, sample_name, k_tuple=(9,)):
+    # The shortened name that exists in the clustering results csv
+    # Ex. Br8667_mid
+    sample_id  = '_'.join(sample_name.split('_')[1:3])
+
+    for k in k_tuple:
+        # Read the data from clusters.csv
+        clusters_path = os.path.join(BAYESSPACE_CLUSTERS_DIR, f'bayesSpace_harmony_{k}', 'clusters.csv')
+        full_cluster_data = pd.read_csv(clusters_path)
+
+        # Extract only the relevant data
+        filtered_cluster_data = full_cluster_data[full_cluster_data['key'].str.contains(sample_id)].copy()
+        filtered_cluster_data.loc[:, 'cell_id'] = filtered_cluster_data['key'].apply(lambda x: x.split('_')[0])
+        filtered_cluster_data = filtered_cluster_data[['cell_id', 'cluster']]
+        filtered_cluster_data.set_index('cell_id', inplace=True)
+
+        # Convert to format as found in leiden
+        filtered_cluster_data = filtered_cluster_data.astype(int)
+        filtered_cluster_data = filtered_cluster_data.astype(str)
+        filtered_cluster_data = filtered_cluster_data.astype('category')
+
+        # Add the data to the AnnData object
+        adata.obs['bayes_space'] = adata.obs_names.map(filtered_cluster_data['cluster'])
 
 def set_genes_of_interest(adata, whitelist_path):
     adata.var['genes_of_interest'] = adata.var['highly_variable'].copy()
