@@ -78,7 +78,7 @@ def process_sample(sample_name):
 
     # Clustering
     sc.tl.leiden(adata, key_added="leiden", flavor="igraph", n_iterations=2)
-    add_cluster_data(adata, sample_name)
+    add_cluster_data(adata, sample_name, k_tuple=(9,16,28))
 
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var['genes_of_interest']].X.toarray()
@@ -120,7 +120,7 @@ def process_sample(sample_name):
     # Optimize and write anndata
     adata = optimize_adata(
         adata,
-        obs_cols=["leiden", "bayes_space"],
+        obs_cols=["leiden", "bayes_space_k=9", "bayes_space_k=16", "bayes_space_k=28"],
         var_cols=["highly_variable", "genes_of_interest"],
         obsm_keys=["X_goi", "spatial", "segmentations", "X_umap", "X_pca"],
         optimize_X=True,
@@ -151,7 +151,7 @@ def create_configuration_file(sample_name):
 
 # TODO improve efficiency, currently opens and searches the clusters.csv once for EACH sample--despite having the data for ALL samples
 # This compounds for more entries in k_tuple
-# TODO add functionality: multiple k-values
+# TODO change to save under one obs entry (bayes_space) with multiple columns where each column is a resolution (simpler and MAY be better for performance/compression?)
 def add_cluster_data(adata, sample_name, k_tuple=(9,)):
     # The shortened name that exists in the clustering results csv
     # Ex. Br8667_mid
@@ -174,7 +174,7 @@ def add_cluster_data(adata, sample_name, k_tuple=(9,)):
         filtered_cluster_data = filtered_cluster_data.astype('category')
 
         # Add the data to the AnnData object
-        adata.obs['bayes_space'] = adata.obs_names.map(filtered_cluster_data['cluster'])
+        adata.obs[f'bayes_space_k={k}'] = adata.obs_names.map(filtered_cluster_data['cluster'])
 
 def set_genes_of_interest(adata, whitelist_path):
     adata.var['genes_of_interest'] = adata.var['highly_variable'].copy()
