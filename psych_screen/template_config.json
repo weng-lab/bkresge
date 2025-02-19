@@ -134,6 +134,119 @@
         }
       ]
     },
+    "obsSetColor": {
+      "A": [
+        {
+          "path": [
+            "BayesSpace (k=9)"
+          ],
+          "color": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "1"
+          ],
+          "color": [
+            88,
+            81,
+            87
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "2"
+          ],
+          "color": [
+            228,
+            224,
+            226
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "3"
+          ],
+          "color": [
+            229,
+            71,
+            55
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "4"
+          ],
+          "color": [
+            239,
+            34,
+            244
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "5"
+          ],
+          "color": [
+            105,
+            252,
+            77
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "6"
+          ],
+          "color": [
+            83,
+            120,
+            248
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "7"
+          ],
+          "color": [
+            243,
+            182,
+            54
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "8"
+          ],
+          "color": [
+            163,
+            37,
+            102
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (k=9)",
+            "9"
+          ],
+          "color": [
+            111,
+            251,
+            207
+          ]
+        }
+      ]
+    },
     "obsColorEncoding": {
       "A": "cellSetSelection",
       "B": "geneSelection"
