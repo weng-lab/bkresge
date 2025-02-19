@@ -276,7 +276,8 @@
         "spatialZoom": "A",
         "spatialTargetX": "A",
         "spatialTargetY": "A",
-        "obsColorEncoding": "A"
+        "obsColorEncoding": "A",
+        "obsSetColor": "A"
       },
       "x": 0,
       "y": 0,
@@ -304,7 +305,8 @@
       "component": "heatmap",
       "coordinationScopes": {
         "obsType": "A",
-        "obsColorEncoding": "A"
+        "obsColorEncoding": "A",
+        "obsSetColor": "A"
       },
       "props": {
         "transpose": true
@@ -333,7 +335,8 @@
       "component": "obsSets",
       "coordinationScopes": {
         "obsType": "A",
-        "obsColorEncoding": "A"
+        "obsColorEncoding": "A",
+        "obsSetColor": "A"
       },
       "x": 2,
       "y": 6,
