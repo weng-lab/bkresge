@@ -77,7 +77,6 @@ def process_sample(sample_name):
     sc.tl.umap(adata)
 
     # Clustering
-    sc.tl.leiden(adata, key_added="leiden", flavor="igraph", n_iterations=2)
     add_cluster_data(adata, sample_name, k_tuple=(9,16,28))
 
     # Hierarchical clustering of genes for optimal gene ordering
@@ -120,7 +119,7 @@ def process_sample(sample_name):
     # Optimize and write anndata
     adata = optimize_adata(
         adata,
-        obs_cols=["leiden", "bayes_space_k=9", "bayes_space_k=16", "bayes_space_k=28"],
+        obs_cols=["bayes_space_k=9", "bayes_space_k=16", "bayes_space_k=28"],
         var_cols=["highly_variable", "genes_of_interest"],
         obsm_keys=["X_goi", "spatial", "segmentations", "X_umap", "X_pca"],
         optimize_X=True,

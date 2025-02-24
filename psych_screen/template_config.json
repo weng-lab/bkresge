@@ -48,10 +48,6 @@
               {
                 "name": "BayesSpace (k=28)",
                 "path": "obs/bayes_space_k=28"
-              },
-              {
-                "name": "Leiden Clusters",
-                "path": "obs/leiden"
               }
             ]
           }
