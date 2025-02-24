@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import DropDown from "./DropDown";
 
-const Menu: React.FC = (): JSX.Element => {
+const Menu: React.FC<{ sampleSelection: (sample: string) => void }> = ({sampleSelection}): JSX.Element => {
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const [selectSample, setSelectSample] = useState<string>("");
+  const [selectedSample, setSelectedSample] = useState<string>("DLPFC_Br8667_mid_manual_alignment_all");
   const samples = () => {
-    return ["DLPFC_Br8667_mid_manual_alignment_all", "DLPFC_Br2720_ant_2", "DLPFC_Br2743_post_manual_alignment", "DLPFC_Br6471_ant_manual_alignment_all"];
+    return [
+        "DLPFC_Br8667_mid_manual_alignment_all",
+        "DLPFC_Br2720_ant_2",
+        "DLPFC_Br2743_post_manual_alignment",
+        "DLPFC_Br6471_ant_manual_alignment_all"
+    ];
   };
 
   /**
@@ -30,19 +35,21 @@ const Menu: React.FC = (): JSX.Element => {
   /**
    * Callback function to consume the
    * sample name from the child component
+   * AND send back to parent component
    *
    * @param sample  The selected sample
    */
-  const sampleSelection = (sample: string): void => {
-    setSelectSample(sample);
+  const handleSampleSelection = (sample: string): void => {
+    setSelectedSample(sample);
+    sampleSelection(sample)
   };
 
   return (
     <>
       <div className="announcement">
         <div>
-          {selectSample
-            ? `You selected ${selectSample} to visualize`
+          {selectedSample
+            ? `You selected ${selectedSample} to visualize`
             : "Select your visualization"}
         </div>
       </div>
@@ -53,13 +60,13 @@ const Menu: React.FC = (): JSX.Element => {
           dismissHandler(e)
         }
       >
-        <div>{selectSample ? "Select: " + selectSample : "Select ..."} </div>
+        <div>{selectedSample ? "Select: " + selectedSample : "Select ..."} </div>
         {showDropDown && (
           <DropDown
             samples={samples()}
             showDropDown={false}
             toggleDropDown={(): void => toggleDropDown()}
-            sampleSelection={sampleSelection}
+            sampleSelection={handleSampleSelection}
           />
         )}
       </button>

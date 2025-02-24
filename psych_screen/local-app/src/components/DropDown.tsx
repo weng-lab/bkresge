@@ -20,8 +20,8 @@ type DropDownProps = {
      *
      * @param sample  The selected sample
      */
-    const onClickHandler = (city: string): void => {
-      sampleSelection(city);
+    const onClickHandler = (sample: string): void => {
+      sampleSelection(sample);
     };
   
     useEffect(() => {
