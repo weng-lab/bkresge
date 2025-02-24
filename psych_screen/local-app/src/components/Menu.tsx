@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import DropDown from "./DropDown";
 
 const Menu: React.FC<{ sampleSelection: (sample: string) => void }> = ({sampleSelection}): JSX.Element => {
+    
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [selectedSample, setSelectedSample] = useState<string>("DLPFC_Br8667_mid_manual_alignment_all");
+
   const samples = () => {
     return [
         "DLPFC_Br8667_mid_manual_alignment_all",
