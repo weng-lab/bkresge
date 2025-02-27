@@ -65,8 +65,8 @@ def process_sample(sample_name):
     sc.pp.normalize_total(adata, inplace=True)
     sc.pp.log1p(adata)
 
-    # Determine the top 300 highly variable genes.
-    sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=300)
+    # Determine the top 100 highly variable genes.
+    sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=100)
 
     # Genes of Interest are all the highly variable genes and any additional ones in the whitelist provided
     set_genes_of_interest(adata, WHITELIST_PATH)

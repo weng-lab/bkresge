@@ -1,5 +1,6 @@
 # +++++Specially formatted semi-manual whitelist for genes to include in visualizations+++++
-# ---Genes from PsychENCODE DLPFC paper---
+# ---Genes from 2024 PsychENCODE DLPFC paper---
+# --Layer Marker Genes--
 # Confirms presence of grey matter
     SNAP25
 # Confirms presence of white matter
@@ -165,3 +166,29 @@
     GRIP2
     GAD2
     ANKRD55
+# ---Top 25 ranked genes from Maynard et. al 2021 Table S5---
+    CTGF
+    ETV1
+    PCP4
+    CARTPT
+    CXCL14
+    NTNG2
+    HTR2C
+    CUX2
+    OPRK1
+    VAT1L
+    CALB1
+    CBLN2
+    BEND5
+    C1QL2
+    CACNA1E
+    RELN
+    LMO4
+    B3GALT2
+    FAM3C
+    RORB
+    RXFP1
+    GABRA5
+    GSG1L
+    SYNPR
+    RPRM
