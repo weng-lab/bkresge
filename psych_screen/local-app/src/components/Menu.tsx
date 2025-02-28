@@ -37,7 +37,19 @@ const Menu: React.FC<{ sampleSelection: (sample: string) => void }> = ({ sampleS
       "DLPFC_Br8492_post_manual_alignment",
       "DLPFC_Br8667_ant_extra_reads",
       "DLPFC_Br8667_mid_manual_alignment_all",
-      "DLPFC_Br8667_post_manual_alignment_all"
+      "DLPFC_Br8667_post_manual_alignment_all",
+      "151507",
+      "151508",
+      "151509",
+      "151510",
+      "151669",
+      "151670",
+      "151671",
+      "151672",
+      "151673",
+      "151674",
+      "151675",
+      "151676"
     ];
   };
 

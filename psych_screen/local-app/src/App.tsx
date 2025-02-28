@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { Vitessce } from 'vitessce';
 import Menu from "./components/Menu";
 
@@ -10,7 +10,17 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (selectedSample) {
       const fetchConfig = async () => {
-        const response = await fetch(`https://users.wenglab.org/kresgeb/psych_encode_spatialDLPFC/configs/${selectedSample}/config.json`);
+        let configPath: string;
+
+        if (selectedSample.startsWith("DLPFC")) {
+          // Fetch from spatialDLPFC (2024 paper)
+          configPath = `https://users.wenglab.org/kresgeb/psych_encode/spatialDLPFC/configs/${selectedSample}/config.json`;
+        } else {
+          // Fetch from HumanPilot10X (2021 Paper)
+          configPath = `https://users.wenglab.org/kresgeb/psych_encode/HumanPilot10X/configs/${selectedSample}/config.json`;
+        }
+
+        const response = await fetch(configPath);
         const data = await response.json();
         setConfig(data);
       };
@@ -20,7 +30,7 @@ export default function App(): JSX.Element {
 
   return (
     <div className="app">
-      <Menu sampleSelection={setSelectedSample}/>
+      <Menu sampleSelection={setSelectedSample} />
       <Vitessce
         config={config}
         theme="dark"
