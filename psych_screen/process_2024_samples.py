@@ -1,3 +1,6 @@
+# Load all the 2024 paper samples, create the config files and process and structure the data
+
+
 import os
 import pandas as pd
 import squidpy as sq
@@ -13,43 +16,53 @@ from vitessce.data_utils import (
     optimize_adata,
 )
 
-SPACERANGER_SOURCE_DIR = '/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger'
-OUTPUT_DIR = '/zata/public_html/users/kresgeb/psych_encode_spatialDLPFC'
-TEMPLATE_CONFIG_PATH = '/zata/zippy/kresgeb/psych_screen/template_config.json'
-BAYESSPACE_CLUSTERS_DIR = '/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rdata/spe/clustering_results'
-WHITELIST_PATH = '/zata/zippy/kresgeb/psych_screen/whitelist.txt'
+SPACERANGER_SOURCE_DIR = (
+    "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger"
+)
+OUTPUT_DIR = "/zata/public_html/users/kresgeb/psych_encode/spatialDLPFC"
+TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/psych_screen/template_config.json"
+BAYESSPACE_CLUSTERS_DIR = "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rdata/spe/clustering_results"
+WHITELIST_PATH = "/zata/zippy/kresgeb/psych_screen/whitelist.txt"
 
 # Suppress the specific UserWarning about unique names
-warnings.filterwarnings("ignore", message="Variable names are not unique. To make them unique, call `.var_names_make_unique`.")
+warnings.filterwarnings(
+    "ignore",
+    message="Variable names are not unique. To make them unique, call `.var_names_make_unique`.",
+)
 
 
 def main():
     # all subdirectories in the source directory (exclude the names.txt)
-    sample_names = [entry.name for entry in os.scandir(SPACERANGER_SOURCE_DIR) if entry.is_dir()]
+    sample_names = [
+        entry.name for entry in os.scandir(SPACERANGER_SOURCE_DIR) if entry.is_dir()
+    ]
 
     # Make all directories if they do not exist
     for sample_name in sample_names:
-        os.makedirs(name=os.path.join(OUTPUT_DIR, 'data', sample_name), exist_ok=True)
-        os.makedirs(name=os.path.join(OUTPUT_DIR, 'configs', sample_name), exist_ok=True)
+        os.makedirs(name=os.path.join(OUTPUT_DIR, "data", sample_name), exist_ok=True)
+        os.makedirs(
+            name=os.path.join(OUTPUT_DIR, "configs", sample_name), exist_ok=True
+        )
 
     # Create the config files from the template
     for sample_name in sample_names:
         create_configuration_file(sample_name)
-    
-    pool = multiprocessing.Pool(processes=30)
+
+    pool = multiprocessing.Pool(processes=min(os.cpu_count() / 2, len(sample_names)))
     pool.map(process_sample, sample_names)
 
     # Close the pool to free resources
     pool.close()
     pool.join()
 
+
 # Based on https://github.com/vitessce/vitessce-python/blob/main/demos/human-lymph-node-10x-visium/src/create_zarr.py
 def process_sample(sample_name):
-    data_output_path = os.path.join(OUTPUT_DIR, 'data', sample_name, 'data.h5ad.zarr')
-    image_output_path = os.path.join(OUTPUT_DIR, 'data', sample_name, 'image.ome.zarr')
-    source_path = os.path.join(SPACERANGER_SOURCE_DIR, sample_name, 'outs')
+    data_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "data.h5ad.zarr")
+    image_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "image.ome.zarr")
+    source_outs_path = os.path.join(SPACERANGER_SOURCE_DIR, sample_name, "outs")
 
-    adata = sq.read.visium(source_path)
+    adata = sq.read.visium(source_outs_path)
     adata.var_names_make_unique()
 
     # Calculate QC metrics
@@ -72,49 +85,61 @@ def process_sample(sample_name):
     set_genes_of_interest(adata, WHITELIST_PATH)
 
     # Dimensionality reduction
-    sc.pp.pca(adata, mask_var='genes_of_interest')
+    sc.pp.pca(adata, mask_var="genes_of_interest")
     sc.pp.neighbors(adata)
     sc.tl.umap(adata)
 
     # Clustering
-    add_cluster_data(adata, sample_name, k_tuple=(9,16,28))
+    add_cluster_data(adata, sample_name, k_tuple=(9, 16, 28))
 
     # Hierarchical clustering of genes for optimal gene ordering
-    X_goi_arr = adata[:, adata.var['genes_of_interest']].X.toarray()
-    X_goi_index = adata[:, adata.var['genes_of_interest']].var.copy().index
-    Z = scipy.cluster.hierarchy.linkage(X_goi_arr.T, method='average', optimal_ordering=True)
+    X_goi_arr = adata[:, adata.var["genes_of_interest"]].X.toarray()
+    X_goi_index = adata[:, adata.var["genes_of_interest"]].var.copy().index
+    Z = scipy.cluster.hierarchy.linkage(
+        X_goi_arr.T, method="average", optimal_ordering=True
+    )
 
     # Get the hierarchy-based ordering of genes.
     num_cells = adata.obs.shape[0]
     goi_index_ordering = scipy.cluster.hierarchy.leaves_list(Z)
     genes_of_interest = X_goi_index.values[goi_index_ordering].tolist()
     all_genes = adata.var.index.values.tolist()
-    not_goi = adata.var.loc[~adata.var['genes_of_interest']].index.values.tolist()
+    not_goi = adata.var.loc[~adata.var["genes_of_interest"]].index.values.tolist()
 
     def get_orig_index(gene_id):
         return all_genes.index(gene_id)
 
-    var_index_ordering = list(map(get_orig_index, genes_of_interest)) + list(map(get_orig_index, not_goi))
+    var_index_ordering = list(map(get_orig_index, genes_of_interest)) + list(
+        map(get_orig_index, not_goi)
+    )
 
     # Create a new *ordered* gene expression dataframe.
     adata = adata[:, var_index_ordering].copy()
-    adata.obsm["X_goi"] = adata[:, adata.var['genes_of_interest']].X.copy()
+    adata.obsm["X_goi"] = adata[:, adata.var["genes_of_interest"]].X.copy()
 
     # Scale the spatial data to align with the image
     scale_factor = get_scale_factor(sample_name)
-    adata.obsm['spatial'] = (adata.obsm['spatial'] * scale_factor)
+    adata.obsm["spatial"] = adata.obsm["spatial"] * scale_factor
 
     # Create the diamond visualizations for the spots
-    adata.obsm['segmentations'] = np.zeros((num_cells, 4, 2))
+    adata.obsm["segmentations"] = np.zeros((num_cells, 4, 2))
     radius = 7
     for i in range(num_cells):
-        adata.obsm['segmentations'][i, :, :] = to_diamond(adata.obsm['spatial'][i, 0], adata.obsm['spatial'][i, 1], radius)
-    
+        adata.obsm["segmentations"][i, :, :] = to_diamond(
+            adata.obsm["spatial"][i, 0], adata.obsm["spatial"][i, 1], radius
+        )
+
     # Write img_arr to OME-Zarr.
     # Need to convert images from interleaved to non-interleaved (color axis should be first).
-    img_hires = adata.uns['spatial'][sample_name]['images']['hires']
+    img_hires = adata.uns["spatial"][sample_name]["images"]["hires"]
     img_arr = np.transpose(img_hires, (2, 0, 1))
-    rgb_img_to_ome_zarr(img_arr, image_output_path, axes="cyx", chunks=(1, 256, 256), img_name="H & E Image")
+    rgb_img_to_ome_zarr(
+        img_arr,
+        image_output_path,
+        axes="cyx",
+        chunks=(1, 256, 256),
+        img_name="H & E Image",
+    )
 
     # Optimize and write anndata
     adata = optimize_adata(
@@ -130,23 +155,24 @@ def process_sample(sample_name):
 
 
 def create_configuration_file(sample_name):
-    output_file_path = os.path.join(OUTPUT_DIR, 'configs', sample_name, 'config.json')
+    output_file_path = os.path.join(OUTPUT_DIR, "configs", sample_name, "config.json")
 
-    with open(TEMPLATE_CONFIG_PATH, 'r') as f:
+    with open(TEMPLATE_CONFIG_PATH, "r") as f:
         data = json.load(f)
-    
+
     # Convert the data to a string
     data_str = json.dumps(data)
-    
+
     # Replace <<Sample_Name>> with the actual sample name
     data_str = data_str.replace("<<Sample_Name>>", sample_name)
-    
+
     # Convert the string back to a dictionary
     data = json.loads(data_str)
-    
+
     # Write the updated data to a new JSON file
-    with open(output_file_path, 'w') as file:
+    with open(output_file_path, "w") as file:
         json.dump(data, file, indent=2)
+
 
 # TODO improve efficiency, currently opens and searches the clusters.csv once for EACH sample--despite having the data for ALL samples
 # This compounds for more entries in k_tuple
@@ -154,40 +180,53 @@ def create_configuration_file(sample_name):
 def add_cluster_data(adata, sample_name, k_tuple=(9,)):
     # The shortened name that exists in the clustering results csv
     # Ex. Br8667_mid
-    sample_id  = '_'.join(sample_name.split('_')[1:3])
+    sample_id = "_".join(sample_name.split("_")[1:3])
 
     for k in k_tuple:
         # Read the data from clusters.csv
-        clusters_path = os.path.join(BAYESSPACE_CLUSTERS_DIR, f'bayesSpace_harmony_{k}', 'clusters.csv')
+        clusters_path = os.path.join(
+            BAYESSPACE_CLUSTERS_DIR, f"bayesSpace_harmony_{k}", "clusters.csv"
+        )
         full_cluster_data = pd.read_csv(clusters_path)
 
         # Extract only the relevant data
-        filtered_cluster_data = full_cluster_data[full_cluster_data['key'].str.contains(sample_id)].copy()
-        filtered_cluster_data.loc[:, 'cell_id'] = filtered_cluster_data['key'].apply(lambda x: x.split('_')[0])
-        filtered_cluster_data = filtered_cluster_data[['cell_id', 'cluster']]
-        filtered_cluster_data.set_index('cell_id', inplace=True)
+        filtered_cluster_data = full_cluster_data[
+            full_cluster_data["key"].str.contains(sample_id)
+        ].copy()
+        filtered_cluster_data.loc[:, "cell_id"] = filtered_cluster_data["key"].apply(
+            lambda x: x.split("_")[0]
+        )
+        filtered_cluster_data = filtered_cluster_data[["cell_id", "cluster"]]
+        filtered_cluster_data.set_index("cell_id", inplace=True)
 
         # Convert to format as found in leiden
         filtered_cluster_data = filtered_cluster_data.astype(int)
         filtered_cluster_data = filtered_cluster_data.astype(str)
-        filtered_cluster_data = filtered_cluster_data.astype('category')
+        filtered_cluster_data = filtered_cluster_data.astype("category")
 
         # Add the data to the AnnData object
-        adata.obs[f'bayes_space_k={k}'] = adata.obs_names.map(filtered_cluster_data['cluster'])
+        adata.obs[f"bayes_space_k={k}"] = adata.obs_names.map(
+            filtered_cluster_data["cluster"]
+        )
+
 
 def set_genes_of_interest(adata, whitelist_path):
-    adata.var['genes_of_interest'] = adata.var['highly_variable'].copy()
-    with open(whitelist_path, 'r') as f:
+    adata.var["genes_of_interest"] = adata.var["highly_variable"].copy()
+    with open(whitelist_path, "r") as f:
         for line in f:
             line = line.strip()
-            if not line.startswith('#') and line in adata.var.index:
-                adata.var.loc[line, 'genes_of_interest'] = True
+            if not line.startswith("#") and line in adata.var.index:
+                adata.var.loc[line, "genes_of_interest"] = True
+
 
 def get_scale_factor(sample_name):
-    json_path = os.path.join(SPACERANGER_SOURCE_DIR, sample_name, 'outs', 'spatial', 'scalefactors_json.json')
-    with open(json_path, 'r') as f:
+    json_path = os.path.join(
+        SPACERANGER_SOURCE_DIR, sample_name, "outs", "spatial", "scalefactors_json.json"
+    )
+    with open(json_path, "r") as f:
         data = json.load(f)
-    return data.get('tissue_hires_scalef')
+    return data.get("tissue_hires_scalef")
+
 
 if __name__ == "__main__":
     main()
