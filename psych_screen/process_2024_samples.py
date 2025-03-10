@@ -20,14 +20,20 @@ SPACERANGER_SOURCE_DIR = (
     "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger"
 )
 OUTPUT_DIR = "/zata/public_html/users/kresgeb/psych_encode/spatialDLPFC"
-TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/psych_screen/template_config.json"
+TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/psych_screen/template_config_2024.json"
 BAYESSPACE_CLUSTERS_DIR = "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rdata/spe/clustering_results"
 WHITELIST_PATH = "/zata/zippy/kresgeb/psych_screen/whitelist.txt"
+FULL_VISIUM_PATH = "/zata/zippy/kresgeb/psych_screen/full_visium.h5ad"
 
-# Suppress the specific UserWarning about unique names
+# Suppress the specific UserWarnings about unique names
 warnings.filterwarnings(
     "ignore",
     message="Variable names are not unique. To make them unique, call `.var_names_make_unique`.",
+)
+# Suppress the specific UserWarnings about unique names
+warnings.filterwarnings(
+    "ignore",
+    message="Observation names are not unique. To make them unique, call `.obs_names_make_unique`.",
 )
 
 
@@ -43,10 +49,6 @@ def main():
         os.makedirs(
             name=os.path.join(OUTPUT_DIR, "configs", sample_name), exist_ok=True
         )
-
-    # Create the config files from the template
-    for sample_name in sample_names:
-        create_configuration_file(sample_name)
 
     pool = multiprocessing.Pool(processes=min(os.cpu_count() / 2, len(sample_names)))
     pool.map(process_sample, sample_names)
@@ -91,6 +93,9 @@ def process_sample(sample_name):
 
     # Clustering
     add_cluster_data(adata, sample_name, k_tuple=(9, 16, 28))
+
+    # Add manual layers if they exist, store whether it exists or not
+    has_manual_layers = add_manual_layers(adata, sample_name)
 
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var["genes_of_interest"]].X.toarray()
@@ -144,7 +149,8 @@ def process_sample(sample_name):
     # Optimize and write anndata
     adata = optimize_adata(
         adata,
-        obs_cols=["bayes_space_k=9", "bayes_space_k=16", "bayes_space_k=28"],
+        obs_cols=(["manual_layers"] if has_manual_layers else [])
+        + ["bayes_space_k=9", "bayes_space_k=16", "bayes_space_k=28"],
         var_cols=["highly_variable", "genes_of_interest"],
         obsm_keys=["X_goi", "spatial", "segmentations", "X_umap", "X_pca"],
         optimize_X=True,
@@ -153,8 +159,11 @@ def process_sample(sample_name):
     )
     adata.write_zarr(data_output_path, chunks=[adata.shape[0], 10])
 
+    # Create the config files from the template
+    create_configuration_file(sample_name, has_manual_layers)
 
-def create_configuration_file(sample_name):
+
+def create_configuration_file(sample_name, has_manual_layers=False):
     output_file_path = os.path.join(OUTPUT_DIR, "configs", sample_name, "config.json")
 
     with open(TEMPLATE_CONFIG_PATH, "r") as f:
@@ -172,6 +181,27 @@ def create_configuration_file(sample_name):
     # Write the updated data to a new JSON file
     with open(output_file_path, "w") as file:
         json.dump(data, file, indent=2)
+
+
+# Returns True if manual layer data exists
+def add_manual_layers(adata, sample_name):
+    full_visium = sc.read_h5ad(FULL_VISIUM_PATH)
+
+    # The shortened name, ex. Br8667_mid
+    sample_id = "_".join(sample_name.split("_")[1:3])
+    sample_visium = full_visium[full_visium.obs["sample_id"] == sample_id]
+
+    manual_layers = sample_visium.obs["manual_layer_label"]
+
+    if manual_layers.notna().any():
+        # Replace 'Layer X' with 'LX', but keep 'WM' unchanged
+        manual_layers = manual_layers.replace(
+            {f"Layer {i}": f"L{i}" for i in range(1, 7)}
+        )
+        adata.obs["manual_layers"] = adata.obs_names.map(manual_layers)
+        return True
+    else:
+        return False
 
 
 # TODO improve efficiency, currently opens and searches the clusters.csv once for EACH sample--despite having the data for ALL samples
