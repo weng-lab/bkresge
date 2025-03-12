@@ -8,4 +8,8 @@ Bai_2024/
 
 # Types of files
 */.ipynb_checkpoints/
+*.h5ad
+*h5ad.zarr
 
+# Specific Files
+psych_screen/test.ipynb

@@ -1,6 +1,5 @@
 # Load all the 2024 paper samples, create the config files and process and structure the data
 
-
 import os
 import pandas as pd
 import squidpy as sq
@@ -16,32 +15,21 @@ from vitessce.data_utils import (
     optimize_adata,
 )
 
-SPACERANGER_SOURCE_DIR = (
-    "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger"
-)
-OUTPUT_DIR = "/zata/public_html/users/kresgeb/psych_encode/spatialDLPFC"
-TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/psych_screen/template_config_2024.json"
-BAYESSPACE_CLUSTERS_DIR = "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rdata/spe/clustering_results"
-WHITELIST_PATH = "/zata/zippy/kresgeb/psych_screen/whitelist.txt"
-FULL_VISIUM_PATH = "/zata/zippy/kresgeb/psych_screen/full_visium.h5ad"
+SOURCE_DIR = "/data/zusers/kresgeb/psych_encode/HumanPilot10X/reorganized"
+OUTPUT_DIR = "/zata/public_html/users/kresgeb/psych_encode/HumanPilot10X"
+TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/template_config_2021.json"
+WHITELIST_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/whitelist.txt"
 
-# Suppress the specific UserWarnings about unique names
+# Suppress the specific UserWarning about unique names
 warnings.filterwarnings(
     "ignore",
     message="Variable names are not unique. To make them unique, call `.var_names_make_unique`.",
-)
-# Suppress the specific UserWarnings about unique names
-warnings.filterwarnings(
-    "ignore",
-    message="Observation names are not unique. To make them unique, call `.obs_names_make_unique`.",
 )
 
 
 def main():
     # all subdirectories in the source directory (exclude the names.txt)
-    sample_names = [
-        entry.name for entry in os.scandir(SPACERANGER_SOURCE_DIR) if entry.is_dir()
-    ]
+    sample_names = [entry.name for entry in os.scandir(SOURCE_DIR) if entry.is_dir()]
 
     # Make all directories if they do not exist
     for sample_name in sample_names:
@@ -49,6 +37,10 @@ def main():
         os.makedirs(
             name=os.path.join(OUTPUT_DIR, "configs", sample_name), exist_ok=True
         )
+
+    # Create the config files from the template
+    for sample_name in sample_names:
+        create_configuration_file(sample_name)
 
     pool = multiprocessing.Pool(processes=min(os.cpu_count() / 2, len(sample_names)))
     pool.map(process_sample, sample_names)
@@ -62,7 +54,7 @@ def main():
 def process_sample(sample_name):
     data_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "data.h5ad.zarr")
     image_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "image.ome.zarr")
-    source_outs_path = os.path.join(SPACERANGER_SOURCE_DIR, sample_name, "outs")
+    source_outs_path = os.path.join(SOURCE_DIR, sample_name, "outs")
 
     adata = sq.read.visium(source_outs_path)
     adata.var_names_make_unique()
@@ -91,11 +83,8 @@ def process_sample(sample_name):
     sc.pp.neighbors(adata)
     sc.tl.umap(adata)
 
-    # Clustering
-    add_cluster_data(adata, sample_name, k_tuple=(9, 16, 28))
-
-    # Add manual layers if they exist, store whether it exists or not
-    has_manual_layers = add_manual_layers(adata, sample_name)
+    # Add manual layer annotation data
+    add_manual_layers(adata, sample_name)
 
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var["genes_of_interest"]].X.toarray()
@@ -149,8 +138,7 @@ def process_sample(sample_name):
     # Optimize and write anndata
     adata = optimize_adata(
         adata,
-        obs_cols=(["manual_layers"] if has_manual_layers else [])
-        + ["bayes_space_k=9", "bayes_space_k=16", "bayes_space_k=28"],
+        obs_cols=["manual_layers"],
         var_cols=["highly_variable", "genes_of_interest"],
         obsm_keys=["X_goi", "spatial", "segmentations", "X_umap", "X_pca"],
         optimize_X=True,
@@ -159,11 +147,8 @@ def process_sample(sample_name):
     )
     adata.write_zarr(data_output_path, chunks=[adata.shape[0], 10])
 
-    # Create the config files from the template
-    create_configuration_file(sample_name, has_manual_layers)
 
-
-def create_configuration_file(sample_name, has_manual_layers=False):
+def create_configuration_file(sample_name):
     output_file_path = os.path.join(OUTPUT_DIR, "configs", sample_name, "config.json")
 
     with open(TEMPLATE_CONFIG_PATH, "r") as f:
@@ -183,61 +168,32 @@ def create_configuration_file(sample_name, has_manual_layers=False):
         json.dump(data, file, indent=2)
 
 
-# Returns True if manual layer data exists
 def add_manual_layers(adata, sample_name):
-    full_visium = sc.read_h5ad(FULL_VISIUM_PATH)
+    layer_names = ["L1", "L2", "L3", "L4", "L5", "L6", "WM"]
+    layer_dir = os.path.join(
+        SOURCE_DIR, sample_name, "outs", "analysis", "manual_layers"
+    )
 
-    # The shortened name, ex. Br8667_mid
-    sample_id = "_".join(sample_name.split("_")[1:3])
-    sample_visium = full_visium[full_visium.obs["sample_id"] == sample_id]
+    all_layers = []
 
-    manual_layers = sample_visium.obs["manual_layer_label"]
+    for layer_name in layer_names:
+        layer_file = os.path.join(layer_dir, f"{layer_name}_barcodes.txt")
 
-    if manual_layers.notna().any():
-        # Replace 'Layer X' with 'LX', but keep 'WM' unchanged
-        manual_layers = manual_layers.replace(
-            {f"Layer {i}": f"L{i}" for i in range(1, 7)}
-        )
-        adata.obs["manual_layers"] = adata.obs_names.map(manual_layers)
-        return True
+        if os.path.exists(layer_file):
+            layer_data = pd.read_csv(layer_file, header=None, names=["cell_id"])
+            layer_data["cluster"] = layer_name  # Assign layer name as the cluster label
+            all_layers.append(layer_data)
+
+    if all_layers:
+        combined_layers = pd.concat(all_layers)  # Combine all layers into one DataFrame
+        combined_layers.set_index("cell_id", inplace=True)
+        combined_layers["cluster"] = combined_layers["cluster"].astype("category")
+
+        # Map to AnnData object
+        adata.obs["manual_layers"] = adata.obs_names.map(combined_layers["cluster"])
+
     else:
-        return False
-
-
-# TODO improve efficiency, currently opens and searches the clusters.csv once for EACH sample--despite having the data for ALL samples
-# This compounds for more entries in k_tuple
-# TODO change to save under one obs entry (bayes_space) with multiple columns where each column is a resolution (simpler and MAY be better for performance/compression?)
-def add_cluster_data(adata, sample_name, k_tuple=(9,)):
-    # The shortened name that exists in the clustering results csv
-    # Ex. Br8667_mid
-    sample_id = "_".join(sample_name.split("_")[1:3])
-
-    for k in k_tuple:
-        # Read the data from clusters.csv
-        clusters_path = os.path.join(
-            BAYESSPACE_CLUSTERS_DIR, f"bayesSpace_harmony_{k}", "clusters.csv"
-        )
-        full_cluster_data = pd.read_csv(clusters_path)
-
-        # Extract only the relevant data
-        filtered_cluster_data = full_cluster_data[
-            full_cluster_data["key"].str.contains(sample_id)
-        ].copy()
-        filtered_cluster_data.loc[:, "cell_id"] = filtered_cluster_data["key"].apply(
-            lambda x: x.split("_")[0]
-        )
-        filtered_cluster_data = filtered_cluster_data[["cell_id", "cluster"]]
-        filtered_cluster_data.set_index("cell_id", inplace=True)
-
-        # Convert to format as found in leiden
-        filtered_cluster_data = filtered_cluster_data.astype(int)
-        filtered_cluster_data = filtered_cluster_data.astype(str)
-        filtered_cluster_data = filtered_cluster_data.astype("category")
-
-        # Add the data to the AnnData object
-        adata.obs[f"bayes_space_k={k}"] = adata.obs_names.map(
-            filtered_cluster_data["cluster"]
-        )
+        print(f"No manual layer files found for {sample_name}.")
 
 
 def set_genes_of_interest(adata, whitelist_path):
@@ -251,7 +207,7 @@ def set_genes_of_interest(adata, whitelist_path):
 
 def get_scale_factor(sample_name):
     json_path = os.path.join(
-        SPACERANGER_SOURCE_DIR, sample_name, "outs", "spatial", "scalefactors_json.json"
+        SOURCE_DIR, sample_name, "outs", "spatial", "scalefactors_json.json"
     )
     with open(json_path, "r") as f:
         data = json.load(f)
