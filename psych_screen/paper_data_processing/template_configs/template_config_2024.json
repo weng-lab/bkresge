@@ -38,6 +38,10 @@
             ],
             "obsSets": [
               {
+                "name": "Manually Annotated Layers",
+                "path": "obs/manual_layers"
+              },
+              {
                 "name": "BayesSpace (k=9)",
                 "path": "obs/bayes_space_k=9"
               },
@@ -130,621 +134,74 @@
         }
       ]
     },
-    "obsSetColor": {
+    "obsSetSelection": {
       "A": [
-        {
-          "path": [
-            "BayesSpace (k=9)"
-          ],
-          "color": [
-            0,
-            0,
-            0
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "1"
-          ],
-          "color": [
-            88,
-            81,
-            87
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "2"
-          ],
-          "color": [
-            228,
-            224,
-            226
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "3"
-          ],
-          "color": [
-            229,
-            71,
-            55
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "4"
-          ],
-          "color": [
-            239,
-            34,
-            244
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "5"
-          ],
-          "color": [
-            105,
-            252,
-            77
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "6"
-          ],
-          "color": [
-            83,
-            120,
-            248
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "7"
-          ],
-          "color": [
-            243,
-            182,
-            54
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "8"
-          ],
-          "color": [
-            163,
-            37,
-            102
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=9)",
-            "9"
-          ],
-          "color": [
-            111,
-            251,
-            207
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)"
-          ],
-          "color": [
-            0,
-            0,
-            0
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "1"
-          ],
-          "color": [
-            88,
-            81,
-            87
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "2"
-          ],
-          "color": [
-            228,
-            224,
-            226
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "3"
-          ],
-          "color": [
-            229,
-            71,
-            55
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "4"
-          ],
-          "color": [
-            239,
-            34,
-            244
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "5"
-          ],
-          "color": [
-            105,
-            252,
-            77
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "6"
-          ],
-          "color": [
-            83,
-            120,
-            248
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "7"
-          ],
-          "color": [
-            243,
-            182,
-            54
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "8"
-          ],
-          "color": [
-            163,
-            37,
-            102
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "9"
-          ],
-          "color": [
-            111,
-            251,
-            207
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "10"
-          ],
-          "color": [
-            147,
-            174,
-            50
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "11"
-          ],
-          "color": [
-            106,
-            210,
-            252
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "12"
-          ],
-          "color": [
-            217,
-            159,
-            251
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "13"
-          ],
-          "color": [
-            162,
-            1,
-            248
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "14"
-          ],
-          "color": [
-            237,
-            166,
-            161
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "15"
-          ],
-          "color": [
-            63,
-            85,
-            152
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=16)",
-            "16"
-          ],
-          "color": [
-            183,
-            83,
-            39
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)"
-          ],
-          "color": [
-            0,
-            0,
-            0
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "1"
-          ],
-          "color": [
-            88,
-            81,
-            87
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "2"
-          ],
-          "color": [
-            228,
-            224,
-            226
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "3"
-          ],
-          "color": [
-            229,
-            71,
-            55
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "4"
-          ],
-          "color": [
-            239,
-            34,
-            244
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "5"
-          ],
-          "color": [
-            105,
-            252,
-            77
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "6"
-          ],
-          "color": [
-            83,
-            120,
-            248
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "7"
-          ],
-          "color": [
-            243,
-            182,
-            54
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "8"
-          ],
-          "color": [
-            163,
-            37,
-            102
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "9"
-          ],
-          "color": [
-            111,
-            251,
-            207
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "10"
-          ],
-          "color": [
-            147,
-            174,
-            50
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "11"
-          ],
-          "color": [
-            106,
-            210,
-            252
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "12"
-          ],
-          "color": [
-            217,
-            159,
-            251
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "13"
-          ],
-          "color": [
-            162,
-            1,
-            248
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "14"
-          ],
-          "color": [
-            237,
-            166,
-            161
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "15"
-          ],
-          "color": [
-            63,
-            85,
-            152
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "16"
-          ],
-          "color": [
-            183,
-            83,
-            39
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "17"
-          ],
-          "color": [
-            58,
-            129,
-            88
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "18"
-          ],
-          "color": [
-            73,
-            29,
-            8
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "19"
-          ],
-          "color": [
-            167,
-            31,
-            159
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "20"
-          ],
-          "color": [
-            245,
-            233,
-            71
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "21"
-          ],
-          "color": [
-            14,
-            38,
-            45
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "22"
-          ],
-          "color": [
-            233,
-            56,
-            134
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "23"
-          ],
-          "color": [
-            234,
-            58,
-            189
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "24"
-          ],
-          "color": [
-            243,
-            229,
-            165
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "25"
-          ],
-          "color": [
-            185,
-            120,
-            164
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "26"
-          ],
-          "color": [
-            117,
-            32,
-            178
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "27"
-          ],
-          "color": [
-            181,
-            245,
-            58
-          ]
-        },
-        {
-          "path": [
-            "BayesSpace (k=28)",
-            "28"
-          ],
-          "color": [
-            192,
-            203,
-            253
-          ]
-        }
+        [
+          "BayesSpace (k=9)",
+          "1"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "2"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "3"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "4"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "5"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "6"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "7"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "8"
+        ],
+        [
+          "BayesSpace (k=9)",
+          "9"
+        ]
+      ],
+      "B": [
+        [
+          "Manually Annotated Layers",
+          "L1"
+        ],
+        [
+          "Manually Annotated Layers",
+          "L2"
+        ],
+        [
+          "Manually Annotated Layers",
+          "L3"
+        ],
+        [
+          "Manually Annotated Layers",
+          "L4"
+        ],
+        [
+          "Manually Annotated Layers",
+          "L5"
+        ],
+        [
+          "Manually Annotated Layers",
+          "L6"
+        ],
+        [
+          "Manually Annotated Layers",
+          "WM"
+        ]
       ]
     },
     "obsColorEncoding": {
@@ -782,7 +239,7 @@
       "x": 0,
       "y": 0,
       "w": 6,
-      "h": 6
+      "h": 2
     },
     {
       "component": "spatial",
@@ -799,37 +256,7 @@
       "x": 6,
       "y": 0,
       "w": 6,
-      "h": 6
-    },
-    {
-      "component": "heatmap",
-      "coordinationScopes": {
-        "obsType": "A",
-        "obsColorEncoding": "A",
-        "obsSetColor": "A"
-      },
-      "props": {
-        "transpose": true
-      },
-      "x": 6,
-      "y": 6,
-      "w": 6,
-      "h": 6
-    },
-    {
-      "component": "layerController",
-      "coordinationScopes": {
-        "obsType": "A",
-        "spatialImageLayer": "A",
-        "spatialSegmentationLayer": "A"
-      },
-      "props": {
-        "disableChannelsIfRgbDetected": true
-      },
-      "x": 0,
-      "y": 6,
-      "w": 2,
-      "h": 6
+      "h": 2
     },
     {
       "component": "obsSets",
@@ -838,22 +265,24 @@
         "obsColorEncoding": "A",
         "obsSetColor": "A"
       },
-      "x": 2,
-      "y": 6,
-      "w": 2,
-      "h": 6
+      "x": 0,
+      "y": 2,
+      "w": 3,
+      "h": 2
     },
     {
-      "component": "featureList",
+      "component": "obsSetFeatureValueDistribution",
       "coordinationScopes": {
         "obsType": "A",
-        "obsColorEncoding": "B",
-        "featureSelection": "A"
+        "obsColorEncoding": "A",
+        "obsSetColor": "A",
+        "featureSelection": "A",
+        "obsSetSelection": "A"
       },
-      "x": 4,
-      "y": 6,
-      "w": 2,
-      "h": 6
+      "x": 3,
+      "y": 2,
+      "w": 9,
+      "h": 2
     }
   ]
 }

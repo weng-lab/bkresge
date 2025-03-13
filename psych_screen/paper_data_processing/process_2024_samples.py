@@ -26,6 +26,7 @@ WHITELIST_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/whiteli
 FULL_VISIUM_PATH = (
     "/zata/zippy/kresgeb/psych_screen/paper_data_processing/full_visium.h5ad"
 )
+COLOR_DATA_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/2024_Paper_Palette.json"
 
 # Suppress the specific UserWarnings about unique names
 warnings.filterwarnings(
@@ -171,18 +172,64 @@ def create_configuration_file(sample_name, has_manual_layers=False):
     with open(TEMPLATE_CONFIG_PATH, "r") as f:
         data = json.load(f)
 
+    # Adjust for sample name
     # Convert the data to a string
     data_str = json.dumps(data)
-
     # Replace <<Sample_Name>> with the actual sample name
     data_str = data_str.replace("<<Sample_Name>>", sample_name)
-
     # Convert the string back to a dictionary
     data = json.loads(data_str)
+
+    data = add_color_data(data)
 
     # Write the updated data to a new JSON file
     with open(output_file_path, "w") as file:
         json.dump(data, file, indent=2)
+
+
+def hex_to_rgb(hex_color):
+    """Converts hex color string to RGB tuple."""
+    hex_color = hex_color.lstrip("#")
+    return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
+
+
+def add_color_data(config_data):
+    """
+    Fills the 'obsSetColor' section in the config file from the color palette file.
+
+    :param config_path: Path to the config file to be updated.
+    :return: Updated config data with filled 'obsSetColor' section.
+    """
+
+    # Load the sets color file
+    with open(COLOR_DATA_PATH, "r") as sets_file:
+        sets_data = json.load(sets_file)
+
+    # Initialize the 'obsSetColor' structure
+    obs_set_color = {"A": []}
+
+    # Iterate through each set in the sets color file
+    for set_entry in sets_data["sets"]:
+        set_name = set_entry["setName"]
+        for color_entry in set_entry["colors"]:
+            label = color_entry["label"]
+            hex_color = color_entry["hex"]
+            rgb_color = hex_to_rgb(hex_color)
+
+            # Build the path and color entry for the 'obsSetColor'
+            path = [set_name]
+            if label:
+                path.append(label)
+
+            color_entry = {"path": path, "color": rgb_color}
+
+            # Append to the appropriate place in obsSetColor
+            obs_set_color["A"].append(color_entry)
+
+    # Fill the 'obsSetColor' section of the config data
+    config_data["coordinationSpace"]["obsSetColor"] = obs_set_color
+
+    return config_data
 
 
 # Returns True if manual layer data exists
@@ -243,8 +290,6 @@ def add_cluster_data(adata, sample_name, k_tuple=(9,)):
         # filtered_cluster_data["cluster"] = filtered_cluster_data[
         #     "cluster"
         # ].cat.rename_categories(rename_dict)
-
-        print("look at me!", filtered_cluster_data["cluster"])
 
         # Add the data to the AnnData object
         adata.obs[f"bayes_space_k={k}"] = adata.obs_names.map(

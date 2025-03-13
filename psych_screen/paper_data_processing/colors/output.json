@@ -9,36 +9,81 @@
                 },
                 {
                     "label": "WM",
-                    "hex": "#1b1b1b"
+                    "hex": "#f60909"
                 },
                 {
                     "label": "L1",
-                    "hex": "#df367e"
+                    "hex": "#ffaa33"
                 },
                 {
                     "label": "L2",
-                    "hex": "#ffffff"
+                    "hex": "#fff705"
                 },
                 {
                     "label": "L3",
-                    "hex": "#6d52ad"
+                    "hex": "#62ae52"
                 },
                 {
                     "label": "L4",
-                    "hex": "#914ea1"
+                    "hex": "#4e53a2"
                 },
                 {
                     "label": "L5",
-                    "hex": "#f7dc38"
+                    "hex": "#5f369b"
                 },
                 {
                     "label": "L6",
-                    "hex": "#ef8c28"
+                    "hex": "#ac5bd7"
                 }
             ]
         },
         {
             "setName": "BayesSpace (k=9)",
+            "colors": [
+                {
+                    "label": "",
+                    "hex": "#000000"
+                },
+                {
+                    "label": "1",
+                    "hex": "#0484fb"
+                },
+                {
+                    "label": "2",
+                    "hex": "#043c95"
+                },
+                {
+                    "label": "3",
+                    "hex": "#01086f"
+                },
+                {
+                    "label": "4",
+                    "hex": "#94c8f0"
+                },
+                {
+                    "label": "5",
+                    "hex": "#061a6a"
+                },
+                {
+                    "label": "6",
+                    "hex": "#1f25e0"
+                },
+                {
+                    "label": "7",
+                    "hex": "#1166a6"
+                },
+                {
+                    "label": "8",
+                    "hex": "#a32566"
+                },
+                {
+                    "label": "9",
+                    "hex": "#6ffbcf"
+                }
+            ]
+        },
+        {
+            "setName": "BayesSpace (k=16)",
             "colors": [
                 {
                     "label": "",
@@ -66,7 +111,7 @@
                 },
                 {
                     "label": "6",
-                    "hex": "#5378f8"
+                    "hex": "#4d6f61"
                 },
                 {
                     "label": "7",
@@ -79,6 +124,155 @@
                 {
                     "label": "9",
                     "hex": "#6ffbcf"
+                },
+                {
+                    "label": "10",
+                    "hex": "#93ae32"
+                },
+                {
+                    "label": "11",
+                    "hex": "#6ad2fc"
+                },
+                {
+                    "label": "12",
+                    "hex": "#d99ffb"
+                },
+                {
+                    "label": "13",
+                    "hex": "#a201f8"
+                },
+                {
+                    "label": "14",
+                    "hex": "#eda6a1"
+                },
+                {
+                    "label": "15",
+                    "hex": "#3f5598"
+                },
+                {
+                    "label": "16",
+                    "hex": "#b75327"
+                }
+            ]
+        },
+        {
+            "setName": "BayesSpace (k=28)",
+            "colors": [
+                {
+                    "label": "",
+                    "hex": "#000000"
+                },
+                {
+                    "label": "1",
+                    "hex": "#585157"
+                },
+                {
+                    "label": "2",
+                    "hex": "#e4e0e2"
+                },
+                {
+                    "label": "3",
+                    "hex": "#e54737"
+                },
+                {
+                    "label": "4",
+                    "hex": "#ef22f4"
+                },
+                {
+                    "label": "5",
+                    "hex": "#69fc4d"
+                },
+                {
+                    "label": "6",
+                    "hex": "#4d6f61"
+                },
+                {
+                    "label": "7",
+                    "hex": "#f3b636"
+                },
+                {
+                    "label": "8",
+                    "hex": "#a32566"
+                },
+                {
+                    "label": "9",
+                    "hex": "#6ffbcf"
+                },
+                {
+                    "label": "10",
+                    "hex": "#93ae32"
+                },
+                {
+                    "label": "11",
+                    "hex": "#6ad2fc"
+                },
+                {
+                    "label": "12",
+                    "hex": "#d99ffb"
+                },
+                {
+                    "label": "13",
+                    "hex": "#a201f8"
+                },
+                {
+                    "label": "14",
+                    "hex": "#eda6a1"
+                },
+                {
+                    "label": "15",
+                    "hex": "#3f5598"
+                },
+                {
+                    "label": "16",
+                    "hex": "#b75327"
+                },
+                {
+                    "label": "17",
+                    "hex": "#3a8158"
+                },
+                {
+                    "label": "18",
+                    "hex": "#491d08"
+                },
+                {
+                    "label": "19",
+                    "hex": "#a71f9f"
+                },
+                {
+                    "label": "20",
+                    "hex": "#f5e947"
+                },
+                {
+                    "label": "21",
+                    "hex": "#0e262d"
+                },
+                {
+                    "label": "22",
+                    "hex": "#e93886"
+                },
+                {
+                    "label": "23",
+                    "hex": "#ea3abd"
+                },
+                {
+                    "label": "24",
+                    "hex": "#f3e5a5"
+                },
+                {
+                    "label": "25",
+                    "hex": "#b978a4"
+                },
+                {
+                    "label": "26",
+                    "hex": "#7520b2"
+                },
+                {
+                    "label": "27",
+                    "hex": "#b5f53a"
+                },
+                {
+                    "label": "28",
+                    "hex": "#c0cbfd"
                 }
             ]
         }
