@@ -1,0 +1,86 @@
+{
+    "sets": [
+        {
+            "setName": "Manually Annotated Layers",
+            "colors": [
+                {
+                    "label": "",
+                    "hex": "#ffffff"
+                },
+                {
+                    "label": "WM",
+                    "hex": "#1b1b1b"
+                },
+                {
+                    "label": "L1",
+                    "hex": "#df367e"
+                },
+                {
+                    "label": "L2",
+                    "hex": "#ffffff"
+                },
+                {
+                    "label": "L3",
+                    "hex": "#6d52ad"
+                },
+                {
+                    "label": "L4",
+                    "hex": "#914ea1"
+                },
+                {
+                    "label": "L5",
+                    "hex": "#f7dc38"
+                },
+                {
+                    "label": "L6",
+                    "hex": "#ef8c28"
+                }
+            ]
+        },
+        {
+            "setName": "BayesSpace (k=9)",
+            "colors": [
+                {
+                    "label": "",
+                    "hex": "#000000"
+                },
+                {
+                    "label": "1",
+                    "hex": "#585157"
+                },
+                {
+                    "label": "2",
+                    "hex": "#e4e0e2"
+                },
+                {
+                    "label": "3",
+                    "hex": "#e54737"
+                },
+                {
+                    "label": "4",
+                    "hex": "#ef22f4"
+                },
+                {
+                    "label": "5",
+                    "hex": "#69fc4d"
+                },
+                {
+                    "label": "6",
+                    "hex": "#5378f8"
+                },
+                {
+                    "label": "7",
+                    "hex": "#f3b636"
+                },
+                {
+                    "label": "8",
+                    "hex": "#a32566"
+                },
+                {
+                    "label": "9",
+                    "hex": "#6ffbcf"
+                }
+            ]
+        }
+    ]
+}
