@@ -26,7 +26,9 @@ WHITELIST_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/whiteli
 FULL_VISIUM_PATH = (
     "/zata/zippy/kresgeb/psych_screen/paper_data_processing/full_visium.h5ad"
 )
-COLOR_DATA_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/2024_Paper_Palette.json"
+COLOR_DATA_PATH = (
+    "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/k16_like_manual.json"
+)
 
 # Suppress the specific UserWarnings about unique names
 warnings.filterwarnings(
@@ -61,7 +63,7 @@ def main():
     pool.join()
 
 
-# Based on https://github.com/vitessce/vitessce-python/blob/main/demos/human-lymph-node-10x-visium/src/create_zarr.py
+# Loosely based on https://github.com/vitessce/vitessce-python/blob/main/demos/human-lymph-node-10x-visium/src/create_zarr.py
 def process_sample(sample_name):
     data_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "data.h5ad.zarr")
     image_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "image.ome.zarr")
@@ -179,6 +181,20 @@ def create_configuration_file(sample_name, has_manual_layers=False):
     data_str = data_str.replace("<<Sample_Name>>", sample_name)
     # Convert the string back to a dictionary
     data = json.loads(data_str)
+
+    if not has_manual_layers:
+        # Find the "Manually Annotated Layers" entry in obsSets and remove it
+        datasets = data.get("datasets", [])
+        for dataset in datasets:
+            files = dataset.get("files", [])
+            for file in files:
+                options = file.get("options", {})
+                obs_sets = options.get("obsSets", [])
+                options["obsSets"] = [
+                    entry
+                    for entry in obs_sets
+                    if entry["name"] != "Manually Annotated Layers"
+                ]
 
     data = add_color_data(data)
 
@@ -298,7 +314,11 @@ def add_cluster_data(adata, sample_name, k_tuple=(9,)):
 
 
 def set_genes_of_interest(adata, whitelist_path):
-    adata.var["genes_of_interest"] = adata.var["highly_variable"].copy()
+
+    if "highly_variable" in adata.var:
+        adata.var["genes_of_interest"] = adata.var["highly_variable"].copy()
+    else:
+        adata.var["genes_of_interest"] = pd.Series(False, index=adata.var.index)
     with open(whitelist_path, "r") as f:
         for line in f:
             line = line.strip()

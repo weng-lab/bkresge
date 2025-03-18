@@ -12,4 +12,5 @@ Bai_2024/
 *h5ad.zarr
 
 # Specific Files
-psych_screen/test.ipynb
+psych_screen/test.*
+psych_screen/small_scripts/just_create_2024_configs.py

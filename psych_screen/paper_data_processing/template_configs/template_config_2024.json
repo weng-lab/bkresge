@@ -48,10 +48,6 @@
               {
                 "name": "BayesSpace (k=16)",
                 "path": "obs/bayes_space_k=16"
-              },
-              {
-                "name": "BayesSpace (k=28)",
-                "path": "obs/bayes_space_k=28"
               }
             ]
           }

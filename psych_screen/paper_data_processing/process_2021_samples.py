@@ -197,7 +197,12 @@ def add_manual_layers(adata, sample_name):
 
 
 def set_genes_of_interest(adata, whitelist_path):
-    adata.var["genes_of_interest"] = adata.var["highly_variable"].copy()
+
+    if "highly_variable" in adata.var:
+        adata.var["genes_of_interest"] = adata.var["highly_variable"].copy()
+    else:
+        adata.var["genes_of_interest"] = pd.Series(False, index=adata.var.index)
+
     with open(whitelist_path, "r") as f:
         for line in f:
             line = line.strip()
