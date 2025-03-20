@@ -1,4 +1,5 @@
-import multiprocessing
+# When testing out new color palettes or template configs we may want to create new configs without running all of the data processing
+
 import os
 import json
 
@@ -7,9 +8,9 @@ SPACERANGER_SOURCE_DIR = (
     "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger"
 )
 OUTPUT_DIR = "/zata/public_html/users/kresgeb/psych_encode/spatialDLPFC"
-TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/2024_test_config.json"
+TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/template_config_2024.json"
 COLOR_DATA_PATH = (
-    "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/output.json"
+    "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/k16_like_manual.json"
 )
 
 

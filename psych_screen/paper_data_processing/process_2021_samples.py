@@ -29,11 +29,13 @@ warnings.filterwarnings(
 
 def main():
     # all subdirectories in the source directory (exclude the names.txt)
-    sample_names = [entry.name for entry in os.scandir(SOURCE_DIR) if entry.is_dir()]
+    sample_names = [entry.name for entry in os.scandir(
+        SOURCE_DIR) if entry.is_dir()]
 
     # Make all directories if they do not exist
     for sample_name in sample_names:
-        os.makedirs(name=os.path.join(OUTPUT_DIR, "data", sample_name), exist_ok=True)
+        os.makedirs(name=os.path.join(
+            OUTPUT_DIR, "data", sample_name), exist_ok=True)
         os.makedirs(
             name=os.path.join(OUTPUT_DIR, "configs", sample_name), exist_ok=True
         )
@@ -42,7 +44,8 @@ def main():
     for sample_name in sample_names:
         create_configuration_file(sample_name)
 
-    pool = multiprocessing.Pool(processes=min(os.cpu_count() / 2, len(sample_names)))
+    pool = multiprocessing.Pool(processes=min(
+        os.cpu_count() / 2, len(sample_names)))
     pool.map(process_sample, sample_names)
 
     # Close the pool to free resources
@@ -52,8 +55,10 @@ def main():
 
 # Based on https://github.com/vitessce/vitessce-python/blob/main/demos/human-lymph-node-10x-visium/src/create_zarr.py
 def process_sample(sample_name):
-    data_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "data.h5ad.zarr")
-    image_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "image.ome.zarr")
+    data_output_path = os.path.join(
+        OUTPUT_DIR, "data", sample_name, "data.h5ad.zarr")
+    image_output_path = os.path.join(
+        OUTPUT_DIR, "data", sample_name, "image.ome.zarr")
     source_outs_path = os.path.join(SOURCE_DIR, sample_name, "outs")
 
     adata = sq.read.visium(source_outs_path)
@@ -86,6 +91,11 @@ def process_sample(sample_name):
     # Add manual layer annotation data
     add_manual_layers(adata, sample_name)
 
+    # Remove spots that do not have manual annotation data
+    spots_missing_layer_data = adata.obs[pd.isna(
+        adata.obs["manual_layers"])].index
+    adata = adata[~adata.obs.index.isin(spots_missing_layer_data)]
+
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var["genes_of_interest"]].X.toarray()
     X_goi_index = adata[:, adata.var["genes_of_interest"]].var.copy().index
@@ -98,7 +108,8 @@ def process_sample(sample_name):
     goi_index_ordering = scipy.cluster.hierarchy.leaves_list(Z)
     genes_of_interest = X_goi_index.values[goi_index_ordering].tolist()
     all_genes = adata.var.index.values.tolist()
-    not_goi = adata.var.loc[~adata.var["genes_of_interest"]].index.values.tolist()
+    not_goi = adata.var.loc[~adata.var["genes_of_interest"]
+                            ].index.values.tolist()
 
     def get_orig_index(gene_id):
         return all_genes.index(gene_id)
@@ -148,8 +159,10 @@ def process_sample(sample_name):
     adata.write_zarr(data_output_path, chunks=[adata.shape[0], 10])
 
 
+# TODO: This json->String->json thing is gross, and the two places <<Sample_Name>> occurs in the template should be explicitly found and the sample name inserted
 def create_configuration_file(sample_name):
-    output_file_path = os.path.join(OUTPUT_DIR, "configs", sample_name, "config.json")
+    output_file_path = os.path.join(
+        OUTPUT_DIR, "configs", sample_name, "config.json")
 
     with open(TEMPLATE_CONFIG_PATH, "r") as f:
         data = json.load(f)
@@ -180,17 +193,22 @@ def add_manual_layers(adata, sample_name):
         layer_file = os.path.join(layer_dir, f"{layer_name}_barcodes.txt")
 
         if os.path.exists(layer_file):
-            layer_data = pd.read_csv(layer_file, header=None, names=["cell_id"])
-            layer_data["cluster"] = layer_name  # Assign layer name as the cluster label
+            layer_data = pd.read_csv(
+                layer_file, header=None, names=["cell_id"])
+            # Assign layer name as the cluster label
+            layer_data["cluster"] = layer_name
             all_layers.append(layer_data)
 
     if all_layers:
-        combined_layers = pd.concat(all_layers)  # Combine all layers into one DataFrame
+        # Combine all layers into one DataFrame
+        combined_layers = pd.concat(all_layers)
         combined_layers.set_index("cell_id", inplace=True)
-        combined_layers["cluster"] = combined_layers["cluster"].astype("category")
+        combined_layers["cluster"] = combined_layers["cluster"].astype(
+            "category")
 
         # Map to AnnData object
-        adata.obs["manual_layers"] = adata.obs_names.map(combined_layers["cluster"])
+        adata.obs["manual_layers"] = adata.obs_names.map(
+            combined_layers["cluster"])
 
     else:
         print(f"No manual layer files found for {sample_name}.")
@@ -201,7 +219,8 @@ def set_genes_of_interest(adata, whitelist_path):
     if "highly_variable" in adata.var:
         adata.var["genes_of_interest"] = adata.var["highly_variable"].copy()
     else:
-        adata.var["genes_of_interest"] = pd.Series(False, index=adata.var.index)
+        adata.var["genes_of_interest"] = pd.Series(
+            False, index=adata.var.index)
 
     with open(whitelist_path, "r") as f:
         for line in f:

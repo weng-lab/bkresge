@@ -50,12 +50,14 @@ def main():
 
     # Make all directories if they do not exist
     for sample_name in sample_names:
-        os.makedirs(name=os.path.join(OUTPUT_DIR, "data", sample_name), exist_ok=True)
+        os.makedirs(name=os.path.join(
+            OUTPUT_DIR, "data", sample_name), exist_ok=True)
         os.makedirs(
             name=os.path.join(OUTPUT_DIR, "configs", sample_name), exist_ok=True
         )
 
-    pool = multiprocessing.Pool(processes=min(os.cpu_count() / 2, len(sample_names)))
+    pool = multiprocessing.Pool(processes=min(
+        os.cpu_count() / 2, len(sample_names)))
     pool.map(process_sample, sample_names)
 
     # Close the pool to free resources
@@ -65,25 +67,49 @@ def main():
 
 # Loosely based on https://github.com/vitessce/vitessce-python/blob/main/demos/human-lymph-node-10x-visium/src/create_zarr.py
 def process_sample(sample_name):
-    data_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "data.h5ad.zarr")
-    image_output_path = os.path.join(OUTPUT_DIR, "data", sample_name, "image.ome.zarr")
-    source_outs_path = os.path.join(SPACERANGER_SOURCE_DIR, sample_name, "outs")
+    data_output_path = os.path.join(
+        OUTPUT_DIR, "data", sample_name, "data.h5ad.zarr")
+    image_output_path = os.path.join(
+        OUTPUT_DIR, "data", sample_name, "image.ome.zarr")
+    source_outs_path = os.path.join(
+        SPACERANGER_SOURCE_DIR, sample_name, "outs")
 
     adata = sq.read.visium(source_outs_path)
     adata.var_names_make_unique()
 
-    # Calculate QC metrics
-    adata.var["mt"] = adata.var_names.str.startswith("MT-")
-    sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
-
-    # Perform basic filtering (much more generous than source)
-    sc.pp.filter_cells(adata, min_genes=100)
-    sc.pp.filter_genes(adata, min_cells=10)
-    adata = adata[adata.obs["pct_counts_mt"] < 30]
+    # Retrieve the data from the R pipeline used in the paper
+    full_visium = sc.read_h5ad(FULL_VISIUM_PATH)
+    # The shortened name, ex. Br8667_mid
+    sample_id = "_".join(sample_name.split("_")[1:3])
+    sample_visium = full_visium[full_visium.obs["sample_id"] == sample_id]
 
     # Perform normalization
     sc.pp.normalize_total(adata, inplace=True)
     sc.pp.log1p(adata)
+
+    # # Calculate QC metrics
+    # adata.var["mt"] = adata.var_names.str.startswith("MT-")
+    # sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
+
+    # # Perform basic filtering (much more generous than source)
+    # sc.pp.filter_cells(adata, min_genes=100)
+    # sc.pp.filter_genes(adata, min_cells=10)
+    # adata = adata[adata.obs["pct_counts_mt"] < 30]
+
+    # Remove any remaining spots that the R pipeline in the paper (scran discard) says should be removed
+    # NOTE: apparently this still leaves spots that do not have a cluster assigned to them, somehow...
+    discard_spots = sample_visium.obs[
+        sample_visium.obs["scran_discard"] == "TRUE"
+    ].index
+    adata = adata[~adata.obs.index.isin(discard_spots)]
+
+    # Clustering
+    add_cluster_data(adata, sample_name, k_tuple=(9, 16, 28))
+
+    # Remove all spots that do not have an assigned cluster in BayesSpace k=9
+    spots_missing_cluster_data = adata.obs[pd.isna(
+        adata.obs["bayes_space_k=9"])].index
+    adata = adata[~adata.obs.index.isin(spots_missing_cluster_data)]
 
     # Determine the top 100 highly variable genes.
     sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=100)
@@ -96,11 +122,8 @@ def process_sample(sample_name):
     sc.pp.neighbors(adata)
     sc.tl.umap(adata)
 
-    # Clustering
-    add_cluster_data(adata, sample_name, k_tuple=(9, 16, 28))
-
     # Add manual layers if they exist, store whether it exists or not
-    has_manual_layers = add_manual_layers(adata, sample_name)
+    has_manual_layers = add_manual_layers(adata, sample_visium)
 
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var["genes_of_interest"]].X.toarray()
@@ -114,7 +137,8 @@ def process_sample(sample_name):
     goi_index_ordering = scipy.cluster.hierarchy.leaves_list(Z)
     genes_of_interest = X_goi_index.values[goi_index_ordering].tolist()
     all_genes = adata.var.index.values.tolist()
-    not_goi = adata.var.loc[~adata.var["genes_of_interest"]].index.values.tolist()
+    not_goi = adata.var.loc[~adata.var["genes_of_interest"]
+                            ].index.values.tolist()
 
     def get_orig_index(gene_id):
         return all_genes.index(gene_id)
@@ -169,11 +193,13 @@ def process_sample(sample_name):
 
 
 def create_configuration_file(sample_name, has_manual_layers=False):
-    output_file_path = os.path.join(OUTPUT_DIR, "configs", sample_name, "config.json")
+    output_file_path = os.path.join(
+        OUTPUT_DIR, "configs", sample_name, "config.json")
 
     with open(TEMPLATE_CONFIG_PATH, "r") as f:
         data = json.load(f)
 
+    # TODO: This json->String->json thing is gross, and the two places <<Sample_Name>> occurs in the template should be explicitly found and the sample name inserted
     # Adjust for sample name
     # Convert the data to a string
     data_str = json.dumps(data)
@@ -206,7 +232,7 @@ def create_configuration_file(sample_name, has_manual_layers=False):
 def hex_to_rgb(hex_color):
     """Converts hex color string to RGB tuple."""
     hex_color = hex_color.lstrip("#")
-    return tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
+    return tuple(int(hex_color[i: i + 2], 16) for i in (0, 2, 4))
 
 
 def add_color_data(config_data):
@@ -249,12 +275,7 @@ def add_color_data(config_data):
 
 
 # Returns True if manual layer data exists
-def add_manual_layers(adata, sample_name):
-    full_visium = sc.read_h5ad(FULL_VISIUM_PATH)
-
-    # The shortened name, ex. Br8667_mid
-    sample_id = "_".join(sample_name.split("_")[1:3])
-    sample_visium = full_visium[full_visium.obs["sample_id"] == sample_id]
+def add_manual_layers(adata, sample_visium):
 
     manual_layers = sample_visium.obs["manual_layer_label"]
 
@@ -313,12 +334,17 @@ def add_cluster_data(adata, sample_name, k_tuple=(9,)):
         )
 
 
+def filter_by_scran(adata, sample_visium):
+    pass
+
+
 def set_genes_of_interest(adata, whitelist_path):
 
     if "highly_variable" in adata.var:
         adata.var["genes_of_interest"] = adata.var["highly_variable"].copy()
     else:
-        adata.var["genes_of_interest"] = pd.Series(False, index=adata.var.index)
+        adata.var["genes_of_interest"] = pd.Series(
+            False, index=adata.var.index)
     with open(whitelist_path, "r") as f:
         for line in f:
             line = line.strip()
