@@ -168,36 +168,6 @@
           "BayesSpace (k=9)",
           "9"
         ]
-      ],
-      "B": [
-        [
-          "Manually Annotated Layers",
-          "L1"
-        ],
-        [
-          "Manually Annotated Layers",
-          "L2"
-        ],
-        [
-          "Manually Annotated Layers",
-          "L3"
-        ],
-        [
-          "Manually Annotated Layers",
-          "L4"
-        ],
-        [
-          "Manually Annotated Layers",
-          "L5"
-        ],
-        [
-          "Manually Annotated Layers",
-          "L6"
-        ],
-        [
-          "Manually Annotated Layers",
-          "WM"
-        ]
       ]
     },
     "obsColorEncoding": {
@@ -205,23 +175,26 @@
       "B": "geneSelection"
     },
     "spatialZoom": {
-      "A": -2.598
+      "A": null
     },
     "spatialTargetX": {
-      "A": 1008.88
+      "A": null
     },
     "spatialTargetY": {
-      "A": 1004.69
+      "A": null
     },
     "featureSelection": {
       "A": [
         "MBP"
       ]
-    }
+    } 
   },
   "layout": [
     {
       "component": "spatial",
+      "props": {
+        "title": "Spatial Organization of Layers/Clusters"
+      },
       "coordinationScopes": {
         "obsType": "A",
         "spatialImageLayer": "A",
@@ -230,7 +203,8 @@
         "spatialTargetX": "A",
         "spatialTargetY": "A",
         "obsColorEncoding": "A",
-        "obsSetColor": "A"
+        "obsSetColor": "A",
+        "obsSetSelection": "A"
       },
       "x": 0,
       "y": 0,
@@ -239,6 +213,9 @@
     },
     {
       "component": "spatial",
+      "props": {
+        "title": "Spatial Gene Expression"
+      },
       "coordinationScopes": {
         "obsType": "A",
         "spatialImageLayer": "A",
@@ -247,7 +224,8 @@
         "spatialTargetX": "A",
         "spatialTargetY": "A",
         "obsColorEncoding": "B",
-        "featureSelection": "A"
+        "featureSelection": "A",
+        "obsSetSelection": "A"
       },
       "x": 6,
       "y": 0,
@@ -256,10 +234,14 @@
     },
     {
       "component": "obsSets",
+      "props": {
+        "title": "Layers/Clusters"
+      },
       "coordinationScopes": {
         "obsType": "A",
         "obsColorEncoding": "A",
-        "obsSetColor": "A"
+        "obsSetColor": "A",
+        "obsSetSelection": "A"
       },
       "x": 0,
       "y": 2,

@@ -125,6 +125,12 @@ def process_sample(sample_name):
     # Add manual layers if they exist, store whether it exists or not
     has_manual_layers = add_manual_layers(adata, sample_visium)
 
+    # If there is manual layer data, make sure no Nones/Null make it through (they break the visualization)
+    if has_manual_layers:
+        spots_missing_manual_layer_data = adata.obs[pd.isna(
+            adata.obs["manual_layers"])].index
+        adata = adata[~adata.obs.index.isin(spots_missing_manual_layer_data)]
+
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var["genes_of_interest"]].X.toarray()
     X_goi_index = adata[:, adata.var["genes_of_interest"]].var.copy().index
