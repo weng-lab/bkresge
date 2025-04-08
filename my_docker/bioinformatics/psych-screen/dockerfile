@@ -13,6 +13,6 @@ RUN pip install --upgrade pip && pip install --no-cache-dir \
 
 # R libraries that are needed for paper data conversion
 RUN R -e "options(warn=2); install.packages(c('magick'))"
-RUN R -e "BiocManager::install(c('zellkonverter', 'SpatialExperiment', 'spatialLIBD'))"
+RUN R -e "BiocManager::install(c('zellkonverter', 'SpatialExperiment', 'spatialLIBD', 'BayesSpace'))"
+RUN R -e "BiocManager::install(c('PCAtools', 'harmony'))"
 RUN R -e "options(warn=2); devtools::install_github('vitessce/vitessceR')"
-

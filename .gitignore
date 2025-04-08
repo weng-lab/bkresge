@@ -5,12 +5,17 @@ greg_task/
 docker/
 Bai_2024/
 figures/
+slurm/
 
 
 # Types of files
 */.ipynb_checkpoints/
 *.h5ad
 *h5ad.zarr
+*.sif
+psych_screen/test.*
+psych_screen/output/testing/
 
 # Specific Files
-psych_screen/test.*
+
+
