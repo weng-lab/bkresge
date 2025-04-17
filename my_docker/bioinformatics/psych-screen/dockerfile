@@ -5,14 +5,20 @@ RUN apt update && apt install -y \
     libsodium-dev \
     libmagick++-dev
 
-
-RUN pip install --upgrade pip && pip install --no-cache-dir \
-    anndata \
-    zarr \
-    vitessce
-
 # R libraries that are needed for paper data conversion
 RUN R -e "options(warn=2); install.packages(c('magick'))"
 RUN R -e "BiocManager::install(c('zellkonverter', 'SpatialExperiment', 'spatialLIBD', 'BayesSpace'))"
 RUN R -e "BiocManager::install(c('PCAtools', 'harmony'))"
+
+# Spatial Diff Gene Exp
 RUN R -e "options(warn=2); devtools::install_github('vitessce/vitessceR')"
+RUN R -e "options(warn=2); devtools::install_github('xzhoulab/SPARK')"
+RUN R -e "BiocManager::install(c('nnSVG'))"
+
+
+RUN pip install --upgrade pip && pip install --no-cache-dir \
+    anndata \
+    zarr \
+    vitessce \
+    spatialde \
+    SpaGCN
