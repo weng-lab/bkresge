@@ -187,7 +187,7 @@
       "A": [
         "MBP"
       ]
-    } 
+    }
   },
   "layout": [
     {
@@ -250,6 +250,9 @@
     },
     {
       "component": "obsSetFeatureValueDistribution",
+      "props": {
+        "title": "Gene Expression by Layer/Cluster"
+      },
       "coordinationScopes": {
         "obsType": "A",
         "obsColorEncoding": "A",
