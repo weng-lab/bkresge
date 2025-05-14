@@ -325,11 +325,11 @@ def add_cluster_data(adata, sample_name, k_tuple=(9,)):
             filtered_cluster_data.astype(int).astype(str).astype("category")
         )
 
-        # Rename the clusters to something more easy for user to understand
+        # Rename the clusters to something more easy for user to understand based on rename_dict
         rename_dict = {
             str(i): f"Spatial Domain {int(k):02d}D{int(i):02d}" for i in range(1, k + 1)
         }
-        # TODO uncomment me for renaming
+        # uncomment me for renaming
         # filtered_cluster_data["cluster"] = filtered_cluster_data[
         #     "cluster"
         # ].cat.rename_categories(rename_dict)

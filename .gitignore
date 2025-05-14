@@ -18,7 +18,6 @@ psych_screen/test.*
 psych_screen/output/testing/
 psych_screen/output/bayes_space/*.Rdata
 psych_screen/output/bayes_space/jitter/*.Rdata
+psych_screen/comparisons/spe_*.Rdata
 
 # Specific Files
-
-
