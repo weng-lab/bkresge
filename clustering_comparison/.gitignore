@@ -1,2 +1,3 @@
 .snakemake/
 results/samples/
+resources/paper_data/

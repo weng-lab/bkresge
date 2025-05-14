@@ -1,6 +1,10 @@
 ground_truth_columns:
-  2021:
+  '2021':
   # TODO: may be incorrect and needs to be checked against manual annotation csvs from Globus download
     - spatialLIBD
-  2024:
+  '2024':
     - manual_layer_label
+
+paper_data_urls:
+  '2021': "https://users.wenglab.org/kresgeb/cluster-comparisons/paper_data/2021.RData"
+  '2024': "https://users.wenglab.org/kresgeb/cluster-comparisons/paper_data/2024.RData"
