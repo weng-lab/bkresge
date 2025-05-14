@@ -1,0 +1,86 @@
+[1] "2025-05-14 13:35:51 EDT"
+[1] "Loading from: resources/paper_data/2021.RData"
+[1] "2025-05-14 13:36:01 EDT"
+Found samples: 151507, 151508, 151509, 151510, 151669, 151670, 151671, 151672, 151673, 151674, 151675, 151676 
+[1] "2025-05-14 13:36:01 EDT"
+Processing sample: 151507 
+[1] "2025-05-14 13:36:07 EDT"
+Processing sample: 151508 
+[1] "2025-05-14 13:36:13 EDT"
+Processing sample: 151509 
+[1] "2025-05-14 13:36:20 EDT"
+Processing sample: 151510 
+[1] "2025-05-14 13:36:26 EDT"
+Processing sample: 151669 
+[1] "2025-05-14 13:36:34 EDT"
+Processing sample: 151670 
+[1] "2025-05-14 13:36:40 EDT"
+Processing sample: 151671 
+[1] "2025-05-14 13:36:48 EDT"
+Processing sample: 151672 
+[1] "2025-05-14 13:36:55 EDT"
+Processing sample: 151673 
+[1] "2025-05-14 13:37:03 EDT"
+Processing sample: 151674 
+[1] "2025-05-14 13:37:13 EDT"
+Processing sample: 151675 
+[1] "2025-05-14 13:37:20 EDT"
+Processing sample: 151676 
+[1] "Reproducibility information:"
+[1] "2025-05-14 13:37:27 EDT"
+   user  system elapsed 
+ 98.270   2.859 101.038 
+- Session info ---------------------------------------------------------------
+ setting  value
+ version  R version 4.5.0 (2025-04-11)
+ os       Ubuntu 22.04.5 LTS
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  C
+ ctype    C
+ tz       America/New_York
+ date     2025-05-14
+ pandoc   NA
+ quarto   NA
+
+- Packages -------------------------------------------------------------------
+ package              * version date (UTC) lib source
+ abind                  1.4-8   2024-09-12 [1] CRAN (R 4.5.0)
+ Biobase              * 2.68.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ BiocGenerics         * 0.54.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ cli                    3.6.5   2025-04-23 [1] CRAN (R 4.5.0)
+ crayon                 1.5.3   2024-06-20 [1] CRAN (R 4.5.0)
+ DelayedArray           0.34.1  2025-04-17 [1] Bioconductor 3.21 (R 4.5.0)
+ generics             * 0.1.4   2025-05-09 [1] CRAN (R 4.5.0)
+ GenomeInfoDb         * 1.44.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ GenomeInfoDbData       1.2.14  2025-05-14 [1] Bioconductor
+ GenomicRanges        * 1.60.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ httr                   1.4.7   2023-08-15 [1] CRAN (R 4.5.0)
+ IRanges              * 2.42.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ jsonlite               2.0.0   2025-03-27 [1] CRAN (R 4.5.0)
+ lattice                0.22-5  2023-10-24 [3] CRAN (R 4.3.1)
+ magick                 2.8.6   2025-03-23 [1] CRAN (R 4.5.0)
+ magrittr               2.0.3   2022-03-30 [1] CRAN (R 4.5.0)
+ Matrix                 1.7-3   2025-03-11 [3] CRAN (R 4.4.3)
+ MatrixGenerics       * 1.20.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ matrixStats          * 1.5.0   2025-01-07 [1] CRAN (R 4.5.0)
+ R6                     2.6.1   2025-02-15 [1] CRAN (R 4.5.0)
+ Rcpp                   1.0.14  2025-01-12 [1] CRAN (R 4.5.0)
+ rjson                  0.2.23  2024-09-16 [1] CRAN (R 4.5.0)
+ S4Arrays               1.8.0   2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ S4Vectors            * 0.46.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ sessioninfo          * 1.2.3   2025-02-05 [1] CRAN (R 4.5.0)
+ SingleCellExperiment * 1.30.1  2025-05-07 [1] Bioconductor 3.21 (R 4.5.0)
+ SparseArray            1.8.0   2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ SpatialExperiment    * 1.18.1  2025-05-11 [1] Bioconductor 3.21 (R 4.5.0)
+ SummarizedExperiment * 1.38.1  2025-04-30 [1] Bioconductor 3.21 (R 4.5.0)
+ UCSC.utils             1.4.0   2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+ XVector                0.48.0  2025-04-15 [1] Bioconductor 3.21 (R 4.5.0)
+
+ [1] /usr/local/lib/R/site-library
+ [2] /usr/lib/R/site-library
+ [3] /usr/lib/R/library
+ * -- Packages attached to the search path.
+
+------------------------------------------------------------------------------

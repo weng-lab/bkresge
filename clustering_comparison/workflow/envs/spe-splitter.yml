@@ -1,0 +1,9 @@
+name: spe-splitter
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - r-base
+  - bioconductor-singlecellexperiment
+  - bioconductor-spatialexperiment

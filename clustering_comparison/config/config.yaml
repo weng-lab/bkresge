@@ -1,0 +1,6 @@
+ground_truth_columns:
+  2021:
+  # TODO: may be incorrect and needs to be checked against manual annotation csvs from Globus download
+    - spatialLIBD
+  2024:
+    - manual_layer_label

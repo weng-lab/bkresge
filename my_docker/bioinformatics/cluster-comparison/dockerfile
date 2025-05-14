@@ -1,0 +1,66 @@
+# Base image
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ="America/New_York"
+
+# Install system packages
+RUN apt update && apt install -y \
+    curl \
+    gpg \
+    git \
+    vim \
+    wget \
+    cmake 
+
+# Install R
+RUN wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | gpg --dearmor -o /usr/share/keyrings/r-project.gpg
+
+RUN echo "deb [signed-by=/usr/share/keyrings/r-project.gpg] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | tee -a /etc/apt/sources.list.d/r-project.list
+
+# Install system libraries (taken from Christian's Base) + libmagick++-dev (SpoatialExperiment)
+RUN apt update && apt install -y \
+    python3 python3-pip python3-dev \
+    r-base \
+    libncurses-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libgmp-dev \
+    libmpfr-dev \
+    libcurl4-openssl-dev \
+    libxml2-dev \
+    libssl-dev \
+    libfontconfig1-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    libcairo2-dev \
+    libxt-dev \
+    libgit2-dev \
+    libglpk-dev \
+    libgsl-dev \
+    libhdf5-dev \
+    libudunits2-dev \
+    libgdal-dev \
+    libmagick++-dev
+
+
+# Install R packages
+RUN R -e "options(warn=2); install.packages(c('BiocManager'))"
+RUN R -e "options(warn=2); BiocManager::install(c('SingleCellExperiment', 'SpatialExperiment', 'zellkonverter'))"
+RUN R -e "options(warn=2); BiocManager::install(c('spatialLIBD'))"
+RUN R -e "options(warn=2); BiocManager::install(c('BayesSpace'))"
+# RUN R -e "BiocManager::install(c('zellkonverter', 'SpatialExperiment'))"
+# RUN R -e "BiocManager::install(c('SingleCellExperiment'))"
+# # RUN R -e "BiocManager::install(c('spatialLIBD', 'BayesSpace'))"
+# RUN R -e "BiocManager::install(c('BayesSpace'))"
+
+
+
+RUN pip install --upgrade pip && pip install --no-cache-dir \
+    anndata \
+    zarr 
