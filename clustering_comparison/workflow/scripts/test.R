@@ -1,3 +1,3 @@
 library("SpatialExperiment")
 
-load("/zata/zippy/kresgeb/clustering_comparison/results/samples/2021/151673.RData", verbose = TRUE)
+load("/zata/zippy/kresgeb/clustering_comparison/results/samples/2024/Br6522_mid.RData", verbose = TRUE)

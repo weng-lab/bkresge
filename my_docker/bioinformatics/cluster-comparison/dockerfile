@@ -19,7 +19,7 @@ RUN wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc |
 
 RUN echo "deb [signed-by=/usr/share/keyrings/r-project.gpg] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | tee -a /etc/apt/sources.list.d/r-project.list
 
-# Install system libraries (taken from Christian's Base) + libmagick++-dev (SpoatialExperiment)
+# Install system libraries (taken from Christian's Base) + libmagick++-dev (SpatialExperiment)
 RUN apt update && apt install -y \
     python3 python3-pip python3-dev \
     r-base \
@@ -54,6 +54,8 @@ RUN R -e "options(warn=2); install.packages(c('BiocManager'))"
 RUN R -e "options(warn=2); BiocManager::install(c('SingleCellExperiment', 'SpatialExperiment', 'zellkonverter'))"
 RUN R -e "options(warn=2); BiocManager::install(c('spatialLIBD'))"
 RUN R -e "options(warn=2); BiocManager::install(c('BayesSpace'))"
+RUN R -e "options(warn=2); install.packages(c('mclust'))"
+
 # RUN R -e "BiocManager::install(c('zellkonverter', 'SpatialExperiment'))"
 # RUN R -e "BiocManager::install(c('SingleCellExperiment'))"
 # # RUN R -e "BiocManager::install(c('spatialLIBD', 'BayesSpace'))"
