@@ -23,3 +23,5 @@ ground_truth_columns:
     - spatialLIBD
   "2024":
     - manual_layer_label
+
+2024_clustering_columns: ["BayesSpace_harmony_09", "BayesSpace_harmony_16"]
