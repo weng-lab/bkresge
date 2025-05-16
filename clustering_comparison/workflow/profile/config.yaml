@@ -1,0 +1,10 @@
+executor: slurm
+
+# Default resources for jobs without explicit resources in the Snakefile
+default-resources:
+  mem_mb: 0
+  runtime: 30
+  cpus: 1
+  partition: "30mins"
+
+

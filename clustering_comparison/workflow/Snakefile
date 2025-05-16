@@ -1,15 +1,24 @@
 configfile: "config/config.yaml"
-all_samples = [(year, sample) for year in config["samples"].keys() for sample in config["samples"][year]]
-ground_truth_samples = [(year, sample) for year in config["ground_truth_samples"].keys() for sample in config["ground_truth_samples"][year]]
+
+include: "rules/common.smk"
+include: "rules/download_paper_data.smk"
+include: "rules/extract_ground_truth.smk"
+include: "rules/extract_2024_bayesspace.smk"
+include: "rules/run_bayesspace.smk"
+
+
+
 rule all:
     input:
         # Download all sample data
         [f"resources/paper_data/{year}/{sample}.RData" for year, sample in all_samples],
+
         # Extract all available ground truth data
         [f"results/ground_truths/{year}/{sample}.csv" for year, sample in ground_truth_samples],
+
         # Extract all available clustering data from 2024 BayesSpace
         [f"results/cluster_assignments/2024/paper_bayesspace/{sample}.csv" for year, sample in all_samples if year == "2024"],
 
-include: "rules/download_paper_data.smk"
-include: "rules/extract_ground_truth.smk"
-include: "rules/extract_2024_bayesspace.smk"
+        # Run BayesSpace clustering for all samples
+        [get_bayesspace_outputs(year, sample) for year, sample in all_samples],
+
