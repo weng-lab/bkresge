@@ -10,7 +10,7 @@ def get_bayesspace_outputs(year, sample):
     seeds = config["bayesspace_parameters"]["seed"]
     
     return expand(
-        "results/cluster_assignments/{year}/BayesSpace/k={k}/{sample}_nreps={nreps}_seed={seed}.csv",
+        "results/cluster_assignments/{year}/BayesSpace/k={k}/{sample}/nreps={nreps}_seed={seed}.csv",
         year=year,
         sample=sample,
         k=k_values,
