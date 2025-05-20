@@ -27,6 +27,11 @@ ground_truth_columns:
 2024_clustering_columns: ["BayesSpace_harmony_09", "BayesSpace_harmony_16"]
 
 bayesspace_parameters:
-  k: [9, 16]
+  k: [7, 9, 16]
   nreps: [10000]
   seed: [314, 30122]
+
+mclust_parameters:
+  k: [7, 9]
+  PCs: [15]
+  model: ["EEE"]

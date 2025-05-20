@@ -17,3 +17,20 @@ def get_bayesspace_outputs(year, sample):
         nreps=nreps,
         seed=seeds
     )
+
+def get_mclust_outputs(year, sample):
+    """
+    Generate the output file paths for Mclust clustering results.
+    """
+    k_values = config["mclust_parameters"]["k"]
+    models = config["mclust_parameters"]["model"]
+    PCs = config["mclust_parameters"]["PCs"]
+
+    return expand(
+        "results/cluster_assignments/{year}/mclust/{model}/k={k}/{sample}/PCs={PCs}.csv",
+        year=year,
+        sample=sample,
+        model=models,
+        k=k_values,
+        PCs=PCs
+    )
