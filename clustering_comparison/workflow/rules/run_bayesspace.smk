@@ -8,5 +8,8 @@ rule run_bayesspace:
         "results/logs/cluster_assignments/{year}/BayesSpace/k={k}/{sample}/nreps={nreps}_seed={seed}.log"
     container:
         "docker://autumnusomega/bioinformatics:cluster-comparison"
+        # Can sometimes run into image header errors during plot creation that are transient and can be retried
+    retries:
+        3
     script:
         "../scripts/run_bayesspace.R"

@@ -3,6 +3,7 @@ suppressPackageStartupMessages({
     library(SpatialExperiment)
     library(BayesSpace)
     library(ggplot2)
+    library(ggspavis)
 })
 
 # Access Snakemake input/output/log
@@ -54,31 +55,14 @@ write.csv(df, file = output_csv, row.names = FALSE)
 
 message(paste("BayesSpace clustering finished at:", Sys.time()))
 
-# Add spatial coordinates to the colData
-# This is necessary to ensure that the spatial coordinates are preserved in a form that can be used for visualization
-# and further analysis
-# Row and column coordinates are somehow different from the Vitessce visualization. (Swapping pxl_row and pxl_col did not fix this)
-# colData(spe)$pxl_col_in_fullres <- spatialCoords(spe)[, "pxl_row_in_fullres"]
-# colData(spe)$pxl_row_in_fullres <- spatialCoords(spe)[, "pxl_col_in_fullres"]
-colData(spe)$pxl_col_in_fullres <- spatialCoords(spe)[, "pxl_col_in_fullres"]
-colData(spe)$pxl_row_in_fullres <- spatialCoords(spe)[, "pxl_row_in_fullres"]
+
+colData(spe)$spatial.cluster <- factor(colData(spe)$spatial.cluster)
 
 # Create a figure with the clustering results
-figure <- clusterPlot(spe) +
-    ggtitle("BayesSpace Clustering") +
-    theme(plot.title = element_text(hjust = 0.5))
+plot <- plotVisium(spe, annotate = "spatial.cluster") +
+    ggtitle("BayesSpace clustering")
 
-# Save the figure
-message("Saving figure...")
-ggsave(
-    filename = output_png,
-    plot = figure,
-    device = "png",
-    width = 8,
-    height = 6,
-    dpi = 300,
-    bg = "white"
-)
+ggsave(output_png, plot, width = 6, height = 5, bg = "white")
 message("Figure saved.")
 message("== BayesSpace clustering finished ==")
 

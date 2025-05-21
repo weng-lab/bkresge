@@ -32,6 +32,6 @@ bayesspace_parameters:
   seed: [314, 30122]
 
 mclust_parameters:
-  k: [7, 9]
+  k: [7, 9, 16]
   PCs: [15]
   model: ["EEE"]

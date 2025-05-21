@@ -54,7 +54,7 @@ RUN R -e "options(warn=2); install.packages(c('BiocManager'))"
 RUN R -e "options(warn=2); BiocManager::install(c('SingleCellExperiment', 'SpatialExperiment', 'zellkonverter'))"
 RUN R -e "options(warn=2); BiocManager::install(c('spatialLIBD'))"
 RUN R -e "options(warn=2); BiocManager::install(c('BayesSpace'))"
-RUN R -e "options(warn=2); install.packages(c('mclust'))"
+RUN R -e "options(warn=2); BiocManager::install(c('ggspavis'))"
 
 # RUN R -e "BiocManager::install(c('zellkonverter', 'SpatialExperiment'))"
 # RUN R -e "BiocManager::install(c('SingleCellExperiment'))"
