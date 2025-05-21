@@ -25,11 +25,16 @@ pred_4 <- c(
     "C", "C", "C", "C", "C"
 )
 
+# 5. Shuffled names and A to B, B to C, C to A
+pred_5 <- c(rep("B", 5), rep("C", 5), rep("A", 5))
+
+
 # Compute and print ARIs
 cat("ARI for perfect match:", adjustedRandIndex(true_labels, pred_1), "\n")
 cat("ARI for refined clustering (split B):", adjustedRandIndex(true_labels, pred_2), "\n")
 cat("ARI for merged clustering (A+B):", adjustedRandIndex(true_labels, pred_3), "\n")
 cat("ARI for noisy clustering:", adjustedRandIndex(true_labels, pred_4), "\n")
+cat("ARI for Shuffled names (A to B, B to C, C to A):", adjustedRandIndex(true_labels, pred_5), "\n")
 
 # Print alignment tables
 cat("\nContingency tables:\n\n")
@@ -37,3 +42,4 @@ print(table(True = true_labels, Predicted = pred_1))
 print(table(True = true_labels, Predicted = pred_2))
 print(table(True = true_labels, Predicted = pred_3))
 print(table(True = true_labels, Predicted = pred_4))
+print(table(True = true_labels, Predicted = pred_5))
