@@ -34,7 +34,7 @@ cat("ARI for perfect match:", adjustedRandIndex(true_labels, pred_1), "\n")
 cat("ARI for refined clustering (split B):", adjustedRandIndex(true_labels, pred_2), "\n")
 cat("ARI for merged clustering (A+B):", adjustedRandIndex(true_labels, pred_3), "\n")
 cat("ARI for noisy clustering:", adjustedRandIndex(true_labels, pred_4), "\n")
-cat("ARI for Shuffled names (A to B, B to C, C to A):", adjustedRandIndex(true_labels, pred_5), "\n")
+cat("ARI for shuffled names (A to B, B to C, C to A):", adjustedRandIndex(true_labels, pred_5), "\n")
 
 # Print alignment tables
 cat("\nContingency tables:\n\n")
