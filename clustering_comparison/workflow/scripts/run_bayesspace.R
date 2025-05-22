@@ -63,6 +63,7 @@ plot <- plotVisium(spe, annotate = "spatial.cluster") +
     ggtitle("BayesSpace clustering")
 
 ggsave(output_png, plot, width = 6, height = 5, bg = "white")
+
 message("Figure saved.")
 message("== BayesSpace clustering finished ==")
 
