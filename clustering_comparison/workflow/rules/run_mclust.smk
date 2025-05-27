@@ -3,7 +3,6 @@ rule run_mclust:
         rdata = "resources/paper_data/{year}/{sample}.RData"
     output:
         output_csv = "results/cluster_assignments/{year}/mclust/{model}/k={k}/{sample}/PCs={PCs}.csv",
-        # TODO implement the cluster visualization
         output_png = "results/cluster_assignments/{year}/mclust/{model}/k={k}/{sample}/PCs={PCs}.png"
     log:
         "results/logs/cluster_assignments/{year}/mclust/{model}/k={k}/{sample}/PCs={PCs}.log"
