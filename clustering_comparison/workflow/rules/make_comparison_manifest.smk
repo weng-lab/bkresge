@@ -1,6 +1,6 @@
 rule make_comparison_manifest:
     output:
-        "resources/comparison/comparison_manifest.csv"
+        "results/comparisons/comparison_manifest.csv"
     conda:
         "../envs/simple_pandas.yaml"
     script:

@@ -7,6 +7,7 @@ include: "rules/extract_2024_bayesspace.smk"
 include: "rules/run_bayesspace.smk"
 include: "rules/run_mclust.smk"
 include: "rules/make_comparison_manifest.smk"
+include: "rules/run_comparisons.smk"
 
 
 
@@ -28,4 +29,7 @@ rule all:
         [get_mclust_outputs(year, sample) for year, sample in all_samples],
 
         # Create the comparison manifest
-        "resources/comparison/comparison_manifest.csv",
+        "results/comparisons/comparison_manifest.csv",
+
+        # Run the comparison
+        "results/comparisons/.done",
