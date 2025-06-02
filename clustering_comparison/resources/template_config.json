@@ -1,0 +1,129 @@
+{
+    "version": "1.0.17",
+    "name": "Clustering Comparison Visualization",
+    "description": "Visium Spatial Gene Expression data from 10x Genomics (PsychENCODE)",
+    "initStrategy": "auto",
+    "datasets": [
+        {
+            "uid": "visium",
+            "files": [
+                {
+                    "fileType": "anndata.zarr",
+                    "url": "",
+                    "coordinationValues": {
+                        "obsType": "spot",
+                        "featureType": "gene",
+                        "featureValueType": "expression"
+                    },
+                    "options": {
+                        "obsFeatureMatrix": {
+                            "path": "X"
+                        },
+                        "obsLocations": {
+                            "path": "obsm/spatial"
+                        },
+                        "obsSegmentations": {
+                            "path": "obsm/segmentations"
+                        },
+                        "obsSets": []
+                    }
+                },
+                {
+                    "fileType": "image.ome-zarr",
+                    "url": ""
+                }
+            ]
+        }
+    ],
+    "coordinationSpace": {
+        "obsType": {
+            "A": "spot"
+        },
+        "spatialSegmentationLayer": {
+            "A": {
+                "radius": 65,
+                "stroked": true,
+                "visible": true,
+                "opacity": 1
+            }
+        },
+        "spatialImageLayer": {
+            "A": [
+                {
+                    "type": "raster",
+                    "index": 0,
+                    "colormap": null,
+                    "transparentColor": null,
+                    "opacity": 1,
+                    "domainType": "Min/Max",
+                    "channels": [
+                        {
+                            "selection": {
+                                "c": 0
+                            },
+                            "color": [
+                                255,
+                                0,
+                                0
+                            ],
+                            "visible": true,
+                            "slider": [
+                                0,
+                                255
+                            ]
+                        },
+                        {
+                            "selection": {
+                                "c": 1
+                            },
+                            "color": [
+                                0,
+                                255,
+                                0
+                            ],
+                            "visible": true,
+                            "slider": [
+                                0,
+                                255
+                            ]
+                        },
+                        {
+                            "selection": {
+                                "c": 2
+                            },
+                            "color": [
+                                0,
+                                0,
+                                255
+                            ],
+                            "visible": true,
+                            "slider": [
+                                0,
+                                255
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "obsSetSelection": {},
+        "obsColorEncoding": {
+            "B": "geneSelection"
+        },
+        "spatialZoom": {
+            "A": null
+        },
+        "spatialTargetX": {
+            "A": null
+        },
+        "spatialTargetY": {
+            "A": null
+        },
+        "featureSelection": {
+            "A": [
+                "MBP"
+            ]
+        }
+    },
+    "layout": []
+}

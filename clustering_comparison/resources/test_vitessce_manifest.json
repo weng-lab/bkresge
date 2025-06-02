@@ -1,0 +1,40 @@
+{
+    "allScreens": [
+        {
+            "name": "6522_mid_test",
+            "sample": "Br6522_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/vit_test/2024",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2024/Br6522_mid.csv",
+                    "columnName": "ground_truth"
+                },
+                {
+                    "title": "BayesSpace k=9 (seed:314)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayes_space"
+                }
+            ]
+        },
+        {
+            "name": "151673_test",
+            "sample": "151673",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/vit_test/2021",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151673.csv",
+                    "columnName": "ground_truth"
+                },
+                {
+                    "title": "BayesSpace k=7 (seed:314)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151673/nreps=10000_seed=314.csv",
+                    "columnName": "bayes_space"
+                }
+            ]
+        }
+    ]
+}
