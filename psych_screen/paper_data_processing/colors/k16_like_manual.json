@@ -38,7 +38,7 @@
             ]
         },
         {
-            "setName": "BayesSpace Clustering (k=9)",
+            "setName": "BayesSpace (9 Clusters)",
             "colors": [
                 {
                     "label": "",
@@ -83,7 +83,7 @@
             ]
         },
         {
-            "setName": "BayesSpace Clustering (k=16)",
+            "setName": "BayesSpace (16 Clusters)",
             "colors": [
                 {
                     "label": "",
