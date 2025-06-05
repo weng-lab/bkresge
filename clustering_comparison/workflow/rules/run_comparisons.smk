@@ -11,6 +11,7 @@ rule run_comparisons:
 
         # Run Mclust clustering for all samples
         [get_mclust_outputs(year, sample) for year, sample in all_samples],
+        
         manifest="results/comparisons/comparison_manifest.csv"
     output:
         done = "results/comparisons/.done"

@@ -9,12 +9,34 @@
                 {
                     "title": "Ground Truth (Manual Annotation)",
                     "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2024/Br6522_mid.csv",
-                    "columnName": "ground_truth"
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "manual_layer_label"
                 },
                 {
                     "title": "BayesSpace k=9 (seed:314)",
                     "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_mid/nreps=10000_seed=314.csv",
-                    "columnName": "bayes_space"
+                    "columnName": "bayes_space_k=9_seed=314"
+                },
+                {
+                    "title": "BayesSpace k=9 (seed:30122)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayes_space_k=9_seed=30122"
+                },
+                {
+                    "title": "BayesSpace k=7 (seed:314)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayes_space_k=7_seed=314"
+                },
+                {
+                    "title": "BayesSpace k=7 (seed:30122)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayes_space_k=7_seed=30122"
+                },
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6522_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
                 }
             ]
         },

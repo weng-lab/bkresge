@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import pandas as pd
-from itertools import product
 
 
 def compare_BayesSpace_against_ground_truth(year, sample):
