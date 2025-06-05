@@ -1,3 +1,4 @@
+import math
 import squidpy as sq
 import os
 import warnings
@@ -18,7 +19,7 @@ warnings.filterwarnings(
 )
 
 TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/clustering_comparison/resources/template_config.json"
-MANIFEST_JSON_PATH = "/zata/zippy/kresgeb/clustering_comparison/resources/test_vitessce_manifest.json"
+MANIFEST_JSON_PATH = "/zata/zippy/kresgeb/clustering_comparison/results/vitessce_visualizations/visualization_manifest.json"
 
 def save_adata(adata, output_path):
         # Optimize and write anndata
@@ -86,8 +87,7 @@ def get_scale_factor(sample_path):
         data = json.load(f)
     return data.get("tissue_hires_scalef")
 
-def add_cluster_assignments(adata, cluster_assignment_path, column_name):
-
+def add_cluster_assignments(adata, cluster_assignment_path, column_name, source_column_name='cluster'):
     # Load cluster assignments
     cluster_df = pd.read_csv(cluster_assignment_path)
 
@@ -95,14 +95,14 @@ def add_cluster_assignments(adata, cluster_assignment_path, column_name):
     if 'barcode' not in cluster_df.columns:
         raise ValueError("CSV must contain a 'barcode' column.")
 
-    # Determine cluster assignment column
-    cluster_columns = [col for col in cluster_df.columns if col != 'barcode']
-    if len(cluster_columns) != 1:
-        raise ValueError("CSV must contain exactly one cluster assignment column besides 'barcode'.")
-    
-    cluster_col = cluster_columns[0]
-    if cluster_col != 'cluster':
-        print(f"Note: Using '{cluster_col}' as the cluster assignment column instead of 'cluster'.")
+    if source_column_name not in cluster_df.columns:
+        if len(cluster_df.columns) == 2:
+            new_source_column_name = cluster_df.columns[1]
+            print(f"CSV located at {cluster_assignment_path} does not contain the requested column:'{source_column_name}',\nbut it contains only one non-barcode column named '{new_source_column_name}'. Using that instead.")
+            source_column_name = new_source_column_name
+        else:
+            raise ValueError(f"CSV located at {cluster_assignment_path} does not contain the requested column:'{source_column_name}'.\n    Since there is more than one non-barcode column, please specify the correct column name to use for cluster assignments.\n    Options are: {', '.join(cluster_df.columns[1:])}")
+        
 
     # Set index to barcode
     cluster_df = cluster_df.set_index('barcode')
@@ -119,12 +119,12 @@ def add_cluster_assignments(adata, cluster_assignment_path, column_name):
     adata = adata[common_barcodes].copy()
 
     # Assign the cluster labels
-    adata.obs[column_name] = cluster_df.loc[adata.obs_names, cluster_col].astype(str)
+    adata.obs[column_name] = cluster_df.loc[adata.obs_names, source_column_name].astype(str)
 
     return adata
 
 
-def add_view_to_config(config_json, view_title, column_name, adata):
+def add_view_to_config(config_json, view_title, column_name, adata, grid_layout):
 
      # Add to obsSets
     obs_set_entry = {
@@ -155,14 +155,59 @@ def add_view_to_config(config_json, view_title, column_name, adata):
             "obsColorEncoding": "A",
             "obsSetSelection": view_title
         },
-        "x": 0,
-        "y": view_index * 2,  # stack vertically
-        "w": 6,
-        "h": 2
+        **grid_layout[view_index]  # Use the grid layout for x, y, w, h
     }
     config_json["layout"].append(layout_entry)
 
     return config_json
+
+def create_grid_layout(num_views):
+    # create a structure that stores x, y, w, h relative to a grid for each view_index to be used elsewhere
+    layout = []
+
+    if num_views == 0:
+        return layout
+    
+    if num_views > 144:
+        raise ValueError("Number of views exceeds the maximum grid size of 12x12 (144 views), attempted to create a grid layout for {num_views} views.")
+
+    best_config = None
+    best_score = float('inf')
+
+    for rows in range(1, num_views + 1):
+        cols = math.ceil(num_views / rows)
+        if rows > 12 or cols > 12:
+            continue
+
+        view_w = 12 // cols
+        view_h = 12 // rows
+
+        total_cells_used = view_w * view_h * num_views
+        unused_space = 144 - total_cells_used
+        aspect_ratio_diff = abs(view_w - view_h)
+
+        # Score = space wasted + penalty for squashed/stretch views
+        score = unused_space + (aspect_ratio_diff * 50)
+
+        if score < best_score:
+            best_score = score
+            best_config = (rows, cols, view_w, view_h)
+
+    rows, cols, view_w, view_h = best_config
+
+    for idx in range(num_views):
+        row = idx // cols
+        col = idx % cols
+        x = col * view_w
+        y = row * view_h
+        layout.append({
+            "x": x,
+            "y": y,
+            "w": view_w,
+            "h": view_h,
+        })
+    # print(f"Unused space: {144 - view_w * view_h * num_views}, Aspect ratio difference: {abs(view_w - view_h)}, Score: {best_score}")
+    return layout
 
 
 def create_screen(screen_json):
@@ -177,17 +222,24 @@ def create_screen(screen_json):
     output_dir = screen_json["outputDir"]
     sample_path, adata = load_data(sample_name, year)
 
+    grid_layout = create_grid_layout(len(screen_json["views"]))
+
     # For each view in screen_json...
     for view in screen_json["views"]:
         view_title = view["title"]
+        print(f"\tProcessing view: {view_title}")
         cluster_assignment_path = view["clusterAssignmentPath"]
         column_name = view["columnName"]
+        source_column_name = view.get("sourceColumnName")
+        # if sourceColumnName is specified, pass it to add_cluster_assignments
+        if source_column_name is None:
+            source_column_name = 'cluster'
 
         # Add cluster assignments to adata.obs
-        adata = add_cluster_assignments(adata, cluster_assignment_path, column_name)
+        adata = add_cluster_assignments(adata, cluster_assignment_path, column_name, source_column_name)
 
         # Add view to config
-        config_json = add_view_to_config(config_json, view_title, column_name, adata)
+        config_json = add_view_to_config(config_json, view_title, column_name, adata, grid_layout)
 
     # Create segmentations
     adata = create_segmentations(sample_path, adata)
@@ -227,6 +279,7 @@ def main():
     for screen in manifest_json.get("allScreens", []):
         print(f"Creating screen: {screen['name']}")
         create_screen(screen)
+
 
 if __name__ == "__main__":
     main()

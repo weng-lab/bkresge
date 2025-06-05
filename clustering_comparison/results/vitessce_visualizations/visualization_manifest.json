@@ -1,0 +1,2500 @@
+{
+    "allScreens": [
+        {
+            "name": "sample_151507",
+            "sample": "151507",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151507",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151507.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151507/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151507/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151507/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151507/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151507/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151507/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151507/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151507/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151507/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151508",
+            "sample": "151508",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151508",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151508.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151508/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151508/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151508/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151508/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151508/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151508/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151508/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151508/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151508/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151509",
+            "sample": "151509",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151509",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151509.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151509/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151509/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151509/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151509/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151509/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151509/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151509/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151509/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151509/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151510",
+            "sample": "151510",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151510",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151510.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151510/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151510/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151510/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151510/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151510/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151510/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151510/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151510/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151510/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151669",
+            "sample": "151669",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151669",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151669.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151669/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151669/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151669/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151669/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151669/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151669/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151669/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151669/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151669/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151670",
+            "sample": "151670",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151670",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151670.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151670/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151670/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151670/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151670/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151670/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151670/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151670/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151670/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151670/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151671",
+            "sample": "151671",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151671",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151671.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151671/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151671/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151671/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151671/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151671/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151671/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151671/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151671/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151671/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151672",
+            "sample": "151672",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151672",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151672.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151672/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151672/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151672/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151672/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151672/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151672/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151672/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151672/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151672/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151673",
+            "sample": "151673",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151673",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151673.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151673/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151673/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151673/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151673/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151673/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151673/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151673/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151673/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151673/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151674",
+            "sample": "151674",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151674",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151674.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151674/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151674/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151674/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151674/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151674/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151674/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151674/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151674/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151674/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151675",
+            "sample": "151675",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151675",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151675.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151675/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151675/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151675/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151675/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151675/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151675/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151675/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151675/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151675/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_151676",
+            "sample": "151676",
+            "year": 2021,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2021/sample_151676",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2021/151676.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "spatialLIBD"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=7/151676/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=9/151676/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/mclust/EEE/k=16/151676/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151676/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=7/151676/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151676/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=9/151676/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151676/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2021/BayesSpace/k=16/151676/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br2743_ant",
+            "sample": "Br2743_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br2743_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br2743_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br2743_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br2743_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br2743_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2743_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2743_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2743_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2743_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2743_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2743_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br2743_mid",
+            "sample": "Br2743_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br2743_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br2743_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br2743_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br2743_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br2743_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2743_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2743_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2743_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2743_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2743_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2743_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br2743_post",
+            "sample": "Br2743_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br2743_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br2743_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br2743_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br2743_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br2743_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2743_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2743_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2743_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2743_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2743_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2743_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br3942_ant",
+            "sample": "Br3942_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br3942_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br3942_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br3942_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br3942_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br3942_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br3942_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br3942_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br3942_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br3942_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br3942_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br3942_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br3942_mid",
+            "sample": "Br3942_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br3942_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br3942_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br3942_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br3942_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br3942_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br3942_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br3942_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br3942_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br3942_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br3942_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br3942_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br3942_post",
+            "sample": "Br3942_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br3942_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br3942_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br3942_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br3942_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br3942_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br3942_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br3942_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br3942_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br3942_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br3942_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br3942_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6423_ant",
+            "sample": "Br6423_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6423_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6423_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6423_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6423_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6423_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6423_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6423_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6423_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6423_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6423_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6423_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6423_mid",
+            "sample": "Br6423_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6423_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6423_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6423_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6423_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6423_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6423_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6423_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6423_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6423_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6423_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6423_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6423_post",
+            "sample": "Br6423_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6423_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6423_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6423_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6423_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6423_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6423_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6423_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6423_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6423_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6423_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6423_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8492_ant",
+            "sample": "Br8492_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8492_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8492_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8492_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8492_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8492_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8492_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8492_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8492_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8492_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8492_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8492_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8492_mid",
+            "sample": "Br8492_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8492_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8492_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8492_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8492_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8492_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8492_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8492_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8492_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8492_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8492_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8492_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8492_post",
+            "sample": "Br8492_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8492_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8492_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8492_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8492_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8492_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8492_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8492_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8492_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8492_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8492_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8492_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br2720_ant",
+            "sample": "Br2720_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br2720_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br2720_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br2720_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br2720_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br2720_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2720_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2720_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2720_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2720_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2720_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2720_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br2720_mid",
+            "sample": "Br2720_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br2720_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br2720_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br2720_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br2720_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br2720_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2720_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2720_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2720_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2720_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2720_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2720_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br2720_post",
+            "sample": "Br2720_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br2720_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br2720_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br2720_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br2720_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br2720_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2720_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br2720_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2720_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br2720_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2720_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br2720_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6432_ant",
+            "sample": "Br6432_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6432_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6432_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6432_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6432_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6432_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6432_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6432_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6432_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6432_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6432_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6432_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6432_mid",
+            "sample": "Br6432_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6432_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6432_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6432_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6432_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6432_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6432_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6432_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6432_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6432_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6432_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6432_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6432_post",
+            "sample": "Br6432_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6432_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6432_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6432_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6432_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6432_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6432_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6432_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6432_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6432_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6432_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6432_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6471_ant",
+            "sample": "Br6471_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6471_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6471_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6471_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6471_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6471_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6471_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6471_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6471_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6471_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6471_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6471_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6471_mid",
+            "sample": "Br6471_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6471_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6471_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6471_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6471_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6471_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6471_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6471_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6471_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6471_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6471_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6471_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6471_post",
+            "sample": "Br6471_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6471_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6471_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6471_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6471_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6471_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6471_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6471_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6471_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6471_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6471_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6471_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6522_ant",
+            "sample": "Br6522_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6522_ant",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2024/Br6522_ant.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "manual_layer_label"
+                },
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6522_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6522_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6522_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6522_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6522_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6522_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6522_mid",
+            "sample": "Br6522_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6522_mid",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2024/Br6522_mid.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "manual_layer_label"
+                },
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6522_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6522_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6522_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6522_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6522_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6522_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br6522_post",
+            "sample": "Br6522_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br6522_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br6522_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br6522_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br6522_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br6522_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br6522_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br6522_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6522_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br6522_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8325_ant",
+            "sample": "Br8325_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8325_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8325_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8325_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8325_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8325_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8325_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8325_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8325_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8325_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8325_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8325_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8325_mid",
+            "sample": "Br8325_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8325_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8325_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8325_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8325_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8325_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8325_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8325_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8325_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8325_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8325_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8325_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8325_post",
+            "sample": "Br8325_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8325_post",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8325_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8325_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8325_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8325_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8325_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8325_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8325_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8325_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8325_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8325_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8667_ant",
+            "sample": "Br8667_ant",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8667_ant",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8667_ant.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8667_ant/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8667_ant/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8667_ant/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8667_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8667_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8667_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8667_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8667_ant/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8667_ant/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8667_mid",
+            "sample": "Br8667_mid",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8667_mid",
+            "views": [
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8667_mid.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8667_mid/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8667_mid/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8667_mid/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8667_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8667_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8667_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8667_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8667_mid/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8667_mid/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        },
+        {
+            "name": "sample_Br8667_post",
+            "sample": "Br8667_post",
+            "year": 2024,
+            "outputDir": "/zata/public_html/users/kresgeb/cluster-comparisons/results/vitessce_visualizations/2024/sample_Br8667_post",
+            "views": [
+                {
+                    "title": "Ground Truth (Manual Annotation)",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/2024/Br8667_post.csv",
+                    "columnName": "ground_truth",
+                    "sourceColumnName": "manual_layer_label"
+                },
+                {
+                    "title": "Paper BayesSpace k=9",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/paper_bayesspace/Br8667_post.csv",
+                    "columnName": "bayes_space_paper",
+                    "sourceColumnName": "BayesSpace_harmony_09"
+                },
+                {
+                    "title": "Mclust k=7 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=7/Br8667_post/PCs=15.csv",
+                    "columnName": "mclust_k7_pcs15"
+                },
+                {
+                    "title": "Mclust k=9 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=9/Br8667_post/PCs=15.csv",
+                    "columnName": "mclust_k9_pcs15"
+                },
+                {
+                    "title": "Mclust k=16 pcs=15 model=EEE",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/mclust/EEE/k=16/Br8667_post/PCs=15.csv",
+                    "columnName": "mclust_k16_pcs15"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8667_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=7 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=7/Br8667_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k7_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8667_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=9 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=9/Br8667_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k9_nreps10000_seed30122"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=314",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8667_post/nreps=10000_seed=314.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed314"
+                },
+                {
+                    "title": "BayesSpace k=16 nreps=10000 seed=30122",
+                    "clusterAssignmentPath": "/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/2024/BayesSpace/k=16/Br8667_post/nreps=10000_seed=30122.csv",
+                    "columnName": "bayesspace_k16_nreps10000_seed30122"
+                }
+            ]
+        }
+    ]
+}
