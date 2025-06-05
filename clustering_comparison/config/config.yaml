@@ -35,3 +35,7 @@ mclust_parameters:
   k: [7, 9, 16]
   PCs: [15]
   model: ["EEE"]
+
+sc3_parameters:
+  k: [7, 9, 16]
+  seed: [314, 30122]

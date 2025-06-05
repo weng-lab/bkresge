@@ -23,3 +23,4 @@ psych_screen/output/bayes_space/jitter/*.Rdata
 psych_screen/comparisons/spe_*.Rdata
 
 # Specific Files
+clustering_comparison/tmp.txt
