@@ -20,7 +20,8 @@ RUN R -e "options(warn=2); BiocManager::install(c('nnSVG'))"
 RUN R -e "options(warn=2); BiocManager::install(c('ggspavis', 'EBImage'))"
 RUN R -e "options(warn=2); BiocManager::install(c('SC3'))"
 
-
+# Needed for R editor support
+RUN R -e "options(warn=2); install.packages(c('languageserver'))"
 
 RUN pip install --upgrade pip && pip install --no-cache-dir \
     squidpy \
