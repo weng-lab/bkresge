@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "zata/kresgeb",
+			"path": "."
+		},
+		{
+			"name": "public_html/users/kresgeb",
+			"path": "../../public_html/users/kresgeb"
+		},
+		{
+			"name": "data/zusers/kresgeb",
+			"path": "../../../data/zusers/kresgeb"
+		}
+	],
+	"settings": {}
+}

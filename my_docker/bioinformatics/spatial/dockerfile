@@ -1,0 +1,34 @@
+# Build off of  Christian's bioinformatics base image
+FROM clarity001/bioinformatics:base
+
+RUN apt update && apt install -y \
+    libsodium-dev \
+    libmagick++-dev \
+    libfftw3-dev
+
+# R libraries that are needed for paper data conversion
+RUN R -e "options(warn=2); install.packages(c('magick'))"
+RUN R -e "options(warn=2); BiocManager::install(c('zellkonverter', 'SpatialExperiment', 'spatialLIBD', 'BayesSpace'))"
+RUN R -e "options(warn=2); BiocManager::install(c('PCAtools', 'harmony'))"
+
+# Spatial Diff Gene Exp
+RUN R -e "options(warn=2); devtools::install_github('vitessce/vitessceR')"
+RUN R -e "options(warn=2); devtools::install_github('xzhoulab/SPARK')"
+RUN R -e "options(warn=2); BiocManager::install(c('nnSVG'))"
+
+# Cluster comparison pipeline
+RUN R -e "options(warn=2); BiocManager::install(c('ggspavis', 'EBImage'))"
+RUN R -e "options(warn=2); BiocManager::install(c('SC3'))"
+
+
+
+RUN pip install --upgrade pip && pip install --no-cache-dir \
+    squidpy \
+    anndata \
+    zarr \
+    vitessce \
+    spatialde \
+    SpaGCN
+
+# Needed, otherwise importing squidpy gives errors
+RUN pip install --upgrade spatialdata

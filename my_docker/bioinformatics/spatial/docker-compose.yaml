@@ -1,9 +1,8 @@
 services:
   dev-container:
-    # image: clarity001/bioinformatics:latest
-    image: autumnusomega/bioinformatics:cluster-comparison
+    image: autumnusomega/bioinformatics:spatial
     # build: .
-    container_name: vscode-container-cluster-comparison
+    container_name: vscode-container-spatial
     volumes:
       - /zata:/zata
       - /data:/data
