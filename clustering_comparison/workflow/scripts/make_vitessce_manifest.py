@@ -1,7 +1,8 @@
 import json
+import sys
 
 
-# Hardcoded config.yaml info for now
+# Hardcoded config.yaml info for now (will delete once we confirm that the snakemake pipeline works)
 config = {
     "samples": {
         "2021": [
@@ -40,13 +41,19 @@ config = {
     }
 }
 
-output_path = "/zata/zippy/kresgeb/clustering_comparison/results/vitessce_visualizations/visualization_manifest.json" 
+# Redirect stdout and stderr to the log file
+log_file = open(snakemake.log[0], "w", buffering=1)  # line-buffered
+sys.stdout = log_file
+sys.stderr = log_file
+
+
+output_path =  snakemake.output["manifest"]#"/zata/zippy/kresgeb/clustering_comparison/results/vitessce_visualizations/visualization_manifest.json" 
 
 
 def make_ground_truth_view(year, sample):
-    if sample not in config["ground_truth_samples"].get(year, []):
+    if sample not in snakemake.config["ground_truth_samples"].get(year, []):
         return None
-    gt_column = config["ground_truth_columns"][year][0]
+    gt_column = snakemake.config["ground_truth_columns"][year][0]
     return {
         "title": "Ground Truth (Manual Annotation)",
         "clusterAssignmentPath": f"/zata/zippy/kresgeb/clustering_comparison/results/ground_truths/{year}/{sample}.csv",
@@ -68,7 +75,7 @@ def make_paper_bayesspace_view(year, sample):
 
 def make_mclust_views(year, sample):
     views = []
-    params = config["mclust_parameters"]
+    params = snakemake.config["mclust_parameters"]
     for model in params["model"]:
         for k in params["k"]:
             for pcs in params["PCs"]:
@@ -83,7 +90,7 @@ def make_mclust_views(year, sample):
 
 def make_bayesspace_views(year, sample):
     views = []
-    params = config["bayesspace_parameters"]
+    params = snakemake.config["bayesspace_parameters"]
     for k in params["k"]:
         for nreps in params["nreps"]:
             for seed in params["seed"]:
@@ -124,7 +131,7 @@ def generate_screen(year, sample):
 
 def generate_manifest():
     manifest = {"allScreens": []}
-    for year, samples in config["samples"].items():
+    for year, samples in snakemake.config["samples"].items():
         for sample in samples:
             screen = generate_screen(year, sample)
             manifest["allScreens"].append(screen)

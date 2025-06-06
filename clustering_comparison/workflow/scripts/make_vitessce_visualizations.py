@@ -1,4 +1,6 @@
+from datetime import datetime
 import math
+import sys
 import squidpy as sq
 import os
 import warnings
@@ -18,8 +20,13 @@ warnings.filterwarnings(
     message="Variable names are not unique. To make them unique, call `.var_names_make_unique`.",
 )
 
-TEMPLATE_CONFIG_PATH = "/zata/zippy/kresgeb/clustering_comparison/resources/template_config.json"
-MANIFEST_JSON_PATH = "/zata/zippy/kresgeb/clustering_comparison/results/vitessce_visualizations/visualization_manifest.json"
+# Redirect stdout and stderr to the log file
+log_file = open(snakemake.log[0], "w", buffering=1)  # line-buffered
+sys.stdout = log_file
+sys.stderr = log_file
+
+TEMPLATE_CONFIG_PATH = snakemake.input["template"]  # Path to the template config file
+MANIFEST_JSON_PATH = snakemake.input["manifest"]  # Path to the manifest JSON file
 
 def save_adata(adata, output_path):
         # Optimize and write anndata
@@ -54,7 +61,7 @@ def create_segmentations(sample_path, adata):
     adata.obsm["spatial"] = adata.obsm["spatial"] * scale_factor
 
     # Create the diamond visualizations for the spots
-    num_cells = adata.obs.shape[0] #TODO: should filter out any non-assigned cells in an earlier step! (compare against cluster assignment csv entries)
+    num_cells = adata.obs.shape[0] # should filter out any non-assigned cells in an earlier step! (compare against cluster assignment csv entries)
     adata.obsm["segmentations"] = np.zeros((num_cells, 4, 2))
     radius = 7
     for i in range(num_cells):
@@ -271,14 +278,23 @@ def create_screen(screen_json):
 
 
 def main():
+
+    print(f"[{datetime.now().isoformat()}] Starting Vitessce visualization creation...")
     # Load the manifest json
     with open(MANIFEST_JSON_PATH, 'r') as f:
         manifest_json = json.load(f)
     
     # For each screen in the manifest, call create_screen
     for screen in manifest_json.get("allScreens", []):
-        print(f"Creating screen: {screen['name']}")
+        print(f"[{datetime.now().isoformat()}] Creating screen: {screen['name']}")
         create_screen(screen)
+    
+    # Make the done file
+    done_file = Path(snakemake.output[0])
+    done_file.parent.mkdir(parents=True, exist_ok=True)
+    done_file.touch()
+
+    print(f"[{datetime.now().isoformat()}] Finished Vitessce visualization creation. Done file created at {done_file}.")
 
 
 if __name__ == "__main__":

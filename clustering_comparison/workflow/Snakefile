@@ -8,6 +8,8 @@ include: "rules/run_bayesspace.smk"
 include: "rules/run_mclust.smk"
 include: "rules/make_comparison_manifest.smk"
 include: "rules/run_comparisons.smk"
+include: "rules/make_vitessce_manifest.smk"
+include: "rules/make_vitessce_visualizations.smk"
 
 
 
@@ -33,3 +35,9 @@ rule all:
 
         # Run the comparison
         "results/comparisons/.done",
+
+        # Create the Vitessce manifest
+        "results/vitessce_visualizations/visualization_manifest.json",
+
+        # Create Vitessce visualizations
+        "results/vitessce_visualizations/visualization.done",
