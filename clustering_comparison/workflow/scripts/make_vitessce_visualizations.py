@@ -168,6 +168,46 @@ def add_view_to_config(config_json, view_title, column_name, adata, grid_layout)
 
     return config_json
 
+def add_gene_expression_view_to_config(config_json, grid_layout):
+    print("\tProcessing views: Gene selector and Gene expression heatmap")
+    # Add gene selector to config
+    view_index = len(config_json["layout"])
+    layout_entry = {
+        "component": "featureList",
+        "props": {
+            "title": "Gene Selector",
+        },
+        "coordinationScopes": {
+            "obsType": "A",
+            "featureSelection": "A",
+        },
+        **grid_layout[view_index]  # Use the grid layout for x, y, w, h
+    }
+    config_json["layout"].append(layout_entry)
+
+    # Add expression heatmap to config
+    view_index = len(config_json["layout"])
+    layout_entry = {
+        "component": "spatial",
+        "props": {
+            "title": "Gene Expression Heatmap",
+        },
+        "coordinationScopes": {
+            "obsType": "A",
+            "spatialImageLayer": "A",
+            "spatialSegmentationLayer": "A",
+            "spatialZoom": "A",
+            "spatialTargetX": "A",
+            "spatialTargetY": "A",
+            "obsColorEncoding": "B",
+            "featureSelection": "A",
+        },
+        **grid_layout[view_index]  # Use the grid layout for x, y, w, h
+    }
+    config_json["layout"].append(layout_entry)
+
+    return config_json
+
 def create_grid_layout(num_views):
     # create a structure that stores x, y, w, h relative to a grid for each view_index to be used elsewhere
     layout = []
@@ -217,7 +257,7 @@ def create_grid_layout(num_views):
     return layout
 
 
-def create_screen(screen_json):
+def create_screen(screen_json, include_gene_expression=True):
 
     # Open the template config file
     with open(TEMPLATE_CONFIG_PATH, "r") as f:
@@ -229,7 +269,10 @@ def create_screen(screen_json):
     output_dir = screen_json["outputDir"]
     sample_path, adata = load_data(sample_name, year)
 
-    grid_layout = create_grid_layout(len(screen_json["views"]))
+    grid_layout = create_grid_layout(len(screen_json["views"]) + (2 if include_gene_expression else 0)) # gene expression needs 2 views (heatmap and gene selector)
+
+    if include_gene_expression:
+        config_json = add_gene_expression_view_to_config(config_json, grid_layout)
 
     # For each view in screen_json...
     for view in screen_json["views"]:

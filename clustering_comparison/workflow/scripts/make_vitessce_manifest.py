@@ -2,45 +2,6 @@ import json
 import sys
 
 
-# Hardcoded config.yaml info for now (will delete once we confirm that the snakemake pipeline works)
-config = {
-    "samples": {
-        "2021": [
-            "151507", "151508", "151509", "151510", "151669", "151670", "151671",
-            "151672", "151673", "151674", "151675", "151676"
-        ],
-        "2024": [
-            "Br2743_ant", "Br2743_mid", "Br2743_post", "Br3942_ant", "Br3942_mid", "Br3942_post",
-            "Br6423_ant", "Br6423_mid", "Br6423_post", "Br8492_ant", "Br8492_mid", "Br8492_post",
-            "Br2720_ant", "Br2720_mid", "Br2720_post", "Br6432_ant", "Br6432_mid", "Br6432_post",
-            "Br6471_ant", "Br6471_mid", "Br6471_post", "Br6522_ant", "Br6522_mid", "Br6522_post",
-            "Br8325_ant", "Br8325_mid", "Br8325_post", "Br8667_ant", "Br8667_mid", "Br8667_post"
-        ],
-    },
-    "ground_truth_samples": {
-        "2021": [
-            "151507", "151508", "151509", "151510", "151669", "151670", "151671",
-            "151672", "151673", "151674", "151675", "151676"
-        ],
-        "2024": ["Br6522_ant", "Br6522_mid", "Br8667_post"]
-    },
-    "ground_truth_columns": {
-        "2021": ["spatialLIBD"],
-        "2024": ["manual_layer_label"]
-    },
-    "2024_clustering_columns": ["BayesSpace_harmony_09", "BayesSpace_harmony_16"],
-    "bayesspace_parameters": {
-        "k": [7, 9, 16],
-        "nreps": [10000],
-        "seed": [314, 30122]
-    },
-    "mclust_parameters": {
-        "k": [7, 9, 16],
-        "PCs": [15],
-        "model": ["EEE"]
-    }
-}
-
 # Redirect stdout and stderr to the log file
 log_file = open(snakemake.log[0], "w", buffering=1)  # line-buffered
 sys.stdout = log_file
