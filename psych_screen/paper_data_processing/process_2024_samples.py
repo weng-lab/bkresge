@@ -83,10 +83,6 @@ def process_sample(sample_name):
     sample_id = "_".join(sample_name.split("_")[1:3])
     sample_visium = full_visium[full_visium.obs["sample_id"] == sample_id]
 
-    # Perform normalization
-    sc.pp.normalize_total(adata, inplace=True)
-    sc.pp.log1p(adata)
-
     # # Calculate QC metrics
     # adata.var["mt"] = adata.var_names.str.startswith("MT-")
     # sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
@@ -110,6 +106,10 @@ def process_sample(sample_name):
     spots_missing_cluster_data = adata.obs[pd.isna(
         adata.obs["bayes_space_k=9"])].index
     adata = adata[~adata.obs.index.isin(spots_missing_cluster_data)]
+
+    # Perform normalization
+    sc.pp.normalize_total(adata, inplace=True)
+    sc.pp.log1p(adata)
 
     # Determine the top 100 highly variable genes.
     sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=100)

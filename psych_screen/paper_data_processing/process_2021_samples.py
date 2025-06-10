@@ -64,14 +64,22 @@ def process_sample(sample_name):
     adata = sq.read.visium(source_outs_path)
     adata.var_names_make_unique()
 
-    # Calculate QC metrics
-    adata.var["mt"] = adata.var_names.str.startswith("MT-")
-    sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
+    # # Calculate QC metrics
+    # adata.var["mt"] = adata.var_names.str.startswith("MT-")
+    # sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
 
-    # Perform basic filtering (much more generous than source)
-    sc.pp.filter_cells(adata, min_genes=100)
-    sc.pp.filter_genes(adata, min_cells=10)
-    adata = adata[adata.obs["pct_counts_mt"] < 30]
+    # # Perform basic filtering (much more generous than source)
+    # sc.pp.filter_cells(adata, min_genes=100)
+    # sc.pp.filter_genes(adata, min_cells=10)
+    # adata = adata[adata.obs["pct_counts_mt"] < 30]
+
+    # Add manual layer annotation data
+    add_manual_layers(adata, sample_name)
+
+    # Remove spots that do not have manual annotation data
+    spots_missing_layer_data = adata.obs[pd.isna(
+        adata.obs["manual_layers"])].index
+    adata = adata[~adata.obs.index.isin(spots_missing_layer_data)]
 
     # Perform normalization
     sc.pp.normalize_total(adata, inplace=True)
@@ -87,14 +95,6 @@ def process_sample(sample_name):
     sc.pp.pca(adata, mask_var="genes_of_interest")
     sc.pp.neighbors(adata)
     sc.tl.umap(adata)
-
-    # Add manual layer annotation data
-    add_manual_layers(adata, sample_name)
-
-    # Remove spots that do not have manual annotation data
-    spots_missing_layer_data = adata.obs[pd.isna(
-        adata.obs["manual_layers"])].index
-    adata = adata[~adata.obs.index.isin(spots_missing_layer_data)]
 
     # Hierarchical clustering of genes for optimal gene ordering
     X_goi_arr = adata[:, adata.var["genes_of_interest"]].X.toarray()
