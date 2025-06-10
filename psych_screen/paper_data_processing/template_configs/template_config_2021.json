@@ -281,7 +281,8 @@
         "spatialTargetX": "A",
         "spatialTargetY": "A",
         "obsColorEncoding": "A",
-        "obsSetColor": "A"
+        "obsSetColor": "A",
+        "obsSetSelection": "A"
       },
       "x": 0,
       "y": 0,
@@ -309,6 +310,22 @@
       "h": 2
     },
     {
+      "component": "obsSets",
+      "props": {
+        "title": "Layers"
+      },
+      "coordinationScopes": {
+        "obsType": "A",
+        "obsColorEncoding": "A",
+        "obsSetColor": "A",
+        "obsSetSelection": "A"
+      },
+      "x": 0,
+      "y": 2,
+      "w": 3,
+      "h": 2
+    },
+    {
       "component": "obsSetFeatureValueDistribution",
       "props": {
         "title": "Gene Expression by Layer"
@@ -320,9 +337,9 @@
         "featureSelection": "A",
         "obsSetSelection": "A"
       },
-      "x": 0,
+      "x": 3,
       "y": 2,
-      "w": 12,
+      "w": 9,
       "h": 2
     }
   ]
