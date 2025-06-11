@@ -25,7 +25,7 @@ BAYESSPACE_CLUSTERS_DIR = "/data/zusers/kresgeb/psych_encode/spatialDLPFC/proces
 WHITELIST_PATH = "/zata/zippy/kresgeb/psych_screen/paper_data_processing/whitelist.txt"
 FULL_VISIUM_PATH = (
     "/zata/zippy/kresgeb/psych_screen/paper_data_processing/full_visium.h5ad"
-)
+) # ZellKonverter of spatialLIBD::fetch_data(type = "spatialDLPFC_Visium")
 COLOR_DATA_PATH = (
     "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/k16_like_manual.json"
 )
@@ -198,41 +198,46 @@ def process_sample(sample_name):
     create_configuration_file(sample_name, has_manual_layers)
 
 
+
 def create_configuration_file(sample_name, has_manual_layers=False):
-    output_file_path = os.path.join(
-        OUTPUT_DIR, "configs", sample_name, "config.json")
+    for suffix in ["", "_single_column"]:
+        # Adjust template and output paths
+        template_path = TEMPLATE_CONFIG_PATH
+        output_file_name = "config.json"
 
-    with open(TEMPLATE_CONFIG_PATH, "r") as f:
-        data = json.load(f)
+        if suffix:
+            template_path = TEMPLATE_CONFIG_PATH.replace(".json", f"{suffix}.json")
+            output_file_name = f"config{suffix}.json"
 
-    # TODO: This json->String->json thing is gross, and the two places <<Sample_Name>> occurs in the template should be explicitly found and the sample name inserted
-    # Adjust for sample name
-    # Convert the data to a string
-    data_str = json.dumps(data)
-    # Replace <<Sample_Name>> with the actual sample name
-    data_str = data_str.replace("<<Sample_Name>>", sample_name)
-    # Convert the string back to a dictionary
-    data = json.loads(data_str)
+        output_file_path = os.path.join(
+            OUTPUT_DIR, "configs", sample_name, output_file_name
+        )
 
-    if not has_manual_layers:
-        # Find the "Manually Annotated Layers" entry in obsSets and remove it
-        datasets = data.get("datasets", [])
-        for dataset in datasets:
-            files = dataset.get("files", [])
-            for file in files:
-                options = file.get("options", {})
-                obs_sets = options.get("obsSets", [])
-                options["obsSets"] = [
-                    entry
-                    for entry in obs_sets
-                    if entry["name"] != "Manually Annotated Layers"
-                ]
+        # Load the template
+        with open(template_path, "r") as f:
+            data = json.load(f)
 
-    data = add_color_data(data)
+        # Replace <<Sample_Name>> with the actual sample name
+        data_str = json.dumps(data)
+        data_str = data_str.replace("<<Sample_Name>>", sample_name)
+        data = json.loads(data_str)
 
-    # Write the updated data to a new JSON file
-    with open(output_file_path, "w") as file:
-        json.dump(data, file, indent=2)
+        if not has_manual_layers:
+            # Remove "Manually Annotated Layers" from obsSets
+            datasets = data.get("datasets", [])
+            for dataset in datasets:
+                for file in dataset.get("files", []):
+                    options = file.get("options", {})
+                    obs_sets = options.get("obsSets", [])
+                    options["obsSets"] = [
+                        entry for entry in obs_sets if entry["name"] != "Manually Annotated Layers"
+                    ]
+
+        data = add_color_data(data)
+
+        # Write the updated config
+        with open(output_file_path, "w") as file:
+            json.dump(data, file, indent=2)
 
 
 def hex_to_rgb(hex_color):

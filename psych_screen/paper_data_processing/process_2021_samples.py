@@ -160,25 +160,33 @@ def process_sample(sample_name):
 
 
 # TODO: This json->String->json thing is gross, and the two places <<Sample_Name>> occurs in the template should be explicitly found and the sample name inserted
+
 def create_configuration_file(sample_name):
-    output_file_path = os.path.join(
-        OUTPUT_DIR, "configs", sample_name, "config.json")
+    
+    for suffix in ["", "_single_column"]:
+        # Update paths based on the suffix
+        template_path = TEMPLATE_CONFIG_PATH
+        output_file_name = "config.json"
 
-    with open(TEMPLATE_CONFIG_PATH, "r") as f:
-        data = json.load(f)
+        if suffix:
+            template_path = TEMPLATE_CONFIG_PATH.replace(".json", f"{suffix}.json")
+            output_file_name = f"config{suffix}.json"
 
-    # Convert the data to a string
-    data_str = json.dumps(data)
+        output_file_path = os.path.join(
+            OUTPUT_DIR, "configs", sample_name, output_file_name)
 
-    # Replace <<Sample_Name>> with the actual sample name
-    data_str = data_str.replace("<<Sample_Name>>", sample_name)
+        # Load the template
+        with open(template_path, "r") as f:
+            data = json.load(f)
 
-    # Convert the string back to a dictionary
-    data = json.loads(data_str)
+        # Replace <<Sample_Name>> with actual name
+        data_str = json.dumps(data)
+        data_str = data_str.replace("<<Sample_Name>>", sample_name)
+        data = json.loads(data_str)
 
-    # Write the updated data to a new JSON file
-    with open(output_file_path, "w") as file:
-        json.dump(data, file, indent=2)
+        # Write the updated data
+        with open(output_file_path, "w") as file:
+            json.dump(data, file, indent=2)
 
 
 def add_manual_layers(adata, sample_name):
