@@ -83,7 +83,7 @@ def process_sample(sample_name):
 
     # Perform normalization
     sc.pp.normalize_total(adata, inplace=True)
-    sc.pp.log1p(adata)
+    sc.pp.log1p(adata, base=2)
 
     # Determine the top 100 highly variable genes.
     sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=100)
