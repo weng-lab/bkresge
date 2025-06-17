@@ -34,7 +34,7 @@ rule all:
         "results/comparisons/comparison_manifest.csv",
 
         # Run the comparison
-        "results/comparisons/.done",
+        "results/comparisons/comparisons.done",
 
         # Create the Vitessce manifest
         "results/vitessce_visualizations/visualization_manifest.json",

@@ -14,7 +14,7 @@ rule run_comparisons:
         
         manifest="results/comparisons/comparison_manifest.csv"
     output:
-        done = "results/comparisons/.done"
+        done = "results/comparisons/comparisons.done"
     log:
         "results/logs/comparisons/run_comparisons.log"
     container:

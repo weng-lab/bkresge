@@ -2,7 +2,7 @@
 import pandas as pd
 
 
-def compare_BayesSpace_against_ground_truth(year, sample):
+def compare_bayesspace_against_ground_truth(year, sample):
     rows = []
     for k in snakemake.config["bayesspace_parameters"]["k"]:
         for nreps in snakemake.config["bayesspace_parameters"]["nreps"]:
@@ -24,6 +24,13 @@ def compare_mclust_against_ground_truth(year, sample):
                 rows.append((file_path1, file_path2, result_dir))
     return rows
 
+def compare_paper_bayesspace_against_ground_truth(sample):
+    year = 2024
+    file_path1 = f"results/cluster_assignments/{year}/paper_bayesspace/{sample}.csv"
+    file_path2 = f"results/ground_truths/{year}/{sample}.csv"
+    result_dir = f"results/comparisons/{year}/paper_bayesspace/{sample}/vs_ground_truth/"
+    return [(file_path1, file_path2, result_dir)]
+
 
 def compare_against_ground_truth():
     rows = []
@@ -31,13 +38,15 @@ def compare_against_ground_truth():
         for year in snakemake.config["ground_truth_columns"]:
             for sample in snakemake.config["ground_truth_samples"][year]:
                 if model == "BayesSpace":
-                    rows.extend(compare_BayesSpace_against_ground_truth(year, sample))
+                    rows.extend(compare_bayesspace_against_ground_truth(year, sample))
                 elif model == "mclust":
                     rows.extend(compare_mclust_against_ground_truth(year, sample))
                 else:
                    # Model is not supported
                    print(f"Model {model} is not supported.")
                    exit(1)
+    for sample in snakemake.config["ground_truth_samples"]["2024"]:
+        rows.extend(compare_paper_bayesspace_against_ground_truth(sample))
     return rows
     
 
