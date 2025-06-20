@@ -1,6 +1,6 @@
 rule make_vitessce_manifest:
     input:
-       
+        comparisons_done = "results/comparisons/comparisons.done"
     output:
         manifest = "results/vitessce_visualizations/visualization_manifest.json"
     log:
