@@ -34,3 +34,18 @@ def get_mclust_outputs(year, sample):
         k=k_values,
         PCs=PCs
     )
+
+def get_sc3_outputs(year, sample):
+    """
+    Generate the output file paths for SC3 clustering results.
+    """
+    k_values = config["sc3_parameters"]["k"]
+    seeds = config["sc3_parameters"]["seed"]
+    
+    return expand(
+        "results/cluster_assignments/{year}/SC3/k={k}/{sample}/seed={seed}.csv",
+        year=year,
+        sample=sample,
+        k=k_values,
+        seed=seeds
+    )

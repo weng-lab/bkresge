@@ -6,6 +6,7 @@ include: "rules/extract_ground_truth.smk"
 include: "rules/extract_2024_bayesspace.smk"
 include: "rules/run_bayesspace.smk"
 include: "rules/run_mclust.smk"
+include: "rules/run_sc3.smk"
 include: "rules/make_comparison_manifest.smk"
 include: "rules/run_comparisons.smk"
 include: "rules/make_vitessce_manifest.smk"
@@ -29,6 +30,9 @@ rule all:
 
         # Run Mclust clustering for all samples
         [get_mclust_outputs(year, sample) for year, sample in all_samples],
+
+        # Run SC3 clustering for all samples
+        [get_sc3_outputs(year, sample) for year, sample in all_samples],
 
         # Create the comparison manifest
         "results/comparisons/comparison_manifest.csv",
