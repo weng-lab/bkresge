@@ -12,6 +12,9 @@ rule make_vitessce_visualizations:
         # Run Mclust clustering for all samples
         [get_mclust_outputs(year, sample) for year, sample in all_samples],
         
+        # Run SC3 clustering for all samples
+        [get_sc3_outputs(year, sample) for year, sample in all_samples],
+        
         manifest = "results/vitessce_visualizations/visualization_manifest.json",
         template = "resources/template_config.json"
     output:

@@ -65,6 +65,19 @@ def make_bayesspace_views(year, sample):
                 })
     return views
 
+def make_sc3_views(year, sample):
+    views = []
+    params = snakemake.config["sc3_parameters"]
+    for k in params["k"]:
+        for seed in params["seed"]:
+            path = f"/zata/zippy/kresgeb/clustering_comparison/results/cluster_assignments/{year}/SC3/k={k}/{sample}/seed={seed}.csv"
+            views.append({
+                "title": f"{ari_string(year, sample, path)}SC3 k={k} seed={seed}",
+                "clusterAssignmentPath": path,
+                "columnName": f"sc3_k{k}_seed{seed}",
+            })
+    return views
+
 def ari_string(year, sample, path_to_cluster_assignment):
 
     # If the sample does not have ground truth data, return an empty string
@@ -104,6 +117,7 @@ def generate_screen(year, sample):
 
     views.extend(make_mclust_views(year, sample))
     views.extend(make_bayesspace_views(year, sample))
+    views.extend(make_sc3_views(year, sample))
 
     screen_name = f"sample_{sample}"
 

@@ -24,6 +24,16 @@ def compare_mclust_against_ground_truth(year, sample):
                 rows.append((file_path1, file_path2, result_dir))
     return rows
 
+def compare_sc3_against_ground_truth(year, sample):
+    rows = []
+    for k in snakemake.config["sc3_parameters"]["k"]:
+        for seed in snakemake.config["sc3_parameters"]["seed"]:
+            file_path1 = f"results/cluster_assignments/{year}/SC3/k={k}/{sample}/seed={seed}.csv"
+            file_path2 = f"results/ground_truths/{year}/{sample}.csv"
+            result_dir = f"results/comparisons/{year}/SC3/k={k}/{sample}/seed={seed}/vs_ground_truth/"
+            rows.append((file_path1, file_path2, result_dir))
+    return rows
+
 def compare_paper_bayesspace_against_ground_truth(sample):
     year = 2024
     file_path1 = f"results/cluster_assignments/{year}/paper_bayesspace/{sample}.csv"
@@ -34,13 +44,15 @@ def compare_paper_bayesspace_against_ground_truth(sample):
 
 def compare_against_ground_truth():
     rows = []
-    for model in ["BayesSpace", "mclust"]:
+    for model in ["BayesSpace", "mclust", "SC3"]:
         for year in snakemake.config["ground_truth_columns"]:
             for sample in snakemake.config["ground_truth_samples"][year]:
                 if model == "BayesSpace":
                     rows.extend(compare_bayesspace_against_ground_truth(year, sample))
                 elif model == "mclust":
                     rows.extend(compare_mclust_against_ground_truth(year, sample))
+                elif model == "SC3":
+                    rows.extend(compare_sc3_against_ground_truth(year, sample))
                 else:
                    # Model is not supported
                    print(f"Model {model} is not supported.")
