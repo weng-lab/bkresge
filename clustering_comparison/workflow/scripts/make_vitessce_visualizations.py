@@ -232,9 +232,11 @@ def create_grid_layout(num_views):
         total_cells_used = view_w * view_h * num_views
         unused_space = 144 - total_cells_used
         aspect_ratio_diff = abs(view_w - view_h)
+        
+        aspect_ratio_penalty = 50 # arbitrary penalty for aspect ratio difference, based on visual inspection of the grid layout
 
         # Score = space wasted + penalty for squashed/stretch views
-        score = unused_space + (aspect_ratio_diff * 50)
+        score = unused_space + (aspect_ratio_diff * aspect_ratio_penalty)
 
         if score < best_score:
             best_score = score
