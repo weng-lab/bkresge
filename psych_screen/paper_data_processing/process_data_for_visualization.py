@@ -24,9 +24,7 @@ PATHS = {
         "visium_source_dir": "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger",
         "output_dir": "/zata/public_html/users/kresgeb/psych_screen/spatialDLPFC",
         "template_config": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/template_config_2024.json",
-        "bayes_clusters_dir": "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rdata/spe/clustering_results",
-        "whitelist_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/whitelist.txt",
-        "full_adata_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/paper_data/2024.h5ad",
+        "full_adata_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/paper_data/2024.h5ad", 
         "color_data_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/k16_like_manual.json", # Not currently used since all color data is in the template config
     },
 }
