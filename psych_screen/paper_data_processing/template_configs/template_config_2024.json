@@ -9,7 +9,7 @@
       "files": [
         {
           "fileType": "anndata.zarr",
-          "url": "https://users.wenglab.org/kresgeb/psych_encode/spatialDLPFC/data/<<Sample_Name>>/data.h5ad.zarr",
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/spatialDLPFC/data/<<Sample_Name>>/data.h5ad.zarr",
           "coordinationValues": {
             "obsType": "spot",
             "featureType": "gene",
@@ -17,8 +17,7 @@
           },
           "options": {
             "obsFeatureMatrix": {
-              "path": "X",
-              "initialFeatureFilterPath": "var/genes_of_interest"
+              "path": "layers/logcounts"
             },
             "obsLocations": {
               "path": "obsm/spatial"
@@ -26,16 +25,6 @@
             "obsSegmentations": {
               "path": "obsm/segmentations"
             },
-            "obsEmbedding": [
-              {
-                "path": "obsm/X_umap",
-                "embeddingType": "UMAP"
-              },
-              {
-                "path": "obsm/X_pca",
-                "embeddingType": "PCA"
-              }
-            ],
             "obsSets": [
               {
                 "name": "Manually Annotated Layers",
@@ -54,7 +43,7 @@
         },
         {
           "fileType": "image.ome-zarr",
-          "url": "https://users.wenglab.org/kresgeb/psych_encode/spatialDLPFC/data/<<Sample_Name>>/image.ome.zarr"
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/spatialDLPFC/data/<<Sample_Name>>/image.ome.zarr"
         }
       ]
     }
@@ -186,6 +175,392 @@
     "featureSelection": {
       "A": [
         "MBP"
+      ]
+    },
+    "obsSetColor": {
+      "A": [
+        {
+          "path": [
+            "Manually Annotated Layers"
+          ],
+          "color": [
+            255,
+            255,
+            255
+          ]
+        },
+        {
+          "path": [
+            "Manually Annotated Layers",
+            "WM"
+          ],
+          "color": [
+            27,
+            27,
+            27
+          ]
+        },
+        {
+          "path": [
+            "Manually Annotated Layers",
+            "Layer 1"
+          ],
+          "color": [
+            223,
+            54,
+            126
+          ]
+        },
+        {
+          "path": [
+            "Manually Annotated Layers",
+            "Layer 2"
+          ],
+          "color": [
+            76,
+            121,
+            180
+          ]
+        },
+        {
+          "path": [
+            "Manually Annotated Layers",
+            "Layer 3"
+          ],
+          "color": [
+            98,
+            174,
+            82
+          ]
+        },
+        {
+          "path": [
+            "Manually Annotated Layers",
+            "Layer 4"
+          ],
+          "color": [
+            145,
+            78,
+            161
+          ]
+        },
+        {
+          "path": [
+            "Manually Annotated Layers",
+            "Layer 5"
+          ],
+          "color": [
+            247,
+            220,
+            56
+          ]
+        },
+        {
+          "path": [
+            "Manually Annotated Layers",
+            "Layer 6"
+          ],
+          "color": [
+            239,
+            140,
+            40
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)"
+          ],
+          "color": [
+            255,
+            255,
+            255
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "1"
+          ],
+          "color": [
+            194,
+            30,
+            101
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "2"
+          ],
+          "color": [
+            231,
+            101,
+            157
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "3"
+          ],
+          "color": [
+            76,
+            121,
+            180
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "4"
+          ],
+          "color": [
+            247,
+            220,
+            56
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "5"
+          ],
+          "color": [
+            98,
+            174,
+            82
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "6"
+          ],
+          "color": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "7"
+          ],
+          "color": [
+            239,
+            140,
+            40
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "8"
+          ],
+          "color": [
+            145,
+            78,
+            161
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (9 Clusters)",
+            "9"
+          ],
+          "color": [
+            69,
+            69,
+            69
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)"
+          ],
+          "color": [
+            255,
+            255,
+            255
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "1"
+          ],
+          "color": [
+            194,
+            30,
+            101
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "2"
+          ],
+          "color": [
+            231,
+            101,
+            157
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "3"
+          ],
+          "color": [
+            98,
+            174,
+            82
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "4"
+          ],
+          "color": [
+            247,
+            220,
+            56
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "5"
+          ],
+          "color": [
+            145,
+            78,
+            161
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "6"
+          ],
+          "color": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "7"
+          ],
+          "color": [
+            239,
+            140,
+            40
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "8"
+          ],
+          "color": [
+            76,
+            121,
+            180
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "9"
+          ],
+          "color": [
+            130,
+            118,
+            174
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "10"
+          ],
+          "color": [
+            116,
+            218,
+            174
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "11"
+          ],
+          "color": [
+            69,
+            69,
+            69
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "12"
+          ],
+          "color": [
+            239,
+            140,
+            40
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "13"
+          ],
+          "color": [
+            107,
+            107,
+            107
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "14"
+          ],
+          "color": [
+            223,
+            54,
+            126
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "15"
+          ],
+          "color": [
+            43,
+            43,
+            43
+          ]
+        },
+        {
+          "path": [
+            "BayesSpace (16 Clusters)",
+            "16"
+          ],
+          "color": [
+            247,
+            220,
+            56
+          ]
+        }
       ]
     }
   },

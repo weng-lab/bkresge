@@ -9,7 +9,7 @@
       "files": [
         {
           "fileType": "anndata.zarr",
-          "url": "https://users.wenglab.org/kresgeb/psych_encode/HumanPilot10X/data/<<Sample_Name>>/data.h5ad.zarr",
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/HumanPilot10X/data/<<Sample_Name>>/data.h5ad.zarr",
           "coordinationValues": {
             "obsType": "spot",
             "featureType": "gene",
@@ -17,8 +17,7 @@
           },
           "options": {
             "obsFeatureMatrix": {
-              "path": "X",
-              "initialFeatureFilterPath": "var/genes_of_interest"
+              "path": "layers/logcounts"
             },
             "obsLocations": {
               "path": "obsm/spatial"
@@ -26,16 +25,6 @@
             "obsSegmentations": {
               "path": "obsm/segmentations"
             },
-            "obsEmbedding": [
-              {
-                "path": "obsm/X_umap",
-                "embeddingType": "UMAP"
-              },
-              {
-                "path": "obsm/X_pca",
-                "embeddingType": "PCA"
-              }
-            ],
             "obsSets": [
               {
                 "name": "Manually Annotated Layers",
@@ -46,7 +35,7 @@
         },
         {
           "fileType": "image.ome-zarr",
-          "url": "https://users.wenglab.org/kresgeb/psych_encode/HumanPilot10X/data/<<Sample_Name>>/image.ome.zarr"
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/HumanPilot10X/data/<<Sample_Name>>/image.ome.zarr"
         }
       ]
     }
