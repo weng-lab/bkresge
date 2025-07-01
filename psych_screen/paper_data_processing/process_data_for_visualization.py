@@ -67,7 +67,7 @@ def load_visium_data(visium_source_dir, sample_name):
 
 def transfer_spatial_and_image_metadata(sample_adata, visium_reference_adata, sample_name):
     """
-    Transfer spatial coordinates and image metadata (uns["spatial"]) from Visium reference to optimized_adata.
+    Transfer spatial coordinates and image metadata (uns["spatial"]) from Visium reference to sample_adata.
 
     :param sample_adata: AnnData object with expression and obs data from the paper pipeline.
     :param visium_reference_adata: Visium AnnData object containing spatial/image metadata.
@@ -287,7 +287,7 @@ def main():
             sample_adata.var.index = sample_adata.var["gene_name"].astype(str)
             sample_adata.var.index.name = None  # Clear index name to avoid conflict
             sample_adata.var_names_make_unique()
-
+        
             # Add the spatial and the image data to the sample AnnData object
             sample_adata = transfer_spatial_and_image_metadata(sample_adata, visium_reference_adata, sample_name)
 

@@ -30,7 +30,7 @@ for (year in YEARS) {
     message("colData columns: ", paste0(colnames(colData(spe)), collapse = ", "))
     message("rowData columns: ", paste0(colnames(rowData(spe)), collapse = ", "))
 
-    # Write to .h5ad
+    # Write to .h5ad (WARNING: strips out image and spatial coordinate [pxl_col_in_fullres, etc])
     h5ad_path <- file.path(OUT_DIR, paste0(year, ".h5ad"))
     message(sprintf("Writing to %s...", h5ad_path))
     writeH5AD(spe, h5ad_path)
