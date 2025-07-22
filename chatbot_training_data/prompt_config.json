@@ -1,0 +1,1603 @@
+[
+    {
+        "prompt_template": "What cCREs are annotated in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "List cCREs found between {start} and {end} on chromosome {chr}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are any cCREs present in the genomic interval chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Could you check for any cCREs within chr{chr} {start} {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find all candidate cis-regulatory elements in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there ENCODE cCREs in the region chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Analyze chr{chr}:{start}-{end} for any cCRE-related activity.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Can you identify cCREs in this region: chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What cCREs are associated with {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Find cCREs that may regulate {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Tell me about cCREs linked to the gene {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Which cCREs are known to influence {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Can you show cCREs that overlap with {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Any cCREs upstream or downstream of {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Give me cCRE annotations for {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "I'm looking for something interesting in the genome.",
+        "link_types": []
+    },
+    {
+        "prompt_template": "Any interesting cCREs to look at?",
+        "link_types": []
+    },
+    {
+        "prompt_template": "Tell me something about gene regulation.",
+        "link_types": []
+    },
+    {
+        "prompt_template": "chr{chr},{start},{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show me the region from {start} to {end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What's annotated in base pairs {start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Look up regulatory elements between {start} and {end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Where is the gene located?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Tell me about this gene.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "I'm interested in that one gene involved in immune response.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Is there any info on the gene near chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "{gene} (chr{chr}:{start}-{end})",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Visualize this BED region: chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What's the cCRE overlap for {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Hey, can you find info about {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Interested in this stretch: {chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Pull up the region {start}-{end} on chromosome {chr}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Need iCREs related to {gene} around chr{chr}:{start}-{end}",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Any hits for chr{chr}:{start}-{end} in SCREEN?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Where is the gene {gene} located?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "What annotated icres are in the region {chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What annotated icres are in the region chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What annotated icres are in the region chr{chr}:{start} {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What annotated icres are in the region chr{chr}:{start}\t{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show me chr{chr}:{start}-{end} on the genome.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show me chr{chr} {start} {end} on the genome.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Tell me about {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "I am interested in the gene {gene}. What can you tell me?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "What ccres are near {gene}, like in the region chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I am interested in {start} to {end} on chromosome {chr}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Can you show me the region from {start} to {end} on crh{chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there any elements between {start} and {end} on chr{chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there any elements between {start} and {end} on chromosome {chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Look up chromosome {chr}, range {start} to {end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Is there anything interesting in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Is there anything interesting in crh{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What iCREs are found between {start} and {end} on chromosome {chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "List iCREs located in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "{gene} regulation?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Are there any regulatory elements in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show annotated iCREs for chr{chr} in the region {start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I'd like to view iCREs in {start} to {end} on chromosome {chr}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find candidate regulatory elements in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Can you analyze this region? chr{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Here's a coordinate range copied from a GTF: chr{chr} {start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Here's a coordinate range copied from a GTF: chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Look up this genomic interval from a table: chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "This entry came from a BED file: chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What elements are in this region? chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Check out this pasted row: chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "{gene}",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Provide me a link of {start}-{end} for chr{chr} for {gene}",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Details for chr{chr} {start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Where is the geen {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Show me stuff on chromosome {chr}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Whats on chr{chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Anything annotated in chr{chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Does {gene} have any annotated regulatory elements?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "I'm analyzing {gene}. What's nearby?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "{gene} expression and regulation?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Can you find iCREs in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What cCREs are located between {start} and {end} on chr{chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I want to analyze the region chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Is there regulatory activity in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show me any known elements within chr{chr} positions {start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}:{start}-{end} — any annotations here?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are any iCREs overlapping chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I'd like details for chr{chr}, {start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I’m looking at {gene}, especially in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show any cCREs near {gene}, maybe around chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What elements overlap chr{chr}:{start}-{end}, relevant to {gene}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Is the region chr{chr}:{start}-{end} associated with {gene}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "{gene} might be regulated by something in chr{chr}:{start}-{end} — can you check?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "How is {gene} regulated in the region chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "List iCREs for {gene} in the span chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Region of interest: chr{chr}  {start}  {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Here's a line I copied: chr{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find anything in this interval: chr{chr}, {start} to {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What function does the gene {gene} serve?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Give me detailed information on {gene} and its role in regulation.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Could you provide a summary of what {gene} does?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "I need data on gene {gene}. What is its significance?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Detail the expression pattern of {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "How does {gene} impact regulatory networks?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Please provide a profile for gene {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "What's known about {gene} in current research?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Summarize the role of {gene} in cell regulation.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Elucidate the biological function of gene {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Can you find any iCREs within chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Examine the region chr{chr}:{start}-{end} and report any regulatory features.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Identify all annotated elements in the interval chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What regulatory elements have been found in chr{chr} from position {start} to {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I would like to analyze chr{chr}:{start}-{end} for any cCRE signals.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show regulatory annotations present in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Retrieve details for the genomic interval chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Provide a summary of known regulatory features in the region chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What functional elements are annotated between positions {start} and {end} on chromosome {chr}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Analyze the genomic segment chr{chr}:{start}-{end} for potential regulatory activity.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Is there evidence of regulatory elements on chr{chr}:{start}-{end} for gene {gene}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Investigate if {gene} is associated with any regulatory elements in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Correlate the gene {gene} with any cCREs found in the region chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Does the region chr{chr}:{start}-{end} contain annotations linked to {gene}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Provide a combined analysis for gene {gene} and its nearby regulatory elements in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What is the overlap of gene {gene} with the features in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "List any iCREs that might affect {gene} in the segment chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show me the features for {gene} specifically within chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there cCREs in chr{chr}:{start}-{end} that could regulate {gene}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Look for cCREs related to {gene} within chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Does {gene} have nearby cCREs in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find candidate regulatory elements in chr{chr}:{start}-{end} that may influence {gene}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I want to investigate {gene} and any cCREs in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show me the cCREs in chr{chr}:{start}-{end} near {gene}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Map {gene} to cCREs within chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Any ccre annotations in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Check for CCRES in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Do you see any CCre regions at chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there ccres at chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "List all Ccre elements in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What ccre's overlap chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}:{start}-{end} — any ccRe's there?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Do you have ccres in chr{chr} from {start} to {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Search for any ccre's in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there any ccress in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Any candidate regulatory elments (ccre) in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Can you list CCErs in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Check this interval for CCRE annotations: chr{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I’d like to see cCRe activity in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What ccres are linked to {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Give me CCRES for {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "ccre's associated with gene {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "What CCre's overlap with {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Find cCres that may regulate {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Does {gene} have any CCReS nearby?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Are there any ccress related to {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Looking for cRCe hits around {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "ccRe links to {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Tell me about ccre activity around {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Any cCres for {gene} in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I'm checking {gene} — what's the cCREs in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find ccres in chr{chr}:{start}-{end} for gene {gene}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Look up CCRE annotations near {gene}, like in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Gene {gene}, region chr{chr}:{start}-{end}, ccre involvement?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Check for ccre overlap with {gene} around chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there ccres relevant to {gene} in that region chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What elements are in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find any known elments in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Check for regulatory elments in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Does chr{chr}:{start}-{end} contain any annotated elements?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}:{start}-{end} — any regulatory stuff there?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there any elemnts in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Tell me if chr{chr}:{start}-{end} includes any elment annotations.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I'd like to explore regulatory annotations in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Locate regulatory elemments in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What regulatory elements are associated with {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Does {gene} have any known regulatory elments?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Give me elements linked to {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Any elemnts involved with {gene} regulation?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Tell me about regulatory elemnts tied to {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "What kinds of elments affect {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "List elments annotated near {gene}.",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Are there any known regulatory elments that act on {gene}?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "Elements involved in {gene} expression?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "I'm curious about regulation around {gene} — any elments to know about?",
+        "link_types": [
+            "gene"
+        ]
+    },
+    {
+        "prompt_template": "What regulatory elements near {gene} are in chr{chr}:{start}-{end}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Look up elments that could affect {gene} in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find annotated regulatory elments in chr{chr}:{start}-{end} related to {gene}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there any known elements in chr{chr}:{start}-{end} linked to {gene}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Search for regulatory elements that may influence {gene} around chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Tell me if {gene} is near any elments in chr{chr}:{start}-{end}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What's in chr{chr}:{start}-{end} that might regulate {gene}?",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Check chr{chr}:{start}-{end} for regulatory elemnts tied to {gene}.",
+        "link_types": [
+            "gene",
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}:{start}–{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}:{start} — {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr} : {start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}:{start}-{end} ",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "from base {start} to base {end} on chromosome {chr}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chromosome {chr}, positions {start} through {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "on chromosome {chr} between {start} and {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "the range {start}-{end} on chr{chr}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "coordinates {start} to {end} on chr{chr}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chr{chr}, bases {start}–{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "positions {start}-{end} on chromosome {chr}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "region: chr{chr} ({start}-{end})",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "ch{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Chr{chr} {start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "CHR{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom {chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "This came from a table: chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I copied this from a BED file: chr{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Interval pasted from UCSC: chr{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Region from IGV: chr{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Coordinates copied from GTF: chr{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Are there any regulatory elements in chrom{chr}:{start}-{end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Show me what's in chrom{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Check for any cCREs in chrom{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "What elements are in chrom{chr} between {start} and {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Find iCREs in the region chrom{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Look up annotations in chrom{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "I'm analyzing chrom{chr}:{start}-{end}. Anything interesting there?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Can you analyze the interval on chrom{chr}, from {start} to {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Any cCREs located in chrom{chr} between {start} and {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Investigate chrom{chr}:{start}-{end} for annotated elements.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Copied from BED: chrom{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Table entry: chrom{chr}\t{start}\t{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "CHROM{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "Chrom{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chRoM{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "cHrOm{chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr} : {start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}:{start} - {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom {chr}:{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom {chr} : {start} - {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}:{start}–{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}:{start} — {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}:  {start}  -  {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom {chr}:{start}–{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}::{start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}:{start}-{end},",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}:{start}-{end}.",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "\"chrom{chr}:{start}-{end}\"",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "(chrom{chr}:{start}-{end})",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr} : {start}—{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "can you look at chrom{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "check chrom{chr}:{start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "need elements from chrom{chr} {start}-{end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "what's in chrom {chr} around {start} to {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "show ccre in chrom{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "can you find stuff in chrom{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "anything annotated in chrom{chr}:{start} to {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "look up chrom {chr}  {start}  {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr}  {start}-{end} what's there",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "ccre data chrom{chr} {start} to {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "give me regulatory stuff chrom{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom {chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "what elements in chrom {chr}:{start} {end}?",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "chrom{chr} from {start} to {end} check that",
+        "link_types": [
+            "region"
+        ]
+    },
+    {
+        "prompt_template": "grab data for chrom{chr} {start} {end}",
+        "link_types": [
+            "region"
+        ]
+    }
+]
