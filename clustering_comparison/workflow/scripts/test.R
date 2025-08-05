@@ -9,7 +9,15 @@ spe <- spatialLIBD::fetch_data(type = "spatialDLPFC_Visium")
 
 output_csv <- "/zata/zippy/kresgeb/clustering_comparison/results/my_bs_output.csv"
 
-set.seed(030122)
+seed <- 030122
+
+set.seed(seed)
+
+message(paste("BayesSpace Version:", packageVersion("BayesSpace")))
+
+message((paste("Seed:", seed)))
+
+message(paste("BayesSpace clustering started at:", Sys.time()))
 
 # Run BayesSpace
 message("Running BayesSpace spatialCluster...")
