@@ -7,12 +7,11 @@ suppressPackageStartupMessages({
 OUT_PATH <- "/data/zusers/kresgeb/hippocampus/python_converted/spe_2.h5ad"
 IN_PATH <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_spe.Rdata"
 
-# TODO: Uncomment when ready
-# load(IN_PATH, verbose = TRUE)
+load(IN_PATH, verbose = TRUE)
 
-# if (!exists("spatial_hpc_spe")) {
-#     stop("No 'spatial_hpc_spe' found in ", IN_PATH)
-# }
+if (!exists("spatial_hpc_spe")) {
+    stop("No 'spatial_hpc_spe' found in ", IN_PATH)
+}
 
 # Convert dateImg to character for h5ad compatibility
 colData(spatial_hpc_spe)$dateImg <- as.character(colData(spatial_hpc_spe)$dateImg)
@@ -35,7 +34,6 @@ message("Spatial coordinates added!")
 hex_to_rgb_array <- function(ras) {
     h <- nrow(ras)
     w <- ncol(ras)
-    n <- h * w
 
     ras_vec <- as.vector(ras)
     r_hex <- substr(ras_vec, 2, 3)
@@ -66,8 +64,6 @@ spatial_list <- list()
 for (sid in unique(img_df$sample_id)) {
     message(sprintf("Processing sample: %s", sid))
     sample_rows <- img_df[img_df$sample_id == sid, ]
-    # message("Sample rows:")
-    # show(sample_rows)
 
     images_list <- list()
     scalefactors_list <- list()
@@ -106,43 +102,3 @@ metadata(sce)$spatial <- spatial_list
 message("Writing SingleCellExperiment to H5AD...")
 writeH5AD(sce, OUT_PATH)
 message("Write complete!")
-
-
-
-
-
-
-
-# suppressPackageStartupMessages({
-#     library(SpatialExperiment)
-#     library(zellkonverter)
-# })
-
-# OUT_PATH <- "/data/zusers/kresgeb/hippocampus/python_converted/spe.h5ad"
-# IN_PATH <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_spe.Rdata"
-
-
-# message(sprintf("Loading %s...", IN_PATH))
-# load(IN_PATH, verbose = TRUE)
-
-# if (!exists("spatial_hpc_spe")) {
-#     warning(sprintf("No 'spatial_hpc_spe' object found in %s, skipping.", IN_PATH))
-#     next
-# }
-
-# # Print basic info
-# message(sprintf("spatial_hpc_spe dimensions: %d genes x %d spots", nrow(spatial_hpc_spe), ncol(spatial_hpc_spe)))
-# message("Assays: ", paste0(names(assays(spatial_hpc_spe)), collapse = ", "))
-# message("colData columns: ", paste0(colnames(colData(spatial_hpc_spe)), collapse = ", "))
-# message("rowData columns: ", paste0(colnames(rowData(spatial_hpc_spe)), collapse = ", "))
-
-# # Have to convert dateImg to character to avoid issues with H5AD conversion
-# colData(spatial_hpc_spe)$dateImg <- as.character(colData(spatial_hpc_spe)$dateImg)
-
-# # Write to .h5ad (WARNING: strips out image and spatial coordinate [pxl_col_in_fullres, etc])
-# message(sprintf("Writing to %s...", OUT_PATH))
-# writeH5AD(spatial_hpc_spe, OUT_PATH)
-
-# # Clean up
-# rm(spatial_hpc_spe)
-# gc()
