@@ -1,13 +1,16 @@
 library(BayesSpace)
 library(mclust)
-# library(dplyr)
 library(spatialLIBD)
+library(sessioninfo)
+library(glue)
 
 # load("/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData", verbose = TRUE)
 
 spe <- spatialLIBD::fetch_data(type = "spatialDLPFC_Visium")
 
-output_csv <- "/zata/zippy/kresgeb/clustering_comparison/results/my_bs_output.csv"
+bayesspace_version <- packageVersion("BayesSpace")
+
+output_csv <- glue("/zata/zippy/kresgeb/clustering_comparison/results/{bayesspace_version}_output_cluster_assignments.csv")
 
 seed <- 030122
 
@@ -63,3 +66,10 @@ ari_df <- data.frame(
 )
 
 print(ari_df)
+
+## Reproducibility information
+print("Reproducibility information:")
+Sys.time()
+proc.time()
+options(width = 120)
+session_info()
