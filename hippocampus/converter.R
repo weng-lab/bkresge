@@ -4,7 +4,7 @@ suppressPackageStartupMessages({
     library(zellkonverter)
 })
 
-OUT_PATH <- "/data/zusers/kresgeb/hippocampus/python_converted/spe_2.h5ad"
+OUT_PATH <- "/data/zusers/kresgeb/hippocampus/python_converted/srt_all_samples.h5ad"
 IN_PATH <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_spe.Rdata"
 
 load(IN_PATH, verbose = TRUE)
@@ -96,7 +96,7 @@ for (sid in unique(img_df$sample_id)) {
     )
     message(sprintf("Finished sample %s\n", sid))
 }
-
+# This will add to the .uns in the AnnData specifically .uns["spatial"]
 metadata(sce)$spatial <- spatial_list
 
 message("Writing SingleCellExperiment to H5AD...")
