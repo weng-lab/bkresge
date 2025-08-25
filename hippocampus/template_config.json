@@ -1,0 +1,284 @@
+{
+  "version": "1.0.17",
+  "name": "Hippocampus Samples",
+  "description": "Visium Spatial Gene Expression data from 10x Genomics (LIBD)",
+  "initStrategy": "auto",
+  "datasets": [
+    {
+      "uid": "logcounts",
+      "files": [
+        {
+          "fileType": "anndata.zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/data.h5ad.zarr",
+          "coordinationValues": {
+            "obsType": "spot",
+            "featureType": "gene",
+            "featureValueType": "expression"
+          },
+          "options": {
+            "obsFeatureMatrix": {
+              "path": "layers/logcounts"
+            },
+            "obsLocations": {
+              "path": "obsm/spatial"
+            },
+            "obsSegmentations": {
+              "path": "obsm/segmentations"
+            },
+            "obsSets": [
+              {
+                "name": "Domain",
+                "path": [
+                  "obs/broad.domain",
+                  "obs/domain"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "fileType": "image.ome-zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
+        }
+      ]
+    },
+    {
+      "uid": "nmf",
+      "files": [
+        {
+          "fileType": "anndata.zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/nmf_data.h5ad.zarr",
+          "coordinationValues": {
+            "obsType": "spot",
+            "featureType": "gene",
+            "featureValueType": "expression"
+          },
+          "options": {
+            "obsFeatureMatrix": {
+              "path": "X"
+            },
+            "obsLocations": {
+              "path": "obsm/spatial"
+            },
+            "obsSegmentations": {
+              "path": "obsm/segmentations"
+            }
+          }
+        },
+        {
+          "fileType": "image.ome-zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
+        }
+      ]
+    }
+  ],
+  "coordinationSpace": {
+    "dataset": {
+      "logcounts": "logcounts",
+      "nmf": "nmf"
+    },
+    "featureValueType": {
+      "A": "expression"
+    },
+    "obsType": {
+      "A": "spot"
+    },
+    "spatialSegmentationLayer": {
+      "A": {
+        "radius": 65,
+        "stroked": true,
+        "visible": true,
+        "opacity": 1
+      }
+    },
+    "spatialImageLayer": {
+      "A": [
+        {
+          "type": "raster",
+          "index": 0,
+          "colormap": null,
+          "transparentColor": null,
+          "opacity": 1,
+          "domainType": "Min/Max",
+          "channels": [
+            {
+              "selection": {
+                "c": 0
+              },
+              "color": [
+                255,
+                0,
+                0
+              ],
+              "visible": true,
+              "slider": [
+                0,
+                255
+              ]
+            },
+            {
+              "selection": {
+                "c": 1
+              },
+              "color": [
+                0,
+                255,
+                0
+              ],
+              "visible": true,
+              "slider": [
+                0,
+                255
+              ]
+            },
+            {
+              "selection": {
+                "c": 2
+              },
+              "color": [
+                0,
+                0,
+                255
+              ],
+              "visible": true,
+              "slider": [
+                0,
+                255
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "obsColorEncoding": {
+      "A": "cellSetSelection",
+      "B": "geneSelection"
+    },
+    "spatialZoom": {
+      "A": null
+    },
+    "spatialTargetX": {
+      "A": null
+    },
+    "spatialTargetY": {
+      "A": null
+    },
+    "featureSelection": {
+      "gene": [
+        "MBP"
+      ],
+      "nmf": [
+        "nmf1"
+      ]
+    }
+  },
+  "layout": [
+    {
+      "component": "featureList",
+      "props": {
+        "title": "Gene Selection"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "featureSelection": "gene",
+        "obsType": "A"
+      },
+      "x": 0,
+      "y": 4,
+      "w": 6,
+      "h": 4
+    },
+    {
+      "component": "spatial",
+      "props": {
+        "title": "Spatial Organization of Domains"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "obsType": "A",
+        "spatialImageLayer": "A",
+        "spatialSegmentationLayer": "A",
+        "spatialZoom": "A",
+        "spatialTargetX": "A",
+        "spatialTargetY": "A",
+        "obsColorEncoding": "A"
+      },
+      "x": 6,
+      "y": 0,
+      "w": 6,
+      "h": 4
+    },
+    {
+      "component": "spatial",
+      "props": {
+        "title": "Spatial Gene Expression (Logcount)"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "obsType": "A",
+        "spatialImageLayer": "A",
+        "spatialSegmentationLayer": "A",
+        "spatialZoom": "A",
+        "spatialTargetX": "A",
+        "spatialTargetY": "A",
+        "obsColorEncoding": "B",
+        "featureSelection": "gene"
+      },
+      "x": 6,
+      "y": 4,
+      "w": 6,
+      "h": 4
+    },
+    {
+      "component": "spatial",
+      "props": {
+        "title": "Spatial NMF Expression"
+      },
+      "coordinationScopes": {
+        "dataset": "nmf",
+        "obsType": "A",
+        "spatialImageLayer": "A",
+        "spatialSegmentationLayer": "A",
+        "spatialZoom": "A",
+        "spatialTargetX": "A",
+        "spatialTargetY": "A",
+        "obsColorEncoding": "B",
+        "featureSelection": "nmf"
+      },
+      "x": 6,
+      "y": 8,
+      "w": 6,
+      "h": 4
+    },
+    {
+      "component": "featureList",
+      "props": {
+        "title": "NMF Selection"
+      },
+      "coordinationScopes": {
+        "dataset": "nmf",
+        "featureSelection": "nmf",
+        "obsType": "A"
+      },
+      "x": 0,
+      "y": 8,
+      "w": 6,
+      "h": 4
+    },
+    {
+      "component": "obsSets",
+      "props": {
+        "title": "Domains"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "obsType": "A",
+        "obsColorEncoding": "A"
+      },
+      "x": 0,
+      "y": 0,
+      "w": 6,
+      "h": 4
+    }
+  ]
+}
