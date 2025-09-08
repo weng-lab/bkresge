@@ -25,3 +25,4 @@ psych_screen/comparisons/spe_*.Rdata
 # Specific Files
 clustering_comparison/tmp.txt
 chatbot_training_data/gencode.v48.annotation.gtf.gz
+hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda

@@ -12,7 +12,7 @@ setRcppMLthreads(64)
 
 
 # Open log file (append = FALSE to overwrite each run)
-log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/simple_nmf.log"
+log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf.log"
 sink(log_file, append = FALSE, split = TRUE) # split=TRUE keeps console + file
 options(width = 120)
 
@@ -22,14 +22,20 @@ log_msg <- function(msg) {
 }
 
 # Paths
-snrna_seq_output_path <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_snrna_seq.Rdata"
-path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/simple_nmf_x.rda"
+snrna_seq_data_path <- "/data/zusers/kresgeb/psych_encode/spatialDLPFC_snRNAseq_fetch/2024_snRNA.RData"
+path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda"
 
 log_msg("===== Starting NMF pipeline =====")
-log_msg(paste("Loading data from:", snrna_seq_output_path))
+log_msg(paste("Loading data from:", snrna_seq_data_path))
 
-load(snrna_seq_output_path, verbose = TRUE)
-snrna <- spatial_hpc_snrna_seq
+obj_names <- load(snrna_seq_data_path, verbose = TRUE)
+stopifnot(length(obj_names) == 1)
+
+snrna <- get(obj_names)
+
+if (!inherits(snrna, "SingleCellExperiment")) {
+    stop("Loaded object is not a SingleCellExperiment, cannot continue.")
+}
 
 log_msg("Data successfully loaded.")
 log_msg(sprintf("snrna object: %s", class(snrna)))
