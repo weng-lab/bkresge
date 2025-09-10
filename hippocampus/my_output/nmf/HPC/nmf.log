@@ -1,17 +1,17 @@
-[2025-09-09 12:19:03] Running with 100 threads
-[2025-09-09 12:19:03] ===== Starting NMF pipeline =====
-[2025-09-09 12:19:03] Loading data from: /data/zusers/kresgeb/psych_encode/spatialDLPFC_snRNAseq_fetch/2024_snRNA.RData
+[2025-09-09 11:42:17] Running with 100 threads
+[2025-09-09 11:42:17] ===== Starting NMF pipeline =====
+[2025-09-09 11:42:17] Loading data from: /data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_snrna_seq.Rdata
 Loading objects:
-  sce
-[2025-09-09 12:22:07] Data successfully loaded.
-[2025-09-09 12:22:07] snrna object: SingleCellExperiment
-[2025-09-09 12:22:07] Dimensions of logcounts: 36601 genes x 77604 cells
-[2025-09-09 12:22:07] Size of logcounts assay: 21679.29 MB
-[2025-09-09 12:22:07] Running NMF with RcppML...
-[2025-09-09 13:00:25] NMF completed in 38.29 minutes
-[2025-09-09 13:00:25] Saving NMF result to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda
-[2025-09-09 13:00:32] Save complete.
-[2025-09-09 13:00:32] ===== Session Info =====
+  spatial_hpc_snrna_seq
+[2025-09-09 11:43:15] Data successfully loaded.
+[2025-09-09 11:43:15] snrna object: SingleCellExperiment
+[2025-09-09 11:43:15] Dimensions of logcounts: 36601 genes x 75411 cells
+[2025-09-09 11:43:15] Size of logcounts assay: 4833.07 MB
+[2025-09-09 11:43:15] Running NMF with RcppML...
+[2025-09-09 11:59:32] NMF completed in 16.29 minutes
+[2025-09-09 11:59:32] Saving NMF result to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/nmf_x.rda
+[2025-09-09 11:59:39] Save complete.
+[2025-09-09 11:59:39] ===== Session Info =====
 R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
@@ -43,7 +43,7 @@ loaded via a namespace (and not attached):
 [17] XVector_0.46.0          RcppEigen_0.3.4.0.2     lattice_0.22-5          R6_2.6.1               
 [21] SparseArray_1.6.0       GenomeInfoDbData_1.2.13 magrittr_2.0.3          tools_4.4.2            
 [25] zlibbioc_1.52.0         S4Arrays_1.6.0         
-- Session info ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Session info -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  setting  value
  version  R version 4.4.2 (2024-10-31)
  os       Ubuntu 22.04.5 LTS
@@ -56,7 +56,7 @@ loaded via a namespace (and not attached):
  date     2025-09-09
  pandoc   2.9.2.1 @ /usr/bin/pandoc
 
-- Packages -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Packages ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  package              * version   date (UTC) lib source
  abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
  Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
@@ -100,5 +100,5 @@ loaded via a namespace (and not attached):
  [2] /usr/lib/R/site-library
  [3] /usr/lib/R/library
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[2025-09-09 13:00:32] ===== Finished NMF process =====
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[2025-09-09 11:59:39] ===== Finished NMF process =====

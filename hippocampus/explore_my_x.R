@@ -18,8 +18,8 @@ log_msg <- function(msg) {
 }
 
 snrna_seq_output_path <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_snrna_seq.Rdata"
-path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/simple_nmf_x.rda"
-plot_dir <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/plots"
+path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/nmf_x.rda"
+plot_dir <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/plots_v0.5.5"
 dir.create(plot_dir, showWarnings = FALSE, recursive = TRUE)
 
 # --- Load data ---
@@ -106,7 +106,7 @@ compare_nmf <- function(nmf_new, nmf_paper, plot_dir) {
 }
 
 # Prepare matrices
-nmf_new <- t(x$h) # cells x 100
+nmf_new <- t(x@h) # cells x 100
 nmf_paper <- as.matrix(colData(snrna)[, paste0("nmf", 1:100)])
 
 # --- Run comparison ---

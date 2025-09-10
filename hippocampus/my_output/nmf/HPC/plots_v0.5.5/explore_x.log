@@ -1,0 +1,166 @@
+[2025-09-09 12:10:39] ===== Starting exploration of NMF result x =====
+[2025-09-09 12:10:39] Loading data from: /data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_snrna_seq.Rdata
+Loading objects:
+  spatial_hpc_snrna_seq
+[2025-09-09 12:11:25] Data successfully loaded.
+[2025-09-09 12:11:25] Loading data from: /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/nmf_x.rda
+Loading objects:
+  x
+[2025-09-09 12:11:26] Data successfully loaded.
+[2025-09-09 12:11:26] Comparing nmf_new vs nmf_paper
+[2025-09-09 12:11:26] Summary stats for nmf_new:
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.000e+00 0.000e+00 0.000e+00 1.326e-05 7.612e-06 4.063e-03 
+[2025-09-09 12:11:26] Summary stats for nmf_paper:
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.000e+00 0.000e+00 0.000e+00 1.326e-05 7.612e-06 4.063e-03 
+[2025-09-09 12:11:27] Top-left 10x10 of nmf_new:
+                             nmf1         nmf2         nmf3         nmf4         nmf5         nmf6         nmf7
+1_AAACCCACAACGATCT-1 0.000000e+00 0.000000e+00 1.891912e-06 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAACGAAAGGTGAGCT-1 1.215323e-05 0.000000e+00 2.293237e-05 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAACGAACACAAAGTA-1 0.000000e+00 5.005418e-07 2.318279e-06 4.340412e-06 0.000000e+00 0.000000e+00 2.177966e-06
+1_AAACGAACAGGGACTA-1 3.671004e-06 0.000000e+00 1.023158e-05 4.666903e-06 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAACGAATCGACGCGT-1 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 2.138542e-05 2.576903e-05
+1_AAACGCTGTAACGTTC-1 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAAGAACCAGCCGGTT-1 3.147934e-05 5.983065e-06 3.002276e-06 0.000000e+00 3.319427e-07 0.000000e+00 4.458386e-05
+1_AAAGAACTCCATGCAA-1 1.904010e-05 4.429016e-06 1.417231e-05 1.939065e-05 1.904469e-06 2.830195e-05 3.300767e-05
+1_AAAGGGCAGCTAATCC-1 1.257823e-05 0.000000e+00 1.190159e-05 0.000000e+00 0.000000e+00 1.111744e-06 4.339859e-06
+1_AAAGGTAAGTTGGGAC-1 1.528441e-05 1.500955e-05 1.036023e-05 5.809194e-06 0.000000e+00 3.124996e-05 7.184256e-05
+                             nmf8         nmf9 nmf10
+1_AAACCCACAACGATCT-1 0.000000e+00 5.293536e-06     0
+1_AAACGAAAGGTGAGCT-1 0.000000e+00 3.472213e-06     0
+1_AAACGAACACAAAGTA-1 0.000000e+00 2.495831e-05     0
+1_AAACGAACAGGGACTA-1 0.000000e+00 7.417723e-06     0
+1_AAACGAATCGACGCGT-1 7.558820e-07 3.874169e-05     0
+1_AAACGCTGTAACGTTC-1 0.000000e+00 2.338672e-05     0
+1_AAAGAACCAGCCGGTT-1 1.315004e-05 0.000000e+00     0
+1_AAAGAACTCCATGCAA-1 3.925449e-06 3.185358e-05     0
+1_AAAGGGCAGCTAATCC-1 0.000000e+00 3.608799e-06     0
+1_AAAGGTAAGTTGGGAC-1 4.014564e-06 2.759078e-05     0
+[2025-09-09 12:11:27] Top-left 10x10 of nmf_paper:
+                             nmf1         nmf2         nmf3         nmf4         nmf5         nmf6         nmf7
+1_AAACCCACAACGATCT-1 0.000000e+00 0.000000e+00 1.891912e-06 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAACGAAAGGTGAGCT-1 1.215323e-05 0.000000e+00 2.293237e-05 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAACGAACACAAAGTA-1 0.000000e+00 5.005418e-07 2.318279e-06 4.340412e-06 0.000000e+00 0.000000e+00 2.177966e-06
+1_AAACGAACAGGGACTA-1 3.671004e-06 0.000000e+00 1.023158e-05 4.666903e-06 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAACGAATCGACGCGT-1 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 2.138542e-05 2.576903e-05
+1_AAACGCTGTAACGTTC-1 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+1_AAAGAACCAGCCGGTT-1 3.147934e-05 5.983065e-06 3.002276e-06 0.000000e+00 3.319427e-07 0.000000e+00 4.458386e-05
+1_AAAGAACTCCATGCAA-1 1.904010e-05 4.429016e-06 1.417231e-05 1.939065e-05 1.904469e-06 2.830195e-05 3.300767e-05
+1_AAAGGGCAGCTAATCC-1 1.257823e-05 0.000000e+00 1.190159e-05 0.000000e+00 0.000000e+00 1.111744e-06 4.339859e-06
+1_AAAGGTAAGTTGGGAC-1 1.528441e-05 1.500955e-05 1.036023e-05 5.809194e-06 0.000000e+00 3.124996e-05 7.184256e-05
+                             nmf8         nmf9 nmf10
+1_AAACCCACAACGATCT-1 0.000000e+00 5.293536e-06     0
+1_AAACGAAAGGTGAGCT-1 0.000000e+00 3.472213e-06     0
+1_AAACGAACACAAAGTA-1 0.000000e+00 2.495831e-05     0
+1_AAACGAACAGGGACTA-1 0.000000e+00 7.417723e-06     0
+1_AAACGAATCGACGCGT-1 7.558820e-07 3.874169e-05     0
+1_AAACGCTGTAACGTTC-1 0.000000e+00 2.338672e-05     0
+1_AAAGAACCAGCCGGTT-1 1.315004e-05 0.000000e+00     0
+1_AAAGAACTCCATGCAA-1 3.925449e-06 3.185358e-05     0
+1_AAAGGGCAGCTAATCC-1 0.000000e+00 3.608799e-06     0
+1_AAAGGTAAGTTGGGAC-1 4.014564e-06 2.759078e-05     0
+[2025-09-09 12:11:35] Plots saved to:
+[2025-09-09 12:11:35] /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/plots_v0.5.5
+[2025-09-09 12:11:35] ===== Finished NMF comparison =====
+[2025-09-09 12:11:35] ===== Session Info =====
+R version 4.4.2 (2024-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+
+locale:
+[1] C
+
+time zone: America/New_York
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] pheatmap_1.0.13             clue_0.3-66                 sessioninfo_1.2.2           Matrix_1.7-1               
+ [5] RcppML_0.5.5                SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0
+ [9] Biobase_2.66.0              GenomicRanges_1.58.0        GenomeInfoDb_1.42.1         IRanges_2.40.1             
+[13] S4Vectors_0.44.0            BiocGenerics_0.52.0         MatrixGenerics_1.18.0       matrixStats_1.5.0          
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6            jsonlite_2.0.0          compiler_4.4.2          rjson_0.2.23           
+ [5] crayon_1.5.3            Rcpp_1.1.0              magick_2.8.6            cluster_2.1.8          
+ [9] scales_1.4.0            lattice_0.22-5          R6_2.6.1                XVector_0.46.0         
+[13] S4Arrays_1.6.0          RcppEigen_0.3.4.0.2     knitr_1.50              DelayedArray_0.32.0    
+[17] GenomeInfoDbData_1.2.13 RColorBrewer_1.1-3      rlang_1.1.6             xfun_0.53              
+[21] SparseArray_1.6.0       cli_3.6.5               magrittr_2.0.3          zlibbioc_1.52.0        
+[25] grid_4.4.2              lifecycle_1.0.4         glue_1.8.0              evaluate_1.0.5         
+[29] farver_2.1.2            abind_1.4-8             httr_1.4.7              tools_4.4.2            
+[33] UCSC.utils_1.2.0       
+- Session info -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ setting  value
+ version  R version 4.4.2 (2024-10-31)
+ os       Ubuntu 22.04.5 LTS
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  C
+ ctype    C
+ tz       America/New_York
+ date     2025-09-09
+ pandoc   2.9.2.1 @ /usr/bin/pandoc
+
+- Packages ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ package              * version   date (UTC) lib source
+ abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
+ Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocGenerics         * 0.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ cli                    3.6.5     2025-04-23 [1] CRAN (R 4.4.2)
+ clue                 * 0.3-66    2024-11-13 [1] CRAN (R 4.4.2)
+ cluster                2.1.8     2024-12-11 [3] CRAN (R 4.4.2)
+ crayon                 1.5.3     2024-06-20 [1] CRAN (R 4.4.2)
+ DelayedArray           0.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ evaluate               1.0.5     2025-08-27 [1] CRAN (R 4.4.2)
+ farver                 2.1.2     2024-05-13 [1] CRAN (R 4.4.2)
+ GenomeInfoDb         * 1.42.1    2024-11-28 [1] Bioconductor 3.20 (R 4.4.2)
+ GenomeInfoDbData       1.2.13    2025-01-10 [1] Bioconductor
+ GenomicRanges        * 1.58.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ glue                   1.8.0     2024-09-30 [1] CRAN (R 4.4.2)
+ gtable                 0.3.6     2024-10-25 [1] CRAN (R 4.4.2)
+ httr                   1.4.7     2023-08-15 [1] CRAN (R 4.4.2)
+ IRanges              * 2.40.1    2024-12-05 [1] Bioconductor 3.20 (R 4.4.2)
+ jsonlite               2.0.0     2025-03-27 [1] CRAN (R 4.4.2)
+ knitr                  1.50      2025-03-16 [1] CRAN (R 4.4.2)
+ lattice                0.22-5    2023-10-24 [3] CRAN (R 4.3.1)
+ lifecycle              1.0.4     2023-11-07 [1] CRAN (R 4.4.2)
+ magick                 2.8.6     2025-03-23 [1] CRAN (R 4.4.2)
+ magrittr               2.0.3     2022-03-30 [1] CRAN (R 4.4.2)
+ Matrix               * 1.7-1     2024-10-18 [3] CRAN (R 4.4.1)
+ MatrixGenerics       * 1.18.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ matrixStats          * 1.5.0     2025-01-07 [1] CRAN (R 4.4.2)
+ pheatmap             * 1.0.13    2025-06-05 [1] CRAN (R 4.4.2)
+ R6                     2.6.1     2025-02-15 [1] CRAN (R 4.4.2)
+ RColorBrewer           1.1-3     2022-04-03 [1] CRAN (R 4.4.2)
+ Rcpp                   1.1.0     2025-07-02 [1] CRAN (R 4.4.2)
+ RcppEigen              0.3.4.0.2 2024-08-24 [1] CRAN (R 4.4.2)
+ RcppML               * 0.5.5     2025-09-09 [1] Github (zdebruine/RcppML@c997bcd)
+ rjson                  0.2.23    2024-09-16 [1] CRAN (R 4.4.2)
+ rlang                  1.1.6     2025-04-11 [1] CRAN (R 4.4.2)
+ S4Arrays               1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S4Vectors            * 0.44.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ scales                 1.4.0     2025-04-24 [1] CRAN (R 4.4.2)
+ sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.4.2)
+ SingleCellExperiment * 1.28.1    2024-11-10 [1] Bioconductor 3.20 (R 4.4.2)
+ SparseArray            1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SpatialExperiment    * 1.16.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SummarizedExperiment * 1.36.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ UCSC.utils             1.2.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ xfun                   0.53      2025-08-19 [1] CRAN (R 4.4.2)
+ XVector                0.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ zlibbioc               1.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+
+ [1] /usr/local/lib/R/site-library
+ [2] /usr/lib/R/site-library
+ [3] /usr/lib/R/library
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

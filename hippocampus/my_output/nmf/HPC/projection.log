@@ -1,17 +1,23 @@
-[2025-09-09 12:19:03] Running with 100 threads
-[2025-09-09 12:19:03] ===== Starting NMF pipeline =====
-[2025-09-09 12:19:03] Loading data from: /data/zusers/kresgeb/psych_encode/spatialDLPFC_snRNAseq_fetch/2024_snRNA.RData
+[2025-09-09 15:13:30] Running with 64 threads
+[2025-09-09 15:13:30] ===== Starting Projection =====
 Loading objects:
-  sce
-[2025-09-09 12:22:07] Data successfully loaded.
-[2025-09-09 12:22:07] snrna object: SingleCellExperiment
-[2025-09-09 12:22:07] Dimensions of logcounts: 36601 genes x 77604 cells
-[2025-09-09 12:22:07] Size of logcounts assay: 21679.29 MB
-[2025-09-09 12:22:07] Running NMF with RcppML...
-[2025-09-09 13:00:25] NMF completed in 38.29 minutes
-[2025-09-09 13:00:25] Saving NMF result to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda
-[2025-09-09 13:00:32] Save complete.
-[2025-09-09 13:00:32] ===== Session Info =====
+  x
+[2025-09-09 15:13:32] Loaded NMF object
+Loading objects:
+  spatial_hpc_spe
+[2025-09-09 15:16:36] Loaded SRT object
+[2025-09-09 15:16:36] Determining the common genes...
+[2025-09-09 15:16:36] Number of common genes: 31482
+[2025-09-09 15:16:36] Filtering w and Y by common genes...
+[2025-09-09 15:16:36] Dimensions of w: 31482
+ [2025-09-09 15:16:36] Dimensions of w: 100
+[2025-09-09 15:17:01] Dimensions of Y: 31482
+ [2025-09-09 15:17:01] Dimensions of Y: 150917
+[2025-09-09 15:17:01] Projecting SRT into snRNA NMF basis...
+[2025-09-09 15:17:03] Projection Complete
+[2025-09-09 15:17:05] Rescaling complete
+[2025-09-09 15:17:06] Saving results...
+[2025-09-09 15:24:49] Projection saved to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/proj_srt.rda
 R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
@@ -101,4 +107,4 @@ loaded via a namespace (and not attached):
  [3] /usr/lib/R/library
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[2025-09-09 13:00:32] ===== Finished NMF process =====
+[2025-09-09 15:24:49] ===== Finished Projection =====

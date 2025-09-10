@@ -8,11 +8,10 @@ suppressPackageStartupMessages({
     library(sessioninfo)
 })
 
-setRcppMLthreads(64)
 
 
 # Open log file (append = FALSE to overwrite each run)
-log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf.log"
+log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/nmf.log"
 sink(log_file, append = FALSE, split = TRUE) # split=TRUE keeps console + file
 options(width = 120)
 
@@ -20,10 +19,15 @@ log_msg <- function(msg) {
     cat(sprintf("[%s] %s\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), msg))
     flush.console()
 }
+# Threads
+threads <- 100
+options(RcppML.threads = threads) # for RcppML 0.5.5
+# setRcppMLthreads(threads) #for RcppML v.0.3.7 (latest CRAN) as of 9/9/25
+log_msg(sprintf("Running with %d threads", threads))
 
 # Paths
-snrna_seq_data_path <- "/data/zusers/kresgeb/psych_encode/spatialDLPFC_snRNAseq_fetch/2024_snRNA.RData"
-path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda"
+snrna_seq_data_path <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_snrna_seq.Rdata"
+path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/nmf_x.rda"
 
 log_msg("===== Starting NMF pipeline =====")
 log_msg(paste("Loading data from:", snrna_seq_data_path))
@@ -57,7 +61,7 @@ x <- RcppML::nmf(
     k = 100,
     tol = 1e-06,
     maxit = 1000,
-    verbose = TRUE,
+    verbose = T,
     L1 = 0.1,
     seed = 1135,
     mask_zeros = FALSE,
