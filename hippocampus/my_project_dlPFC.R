@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
     library(sessioninfo)
 })
 # Logging
-log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/projection.log"
+log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/projection.log"
 sink(log_file, append = FALSE, split = TRUE)
 options(width = 120)
 log_msg <- function(msg) {
@@ -29,9 +29,9 @@ log_msg(sprintf("Seed: %d", seed))
 options(RcppML.verbose = TRUE)
 
 # Paths
-nmf_path <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/nmf_x.rda"
-srt_path <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_spe.Rdata"
-proj_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/proj_srt.rda"
+nmf_path <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda"
+srt_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
+proj_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt.rda"
 
 log_msg("===== Starting Projection =====")
 
@@ -45,6 +45,32 @@ obj_names <- load(srt_path, verbose = TRUE)
 srt <- get(obj_names)
 stopifnot(inherits(srt, "SpatialExperiment"))
 log_msg("Loaded SRT object")
+
+# The object uses Ensebml IDs as rownames
+# I should not ever WANT this,
+# so lets just replace them with the gene_names right now
+# Replace Ensembl IDs with gene_name as rownames
+log_msg("Replacing rownames(srt) with gene_name from rowData...")
+
+gene_names <- as.character(rowData(srt)$gene_name)
+
+# Handle NAs
+na_idx <- which(is.na(gene_names) | gene_names == "")
+if (length(na_idx) > 0) {
+    gene_names[na_idx] <- rownames(srt)[na_idx] # fallback to Ensembl ID
+    log_msg(sprintf("Replaced %d NA/blank gene_name entries with Ensembl IDs", length(na_idx)))
+}
+
+# Count duplicates before fixing
+dup_count <- sum(duplicated(gene_names))
+log_msg(sprintf("Number of duplicated gene_name entries: %d", dup_count))
+
+# Make names unique (adds .1, .2, etc. suffixes)
+gene_names <- make.unique(gene_names)
+
+# Apply to srt
+rownames(srt) <- gene_names
+log_msg("Rowname replacement complete")
 
 # Match genes
 log_msg("Determining the common genes...")
@@ -68,8 +94,8 @@ proj <- t(proj)
 proj <- apply(proj, 2, function(z) z / sum(z))
 log_msg("Rescaling complete")
 
-# Prepend 'my_' to projection column names since nmf1-nmf100 already exists in this data
-colnames(proj) <- paste0("my_", colnames(proj))
+# # Prepend 'my_' to projection column names since HPC uses this convention
+# colnames(proj) <- paste0("my_", colnames(proj))
 
 # Add to SRT metadata
 colData(srt) <- cbind(colData(srt), proj)

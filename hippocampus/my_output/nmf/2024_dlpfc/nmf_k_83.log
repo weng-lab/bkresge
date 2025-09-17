@@ -1,24 +1,149 @@
-[2025-09-10 15:02:03] Running with 64 threads
-[2025-09-10 15:02:03] Seed: 1029
-[2025-09-10 15:02:03] ===== Starting Projection =====
+[2025-09-15 10:22:49] Running with 64 threads
+[2025-09-15 10:22:49] ===== Starting NMF pipeline =====
+[2025-09-15 10:22:49] Loading data from: /data/zusers/kresgeb/psych_encode/spatialDLPFC_snRNAseq_fetch/2024_snRNA.RData
 Loading objects:
-  x
-[2025-09-10 15:02:05] Loaded NMF object
-Loading objects:
-  spatial_hpc_spe
-[2025-09-10 15:05:22] Loaded SRT object
-[2025-09-10 15:05:22] Determining the common genes...
-[2025-09-10 15:05:22] Number of common genes: 31482
-[2025-09-10 15:05:22] Filtering w and Y by common genes...
-[2025-09-10 15:05:22] Dimensions of w: 31482
- [2025-09-10 15:05:22] Dimensions of w: 100
-[2025-09-10 15:05:47] Dimensions of Y: 31482
- [2025-09-10 15:05:47] Dimensions of Y: 150917
-[2025-09-10 15:05:47] Projecting SRT into snRNA NMF basis...
-[2025-09-10 15:05:49] Projection Complete
-[2025-09-10 15:05:51] Rescaling complete
-[2025-09-10 15:05:53] Saving results...
-[2025-09-10 15:14:18] Projection saved to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/proj_srt.rda
+  sce
+[2025-09-15 10:25:07] Data successfully loaded.
+[2025-09-15 10:25:07] snrna object: SingleCellExperiment
+[2025-09-15 10:25:07] Dimensions of logcounts: 36601 genes x 77604 cells
+[2025-09-15 10:25:07] Size of logcounts assay: 21679.29 MB
+[2025-09-15 10:25:07] Running NMF with RcppML...
+
+iter |      tol 
+---------------
+   1 | 9.15e-01
+   2 | 1.09e-01
+   3 | 3.73e-02
+   4 | 1.88e-02
+   5 | 1.24e-02
+   6 | 9.02e-03
+   7 | 6.85e-03
+   8 | 5.41e-03
+   9 | 4.36e-03
+  10 | 3.57e-03
+  11 | 2.98e-03
+  12 | 2.55e-03
+  13 | 2.28e-03
+  14 | 2.10e-03
+  15 | 1.96e-03
+  16 | 1.83e-03
+  17 | 1.69e-03
+  18 | 1.55e-03
+  19 | 1.42e-03
+  20 | 1.32e-03
+  21 | 1.26e-03
+  22 | 1.24e-03
+  23 | 1.27e-03
+  24 | 1.31e-03
+  25 | 1.37e-03
+  26 | 1.43e-03
+  27 | 1.44e-03
+  28 | 1.41e-03
+  29 | 1.33e-03
+  30 | 1.20e-03
+  31 | 1.01e-03
+  32 | 8.42e-04
+  33 | 6.56e-04
+  34 | 5.00e-04
+  35 | 4.03e-04
+  36 | 3.34e-04
+  37 | 2.92e-04
+  38 | 2.65e-04
+  39 | 2.44e-04
+  40 | 2.29e-04
+  41 | 2.17e-04
+  42 | 2.10e-04
+  43 | 2.06e-04
+  44 | 1.98e-04
+  45 | 1.86e-04
+  46 | 1.74e-04
+  47 | 1.63e-04
+  48 | 1.55e-04
+  49 | 1.48e-04
+  50 | 1.35e-04
+  51 | 1.26e-04
+  52 | 1.24e-04
+  53 | 1.22e-04
+  54 | 1.25e-04
+  55 | 1.29e-04
+  56 | 1.34e-04
+  57 | 1.41e-04
+  58 | 1.55e-04
+  59 | 1.77e-04
+  60 | 2.05e-04
+  61 | 2.39e-04
+  62 | 2.80e-04
+  63 | 3.25e-04
+  64 | 3.44e-04
+  65 | 2.99e-04
+  66 | 2.62e-04
+  67 | 2.11e-04
+  68 | 1.70e-04
+  69 | 1.33e-04
+  70 | 9.99e-05
+  71 | 6.42e-05
+  72 | 4.40e-05
+  73 | 3.44e-05
+  74 | 2.97e-05
+  75 | 2.70e-05
+  76 | 2.57e-05
+  77 | 2.54e-05
+  78 | 2.52e-05
+  79 | 2.48e-05
+  80 | 2.57e-05
+  81 | 2.63e-05
+  82 | 2.78e-05
+  83 | 2.97e-05
+  84 | 3.18e-05
+  85 | 3.41e-05
+  86 | 3.67e-05
+  87 | 3.92e-05
+  88 | 4.07e-05
+  89 | 4.13e-05
+  90 | 4.09e-05
+  91 | 3.91e-05
+  92 | 3.59e-05
+  93 | 3.23e-05
+  94 | 2.79e-05
+  95 | 2.27e-05
+  96 | 1.85e-05
+  97 | 1.46e-05
+  98 | 1.13e-05
+  99 | 8.35e-06
+ 100 | 6.26e-06
+ 101 | 4.83e-06
+ 102 | 3.78e-06
+ 103 | 3.06e-06
+ 104 | 2.57e-06
+ 105 | 2.24e-06
+ 106 | 1.94e-06
+ 107 | 1.76e-06
+ 108 | 1.62e-06
+ 109 | 1.50e-06
+ 110 | 1.42e-06
+ 111 | 1.35e-06
+ 112 | 1.29e-06
+ 113 | 1.24e-06
+ 114 | 1.19e-06
+ 115 | 1.16e-06
+ 116 | 1.14e-06
+ 117 | 1.10e-06
+ 118 | 1.08e-06
+ 119 | 1.06e-06
+ 120 | 1.05e-06
+ 121 | 1.04e-06
+ 122 | 1.03e-06
+ 123 | 1.03e-06
+ 124 | 1.02e-06
+ 125 | 1.01e-06
+ 126 | 1.00e-06
+ 127 | 1.00e-06
+ 128 | 1.00e-06
+ 129 | 1.00e-06
+[2025-09-15 10:43:37] NMF completed in 18.50 minutes
+[2025-09-15 10:43:37] Saving NMF result to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x_k_83.rda
+[2025-09-15 10:43:42] Save complete.
+[2025-09-15 10:43:42] ===== Session Info =====
 R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
@@ -43,14 +168,14 @@ other attached packages:
 [13] MatrixGenerics_1.18.0       matrixStats_1.5.0          
 
 loaded via a namespace (and not attached):
- [1] crayon_1.5.3            knitr_1.50              httr_1.4.7              cli_3.6.5              
- [5] xfun_0.53               magick_2.8.6            rlang_1.1.6             UCSC.utils_1.2.0       
- [9] jsonlite_2.0.0          DelayedArray_0.32.0     rjson_0.2.23            grid_4.4.2             
-[13] evaluate_1.0.5          abind_1.4-8             compiler_4.4.2          Rcpp_1.1.0             
-[17] XVector_0.46.0          RcppEigen_0.3.4.0.2     lattice_0.22-5          R6_2.6.1               
-[21] SparseArray_1.6.0       GenomeInfoDbData_1.2.13 magrittr_2.0.3          tools_4.4.2            
-[25] zlibbioc_1.52.0         S4Arrays_1.6.0         
-- Session info --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ [1] crayon_1.5.3            cli_3.6.5               knitr_1.50              httr_1.4.7             
+ [5] xfun_0.53               magick_2.8.6            UCSC.utils_1.2.0        jsonlite_2.0.0         
+ [9] DelayedArray_0.32.0     rjson_0.2.23            grid_4.4.2              evaluate_1.0.5         
+[13] abind_1.4-8             compiler_4.4.2          Rcpp_1.1.0              XVector_0.46.0         
+[17] RcppEigen_0.3.4.0.2     lattice_0.22-5          R6_2.6.1                SparseArray_1.6.0      
+[21] GenomeInfoDbData_1.2.13 magrittr_2.0.3          tools_4.4.2             zlibbioc_1.52.0        
+[25] S4Arrays_1.6.0         
+- Session info ---------------------------------------------------------------
  setting  value
  version  R version 4.4.2 (2024-10-31)
  os       Ubuntu 22.04.5 LTS
@@ -60,10 +185,10 @@ loaded via a namespace (and not attached):
  collate  C
  ctype    C
  tz       America/New_York
- date     2025-09-10
+ date     2025-09-15
  pandoc   2.9.2.1 @ /usr/bin/pandoc
 
-- Packages ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Packages -------------------------------------------------------------------
  package              * version   date (UTC) lib source
  abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
  Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
@@ -90,7 +215,6 @@ loaded via a namespace (and not attached):
  RcppEigen              0.3.4.0.2 2024-08-24 [1] CRAN (R 4.4.2)
  RcppML               * 0.5.5     2025-09-09 [1] Github (zdebruine/RcppML@c997bcd)
  rjson                  0.2.23    2024-09-16 [1] CRAN (R 4.4.2)
- rlang                  1.1.6     2025-04-11 [1] CRAN (R 4.4.2)
  S4Arrays               1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
  S4Vectors            * 0.44.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
  sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.4.2)
@@ -107,5 +231,5 @@ loaded via a namespace (and not attached):
  [2] /usr/lib/R/site-library
  [3] /usr/lib/R/library
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[2025-09-10 15:14:18] ===== Finished Projection =====
+------------------------------------------------------------------------------
+[2025-09-15 10:43:43] ===== Finished NMF process =====

@@ -4,6 +4,7 @@ import pandas as pd
 def make_vitessce_links(
     input_csv="/zata/zippy/kresgeb/hippocampus/srt_unique_sample_id_brnum_position_sorted_custom.csv",
     output_csv="/zata/zippy/kresgeb/hippocampus/vitessce_spreadsheet.csv"
+    # output_csv="/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/vitessce_spreadsheet.csv"
 ):
     """
     Reads a CSV of sample_ids and appends a vitessce_link column.
@@ -19,6 +20,7 @@ def make_vitessce_links(
     base_url = (
         "https://vitessce.io/#?edit=false&url="
         "https%3A%2F%2Fusers.wenglab.org%2Fkresgeb%2Fhippocampus%2Fconfigs%2F"
+        # "https%3A%2F%2Fusers.wenglab.org%2Fkresgeb%2Fhippocampus%2Fnmf_compare%2Fconfigs%2F"
     )
 
     # Construct vitessce_link column

@@ -25,6 +25,9 @@ options(RcppML.threads = threads) # for RcppML 0.5.5
 # setRcppMLthreads(threads) #for RcppML v.0.3.7 (latest CRAN) as of 9/9/25
 log_msg(sprintf("Running with %d threads", threads))
 
+# Verbose option for RcppML v0.5.5
+options(RcppML.verbose = TRUE)
+
 # Paths
 snrna_seq_data_path <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_snrna_seq.Rdata"
 path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/nmf_x.rda"

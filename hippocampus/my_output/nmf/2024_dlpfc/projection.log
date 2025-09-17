@@ -1,24 +1,27 @@
-[2025-09-10 15:02:03] Running with 64 threads
-[2025-09-10 15:02:03] Seed: 1029
-[2025-09-10 15:02:03] ===== Starting Projection =====
+[2025-09-15 14:01:39] Running with 64 threads
+[2025-09-15 14:01:39] Seed: 1029
+[2025-09-15 14:01:39] ===== Starting Projection =====
 Loading objects:
   x
-[2025-09-10 15:02:05] Loaded NMF object
+[2025-09-15 14:01:43] Loaded NMF object
 Loading objects:
-  spatial_hpc_spe
-[2025-09-10 15:05:22] Loaded SRT object
-[2025-09-10 15:05:22] Determining the common genes...
-[2025-09-10 15:05:22] Number of common genes: 31482
-[2025-09-10 15:05:22] Filtering w and Y by common genes...
-[2025-09-10 15:05:22] Dimensions of w: 31482
- [2025-09-10 15:05:22] Dimensions of w: 100
-[2025-09-10 15:05:47] Dimensions of Y: 31482
- [2025-09-10 15:05:47] Dimensions of Y: 150917
-[2025-09-10 15:05:47] Projecting SRT into snRNA NMF basis...
-[2025-09-10 15:05:49] Projection Complete
-[2025-09-10 15:05:51] Rescaling complete
-[2025-09-10 15:05:53] Saving results...
-[2025-09-10 15:14:18] Projection saved to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/proj_srt.rda
+  spe
+[2025-09-15 14:06:17] Loaded SRT object
+[2025-09-15 14:06:17] Replacing rownames(srt) with gene_name from rowData...
+[2025-09-15 14:06:17] Number of duplicated gene_name entries: 9
+[2025-09-15 14:06:17] Rowname replacement complete
+[2025-09-15 14:06:17] Determining the common genes...
+[2025-09-15 14:06:17] Number of common genes: 28907
+[2025-09-15 14:06:17] Filtering w and Y by common genes...
+[2025-09-15 14:06:17] Dimensions of w: 28907
+ [2025-09-15 14:06:17] Dimensions of w: 100
+[2025-09-15 14:06:21] Dimensions of Y: 28907
+ [2025-09-15 14:06:21] Dimensions of Y: 113927
+[2025-09-15 14:06:21] Projecting SRT into snRNA NMF basis...
+[2025-09-15 14:06:23] Projection Complete
+[2025-09-15 14:06:25] Rescaling complete
+[2025-09-15 14:06:26] Saving results...
+[2025-09-15 14:15:31] Projection saved to: /zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt.rda
 R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
@@ -50,7 +53,7 @@ loaded via a namespace (and not attached):
 [17] XVector_0.46.0          RcppEigen_0.3.4.0.2     lattice_0.22-5          R6_2.6.1               
 [21] SparseArray_1.6.0       GenomeInfoDbData_1.2.13 magrittr_2.0.3          tools_4.4.2            
 [25] zlibbioc_1.52.0         S4Arrays_1.6.0         
-- Session info --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Session info ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  setting  value
  version  R version 4.4.2 (2024-10-31)
  os       Ubuntu 22.04.5 LTS
@@ -60,10 +63,10 @@ loaded via a namespace (and not attached):
  collate  C
  ctype    C
  tz       America/New_York
- date     2025-09-10
+ date     2025-09-15
  pandoc   2.9.2.1 @ /usr/bin/pandoc
 
-- Packages ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Packages ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  package              * version   date (UTC) lib source
  abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
  Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
@@ -107,5 +110,5 @@ loaded via a namespace (and not attached):
  [2] /usr/lib/R/site-library
  [3] /usr/lib/R/library
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[2025-09-10 15:14:18] ===== Finished Projection =====
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[2025-09-15 14:15:32] ===== Finished Projection =====
