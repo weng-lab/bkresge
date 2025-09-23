@@ -5,9 +5,11 @@ suppressPackageStartupMessages({
 })
 
 # OUT_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/srt.h5ad"
-OUT_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/srt.h5ad"
+# OUT_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/srt.h5ad"
+OUT_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/srt_k_80.h5ad"
 # IN_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/proj_srt.rda"
-IN_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt.rda"
+# IN_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt.rda"
+IN_PATH <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt_k_80.rda"
 
 load(IN_PATH, verbose = TRUE)
 

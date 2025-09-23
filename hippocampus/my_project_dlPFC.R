@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
     library(sessioninfo)
 })
 # Logging
-log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/projection.log"
+log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/projection_k_80.log"
 sink(log_file, append = FALSE, split = TRUE)
 options(width = 120)
 log_msg <- function(msg) {
@@ -29,9 +29,9 @@ log_msg(sprintf("Seed: %d", seed))
 options(RcppML.verbose = TRUE)
 
 # Paths
-nmf_path <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda"
+nmf_path <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x_k_80.rda"
 srt_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
-proj_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt.rda"
+proj_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt_k_80.rda"
 
 log_msg("===== Starting Projection =====")
 
