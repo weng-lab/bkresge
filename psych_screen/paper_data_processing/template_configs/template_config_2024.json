@@ -119,46 +119,6 @@
         }
       ]
     },
-    "obsSetSelection": {
-      "A": [
-        [
-          "BayesSpace (9 Clusters)",
-          "1"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "2"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "3"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "4"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "5"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "6"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "7"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "8"
-        ],
-        [
-          "BayesSpace (9 Clusters)",
-          "9"
-        ]
-      ]
-    },
     "obsColorEncoding": {
       "A": "cellSetSelection",
       "B": "geneSelection"
@@ -578,8 +538,7 @@
         "spatialTargetX": "A",
         "spatialTargetY": "A",
         "obsColorEncoding": "A",
-        "obsSetColor": "A",
-        "obsSetSelection": "A"
+        "obsSetColor": "A"
       },
       "x": 0,
       "y": 0,
@@ -599,8 +558,7 @@
         "spatialTargetX": "A",
         "spatialTargetY": "A",
         "obsColorEncoding": "B",
-        "featureSelection": "A",
-        "obsSetSelection": "A"
+        "featureSelection": "A"
       },
       "x": 6,
       "y": 0,
@@ -615,8 +573,7 @@
       "coordinationScopes": {
         "obsType": "A",
         "obsColorEncoding": "A",
-        "obsSetColor": "A",
-        "obsSetSelection": "A"
+        "obsSetColor": "A"
       },
       "x": 0,
       "y": 2,
@@ -632,8 +589,7 @@
         "obsType": "A",
         "obsColorEncoding": "A",
         "obsSetColor": "A",
-        "featureSelection": "A",
-        "obsSetSelection": "A"
+        "featureSelection": "A"
       },
       "x": 3,
       "y": 2,
