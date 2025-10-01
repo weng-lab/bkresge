@@ -1,0 +1,358 @@
+[2025-09-23 11:15:20] ===== Starting GO Analysis =====
+Loading objects:
+  sce
+[2025-09-23 11:17:36] Loaded snRNA-seq object 'sce' with 36601 genes and 77604 cells
+Loading objects:
+  x
+[2025-09-23 11:17:39] Loaded NMF object 'x' with 36601 genes (W) and 80 patterns
+[2025-09-23 11:17:39] No patterns marked for discard
+[2025-09-23 11:17:39] Removing 20308 genes with no contribution across patterns
+[2025-09-23 11:17:39] Example genes removed: MIR1302-2HG, FAM138A, OR4F5, AL627309.1, AL627309.3, AL627309.2
+[2025-09-23 11:17:39] Filtering 13 mitochondrial genes
+[2025-09-23 11:17:39] Filtering to 19394 protein-coding genes
+[2025-09-23 11:17:39] Selecting genes with percentile + specificity approach
+[2025-09-23 11:17:39] Percentile cutoff: 0.90 (top 10%)
+[2025-09-23 11:17:39] Specificity cutoff: 0.05
+[2025-09-23 11:17:39] Pattern nmf1: 626 genes passed percentile cutoff, 1708 passed specificity, 80 kept
+[2025-09-23 11:17:39] Pattern nmf2: 799 genes passed percentile cutoff, 1577 passed specificity, 54 kept
+[2025-09-23 11:17:39] Pattern nmf3: 671 genes passed percentile cutoff, 1287 passed specificity, 218 kept
+[2025-09-23 11:17:39] Pattern nmf4: 577 genes passed percentile cutoff, 1814 passed specificity, 243 kept
+[2025-09-23 11:17:39] Pattern nmf5: 569 genes passed percentile cutoff, 1541 passed specificity, 244 kept
+[2025-09-23 11:17:39] Pattern nmf6: 794 genes passed percentile cutoff, 695 passed specificity, 127 kept
+[2025-09-23 11:17:39] Pattern nmf7: 590 genes passed percentile cutoff, 2423 passed specificity, 389 kept
+[2025-09-23 11:17:39] Pattern nmf8: 752 genes passed percentile cutoff, 1252 passed specificity, 173 kept
+[2025-09-23 11:17:39] Pattern nmf9: 668 genes passed percentile cutoff, 569 passed specificity, 105 kept
+[2025-09-23 11:17:39] Pattern nmf10: 630 genes passed percentile cutoff, 1641 passed specificity, 208 kept
+[2025-09-23 11:17:39] Pattern nmf11: 689 genes passed percentile cutoff, 621 passed specificity, 117 kept
+[2025-09-23 11:17:39] Pattern nmf12: 617 genes passed percentile cutoff, 1531 passed specificity, 269 kept
+[2025-09-23 11:17:39] Pattern nmf13: 290 genes passed percentile cutoff, 917 passed specificity, 237 kept
+[2025-09-23 11:17:39] Pattern nmf14: 720 genes passed percentile cutoff, 2504 passed specificity, 417 kept
+[2025-09-23 11:17:39] Pattern nmf15: 726 genes passed percentile cutoff, 1238 passed specificity, 248 kept
+[2025-09-23 11:17:39] Pattern nmf16: 672 genes passed percentile cutoff, 750 passed specificity, 208 kept
+[2025-09-23 11:17:39] Pattern nmf17: 719 genes passed percentile cutoff, 535 passed specificity, 117 kept
+[2025-09-23 11:17:39] Pattern nmf18: 869 genes passed percentile cutoff, 1006 passed specificity, 141 kept
+[2025-09-23 11:17:39] Pattern nmf19: 286 genes passed percentile cutoff, 925 passed specificity, 225 kept
+[2025-09-23 11:17:39] Pattern nmf20: 450 genes passed percentile cutoff, 928 passed specificity, 233 kept
+[2025-09-23 11:17:39] Pattern nmf21: 355 genes passed percentile cutoff, 456 passed specificity, 235 kept
+[2025-09-23 11:17:39] Pattern nmf22: 625 genes passed percentile cutoff, 890 passed specificity, 213 kept
+[2025-09-23 11:17:39] Pattern nmf23: 294 genes passed percentile cutoff, 757 passed specificity, 210 kept
+[2025-09-23 11:17:39] Pattern nmf24: 684 genes passed percentile cutoff, 530 passed specificity, 121 kept
+[2025-09-23 11:17:39] Pattern nmf25: 285 genes passed percentile cutoff, 729 passed specificity, 219 kept
+[2025-09-23 11:17:39] Pattern nmf26: 673 genes passed percentile cutoff, 642 passed specificity, 141 kept
+[2025-09-23 11:17:39] Pattern nmf27: 242 genes passed percentile cutoff, 596 passed specificity, 175 kept
+[2025-09-23 11:17:39] Pattern nmf28: 235 genes passed percentile cutoff, 881 passed specificity, 217 kept
+[2025-09-23 11:17:39] Pattern nmf29: 863 genes passed percentile cutoff, 989 passed specificity, 88 kept
+[2025-09-23 11:17:39] Pattern nmf30: 608 genes passed percentile cutoff, 527 passed specificity, 147 kept
+[2025-09-23 11:17:39] Pattern nmf31: 244 genes passed percentile cutoff, 439 passed specificity, 197 kept
+[2025-09-23 11:17:39] Pattern nmf32: 742 genes passed percentile cutoff, 952 passed specificity, 163 kept
+[2025-09-23 11:17:39] Pattern nmf33: 179 genes passed percentile cutoff, 624 passed specificity, 160 kept
+[2025-09-23 11:17:39] Pattern nmf34: 128 genes passed percentile cutoff, 186 passed specificity, 112 kept
+[2025-09-23 11:17:39] Pattern nmf35: 694 genes passed percentile cutoff, 1519 passed specificity, 327 kept
+[2025-09-23 11:17:39] Pattern nmf36: 736 genes passed percentile cutoff, 605 passed specificity, 130 kept
+[2025-09-23 11:17:39] Pattern nmf37: 383 genes passed percentile cutoff, 1060 passed specificity, 286 kept
+[2025-09-23 11:17:39] Pattern nmf38: 122 genes passed percentile cutoff, 498 passed specificity, 122 kept
+[2025-09-23 11:17:39] Pattern nmf39: 755 genes passed percentile cutoff, 1548 passed specificity, 370 kept
+[2025-09-23 11:17:39] Pattern nmf40: 121 genes passed percentile cutoff, 437 passed specificity, 121 kept
+[2025-09-23 11:17:39] Pattern nmf41: 188 genes passed percentile cutoff, 664 passed specificity, 166 kept
+[2025-09-23 11:17:39] Pattern nmf42: 673 genes passed percentile cutoff, 496 passed specificity, 92 kept
+[2025-09-23 11:17:39] Pattern nmf43: 134 genes passed percentile cutoff, 509 passed specificity, 134 kept
+[2025-09-23 11:17:39] Pattern nmf44: 838 genes passed percentile cutoff, 785 passed specificity, 144 kept
+[2025-09-23 11:17:39] Pattern nmf45: 116 genes passed percentile cutoff, 414 passed specificity, 111 kept
+[2025-09-23 11:17:39] Pattern nmf46: 117 genes passed percentile cutoff, 286 passed specificity, 105 kept
+[2025-09-23 11:17:39] Pattern nmf47: 738 genes passed percentile cutoff, 636 passed specificity, 152 kept
+[2025-09-23 11:17:39] Pattern nmf48: 760 genes passed percentile cutoff, 1300 passed specificity, 310 kept
+[2025-09-23 11:17:39] Pattern nmf49: 334 genes passed percentile cutoff, 783 passed specificity, 236 kept
+[2025-09-23 11:17:39] Pattern nmf50: 643 genes passed percentile cutoff, 1209 passed specificity, 295 kept
+[2025-09-23 11:17:39] Pattern nmf51: 102 genes passed percentile cutoff, 356 passed specificity, 102 kept
+[2025-09-23 11:17:39] Pattern nmf52: 831 genes passed percentile cutoff, 753 passed specificity, 163 kept
+[2025-09-23 11:17:39] Pattern nmf53: 799 genes passed percentile cutoff, 801 passed specificity, 117 kept
+[2025-09-23 11:17:39] Pattern nmf54: 693 genes passed percentile cutoff, 553 passed specificity, 167 kept
+[2025-09-23 11:17:39] Pattern nmf55: 664 genes passed percentile cutoff, 524 passed specificity, 151 kept
+[2025-09-23 11:17:39] Pattern nmf56: 94 genes passed percentile cutoff, 290 passed specificity, 94 kept
+[2025-09-23 11:17:39] Pattern nmf57: 91 genes passed percentile cutoff, 312 passed specificity, 91 kept
+[2025-09-23 11:17:39] Pattern nmf58: 288 genes passed percentile cutoff, 805 passed specificity, 156 kept
+[2025-09-23 11:17:39] Pattern nmf59: 583 genes passed percentile cutoff, 379 passed specificity, 128 kept
+[2025-09-23 11:17:39] Pattern nmf60: 490 genes passed percentile cutoff, 939 passed specificity, 313 kept
+[2025-09-23 11:17:39] Pattern nmf61: 84 genes passed percentile cutoff, 275 passed specificity, 84 kept
+[2025-09-23 11:17:39] Pattern nmf62: 74 genes passed percentile cutoff, 246 passed specificity, 70 kept
+[2025-09-23 11:17:39] Pattern nmf63: 120 genes passed percentile cutoff, 240 passed specificity, 114 kept
+[2025-09-23 11:17:39] Pattern nmf64: 189 genes passed percentile cutoff, 482 passed specificity, 138 kept
+[2025-09-23 11:17:39] Pattern nmf65: 84 genes passed percentile cutoff, 254 passed specificity, 84 kept
+[2025-09-23 11:17:39] Pattern nmf66: 105 genes passed percentile cutoff, 306 passed specificity, 105 kept
+[2025-09-23 11:17:39] Pattern nmf67: 84 genes passed percentile cutoff, 231 passed specificity, 84 kept
+[2025-09-23 11:17:39] Pattern nmf68: 82 genes passed percentile cutoff, 264 passed specificity, 82 kept
+[2025-09-23 11:17:39] Pattern nmf69: 676 genes passed percentile cutoff, 548 passed specificity, 148 kept
+[2025-09-23 11:17:39] Pattern nmf70: 86 genes passed percentile cutoff, 286 passed specificity, 86 kept
+[2025-09-23 11:17:39] Pattern nmf71: 119 genes passed percentile cutoff, 404 passed specificity, 103 kept
+[2025-09-23 11:17:39] Pattern nmf72: 53 genes passed percentile cutoff, 183 passed specificity, 41 kept
+[2025-09-23 11:17:39] Pattern nmf73: 76 genes passed percentile cutoff, 239 passed specificity, 76 kept
+[2025-09-23 11:17:39] Pattern nmf74: 74 genes passed percentile cutoff, 223 passed specificity, 74 kept
+[2025-09-23 11:17:39] Pattern nmf75: 778 genes passed percentile cutoff, 634 passed specificity, 141 kept
+[2025-09-23 11:17:39] Pattern nmf76: 60 genes passed percentile cutoff, 181 passed specificity, 57 kept
+[2025-09-23 11:17:39] Pattern nmf77: 65 genes passed percentile cutoff, 178 passed specificity, 65 kept
+[2025-09-23 11:17:39] Pattern nmf78: 467 genes passed percentile cutoff, 968 passed specificity, 311 kept
+[2025-09-23 11:17:39] Pattern nmf79: 69 genes passed percentile cutoff, 313 passed specificity, 64 kept
+[2025-09-23 11:17:39] Pattern nmf80: 85 genes passed percentile cutoff, 430 passed specificity, 74 kept
+[2025-09-23 11:17:39] Finished selecting genes for 80 patterns
+[2025-09-23 11:17:39] Running GO enrichment analysis for each pattern
+[2025-09-23 11:17:39] Enriching GO for pattern nmf1 with 80 genes
+[2025-09-23 11:18:27] Enriching GO for pattern nmf2 with 54 genes
+[2025-09-23 11:18:46] Enriching GO for pattern nmf3 with 218 genes
+[2025-09-23 11:19:03] Enriching GO for pattern nmf4 with 243 genes
+[2025-09-23 11:19:23] Enriching GO for pattern nmf5 with 244 genes
+[2025-09-23 11:19:46] Enriching GO for pattern nmf6 with 127 genes
+[2025-09-23 11:20:06] Enriching GO for pattern nmf7 with 389 genes
+[2025-09-23 11:20:28] Enriching GO for pattern nmf8 with 173 genes
+[2025-09-23 11:20:50] Enriching GO for pattern nmf9 with 105 genes
+[2025-09-23 11:21:09] Enriching GO for pattern nmf10 with 208 genes
+[2025-09-23 11:21:30] Enriching GO for pattern nmf11 with 117 genes
+[2025-09-23 11:21:52] Enriching GO for pattern nmf12 with 269 genes
+[2025-09-23 11:22:18] Enriching GO for pattern nmf13 with 237 genes
+[2025-09-23 11:22:41] Enriching GO for pattern nmf14 with 417 genes
+[2025-09-23 11:23:08] Enriching GO for pattern nmf15 with 248 genes
+[2025-09-23 11:23:34] Enriching GO for pattern nmf16 with 208 genes
+[2025-09-23 11:23:58] Enriching GO for pattern nmf17 with 117 genes
+[2025-09-23 11:24:20] Enriching GO for pattern nmf18 with 141 genes
+[2025-09-23 11:24:44] Enriching GO for pattern nmf19 with 225 genes
+[2025-09-23 11:25:11] Enriching GO for pattern nmf20 with 233 genes
+[2025-09-23 11:25:37] Enriching GO for pattern nmf21 with 235 genes
+[2025-09-23 11:25:59] Enriching GO for pattern nmf22 with 213 genes
+[2025-09-23 11:26:25] Enriching GO for pattern nmf23 with 210 genes
+[2025-09-23 11:26:51] Enriching GO for pattern nmf24 with 121 genes
+[2025-09-23 11:27:15] Enriching GO for pattern nmf25 with 219 genes
+[2025-09-23 11:27:42] Enriching GO for pattern nmf26 with 141 genes
+[2025-09-23 11:28:07] Enriching GO for pattern nmf27 with 175 genes
+[2025-09-23 11:28:31] Enriching GO for pattern nmf28 with 217 genes
+[2025-09-23 11:28:54] Enriching GO for pattern nmf29 with 88 genes
+[2025-09-23 11:29:17] Enriching GO for pattern nmf30 with 147 genes
+[2025-09-23 11:29:41] Enriching GO for pattern nmf31 with 197 genes
+[2025-09-23 11:30:06] Enriching GO for pattern nmf32 with 163 genes
+[2025-09-23 11:30:31] Enriching GO for pattern nmf33 with 160 genes
+[2025-09-23 11:30:56] Enriching GO for pattern nmf34 with 112 genes
+[2025-09-23 11:31:20] Enriching GO for pattern nmf35 with 327 genes
+[2025-09-23 11:31:46] Enriching GO for pattern nmf36 with 130 genes
+[2025-09-23 11:32:10] Enriching GO for pattern nmf37 with 286 genes
+[2025-09-23 11:32:35] Enriching GO for pattern nmf38 with 122 genes
+[2025-09-23 11:32:58] Enriching GO for pattern nmf39 with 370 genes
+[2025-09-23 11:33:28] Enriching GO for pattern nmf40 with 121 genes
+[2025-09-23 11:33:57] Enriching GO for pattern nmf41 with 166 genes
+[2025-09-23 11:34:29] Enriching GO for pattern nmf42 with 92 genes
+[2025-09-23 11:34:58] Enriching GO for pattern nmf43 with 134 genes
+[2025-09-23 11:35:30] Enriching GO for pattern nmf44 with 144 genes
+[2025-09-23 11:35:59] Enriching GO for pattern nmf45 with 111 genes
+[2025-09-23 11:36:31] Enriching GO for pattern nmf46 with 105 genes
+[2025-09-23 11:37:01] Enriching GO for pattern nmf47 with 152 genes
+[2025-09-23 11:37:31] Enriching GO for pattern nmf48 with 310 genes
+[2025-09-23 11:38:01] Enriching GO for pattern nmf49 with 236 genes
+[2025-09-23 11:38:31] Enriching GO for pattern nmf50 with 295 genes
+[2025-09-23 11:38:59] Enriching GO for pattern nmf51 with 102 genes
+[2025-09-23 11:39:27] Enriching GO for pattern nmf52 with 163 genes
+[2025-09-23 11:40:00] Enriching GO for pattern nmf53 with 117 genes
+[2025-09-23 11:40:29] Enriching GO for pattern nmf54 with 167 genes
+[2025-09-23 11:41:02] Enriching GO for pattern nmf55 with 151 genes
+[2025-09-23 11:41:34] Enriching GO for pattern nmf56 with 94 genes
+[2025-09-23 11:42:03] Enriching GO for pattern nmf57 with 91 genes
+[2025-09-23 11:42:33] Enriching GO for pattern nmf58 with 156 genes
+[2025-09-23 11:43:02] Enriching GO for pattern nmf59 with 128 genes
+[2025-09-23 11:43:35] Enriching GO for pattern nmf60 with 313 genes
+[2025-09-23 11:44:06] Enriching GO for pattern nmf61 with 84 genes
+[2025-09-23 11:44:35] Enriching GO for pattern nmf62 with 70 genes
+[2025-09-23 11:45:05] Enriching GO for pattern nmf63 with 114 genes
+[2025-09-23 11:45:34] Enriching GO for pattern nmf64 with 138 genes
+[2025-09-23 11:46:04] Enriching GO for pattern nmf65 with 84 genes
+[2025-09-23 11:46:33] Enriching GO for pattern nmf66 with 105 genes
+[2025-09-23 11:47:02] Enriching GO for pattern nmf67 with 84 genes
+[2025-09-23 11:47:31] Enriching GO for pattern nmf68 with 82 genes
+[2025-09-23 11:47:59] Enriching GO for pattern nmf69 with 148 genes
+[2025-09-23 11:48:28] Enriching GO for pattern nmf70 with 86 genes
+[2025-09-23 11:48:56] Enriching GO for pattern nmf71 with 103 genes
+[2025-09-23 11:49:26] Enriching GO for pattern nmf72 with 41 genes
+[2025-09-23 11:49:54] Enriching GO for pattern nmf73 with 76 genes
+[2025-09-23 11:50:25] Enriching GO for pattern nmf74 with 74 genes
+[2025-09-23 11:50:54] Enriching GO for pattern nmf75 with 141 genes
+[2025-09-23 11:51:25] Enriching GO for pattern nmf76 with 57 genes
+[2025-09-23 11:51:55] Enriching GO for pattern nmf77 with 65 genes
+[2025-09-23 11:52:25] Enriching GO for pattern nmf78 with 311 genes
+[2025-09-23 11:52:55] Enriching GO for pattern nmf79 with 64 genes
+[2025-09-23 11:53:22] Enriching GO for pattern nmf80 with 74 genes
+[2025-09-23 11:55:04] Saved GO enrichment results to /zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/go_analysis_k_80_percentile_01.rda
+[2025-09-23 11:55:04] ===== Session Info =====
+R version 4.4.2 (2024-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+
+locale:
+[1] C
+
+time zone: America/New_York
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0 GenomicRanges_1.58.0        GenomeInfoDb_1.42.1        
+ [5] MatrixGenerics_1.18.0       matrixStats_1.5.0           sessioninfo_1.2.2           clusterProfiler_4.14.6     
+ [9] org.Hs.eg.db_3.20.0         AnnotationDbi_1.68.0        IRanges_2.40.1              S4Vectors_0.44.0           
+[13] Biobase_2.66.0              BiocGenerics_0.52.0         RcppML_0.5.5                dplyr_1.1.4                
+[17] ggplot2_4.0.0              
+
+loaded via a namespace (and not attached):
+ [1] DBI_1.2.3               gson_0.1.0              rlang_1.1.6             magrittr_2.0.4         
+ [5] DOSE_4.0.1              compiler_4.4.2          RSQLite_2.4.2           png_0.1-8              
+ [9] systemfonts_1.2.3       vctrs_0.6.5             reshape2_1.4.4          stringr_1.5.2          
+[13] pkgconfig_2.0.3         crayon_1.5.3            fastmap_1.2.0           XVector_0.46.0         
+[17] enrichplot_1.26.6       UCSC.utils_1.2.0        purrr_1.1.0             bit_4.6.0              
+[21] xfun_0.53               zlibbioc_1.52.0         cachem_1.1.0            aplot_0.2.9            
+[25] jsonlite_2.0.0          blob_1.2.4              DelayedArray_0.32.0     uuid_1.2-1             
+[29] BiocParallel_1.40.0     parallel_4.4.2          R6_2.6.1                stringi_1.8.7          
+[33] RColorBrewer_1.1-3      GOSemSim_2.32.0         Rcpp_1.1.0              knitr_1.50             
+[37] ggtangle_0.0.7          R.utils_2.12.3          Matrix_1.7-1            splines_4.4.2          
+[41] igraph_2.1.4            tidyselect_1.2.1        abind_1.4-8             qvalue_2.38.0          
+[45] codetools_0.2-19        lattice_0.22-5          tibble_3.3.0            plyr_1.8.9             
+[49] treeio_1.30.0           withr_3.0.2             KEGGREST_1.46.0         S7_0.2.0               
+[53] evaluate_1.0.5          gridGraphics_0.5-1      RcppEigen_0.3.4.0.2     Biostrings_2.74.1      
+[57] pillar_1.11.1           ggtree_3.99.0           ggfun_0.2.0             generics_0.1.4         
+[61] scales_1.4.0            tidytree_0.4.6          glue_1.8.0              lazyeval_0.2.2         
+[65] tools_4.4.2             data.table_1.17.8       fgsea_1.32.4            ggiraph_0.9.1          
+[69] fs_1.6.6                fastmatch_1.1-6         cowplot_1.2.0           grid_4.4.2             
+[73] tidyr_1.3.1             ape_5.8-1               nlme_3.1-166            GenomeInfoDbData_1.2.13
+[77] patchwork_1.3.2         cli_3.6.5               rappdirs_0.3.3          S4Arrays_1.6.0         
+[81] gtable_0.3.6            R.methodsS3_1.8.2       yulab.utils_0.2.1       digest_0.6.37          
+[85] SparseArray_1.6.0       ggrepel_0.9.6           ggplotify_0.1.2         htmlwidgets_1.6.4      
+[89] farver_2.1.2            memoise_2.0.1           htmltools_0.5.8.1       R.oo_1.27.0            
+[93] lifecycle_1.0.4         httr_1.4.7              GO.db_3.20.0            bit64_4.6.0-1          
+- Session info --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ setting  value
+ version  R version 4.4.2 (2024-10-31)
+ os       Ubuntu 22.04.5 LTS
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  C
+ ctype    C
+ tz       America/New_York
+ date     2025-09-23
+ pandoc   2.9.2.1 @ /usr/bin/pandoc
+
+- Packages ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ package              * version   date (UTC) lib source
+ abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
+ AnnotationDbi        * 1.68.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ ape                    5.8-1     2024-12-16 [1] CRAN (R 4.4.2)
+ aplot                  0.2.9     2025-09-12 [1] CRAN (R 4.4.2)
+ Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocGenerics         * 0.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocParallel           1.40.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ Biostrings             2.74.1    2024-12-16 [1] Bioconductor 3.20 (R 4.4.2)
+ bit                    4.6.0     2025-03-06 [1] CRAN (R 4.4.2)
+ bit64                  4.6.0-1   2025-01-16 [1] CRAN (R 4.4.2)
+ blob                   1.2.4     2023-03-17 [1] CRAN (R 4.4.2)
+ cachem                 1.1.0     2024-05-16 [1] CRAN (R 4.4.2)
+ cli                    3.6.5     2025-04-23 [1] CRAN (R 4.4.2)
+ clusterProfiler      * 4.14.6    2025-02-27 [1] Bioconductor 3.20 (R 4.4.2)
+ codetools              0.2-19    2023-02-01 [3] CRAN (R 4.2.2)
+ cowplot                1.2.0     2025-07-07 [1] CRAN (R 4.4.2)
+ crayon                 1.5.3     2024-06-20 [1] CRAN (R 4.4.2)
+ data.table             1.17.8    2025-07-10 [1] CRAN (R 4.4.2)
+ DBI                    1.2.3     2024-06-02 [1] CRAN (R 4.4.2)
+ DelayedArray           0.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ digest                 0.6.37    2024-08-19 [1] CRAN (R 4.4.2)
+ DOSE                   4.0.1     2025-03-27 [1] Bioconductor 3.20 (R 4.4.2)
+ dplyr                * 1.1.4     2023-11-17 [1] CRAN (R 4.4.2)
+ enrichplot             1.26.6    2025-01-09 [1] Bioconductor 3.20 (R 4.4.2)
+ evaluate               1.0.5     2025-08-27 [1] CRAN (R 4.4.2)
+ farver                 2.1.2     2024-05-13 [1] CRAN (R 4.4.2)
+ fastmap                1.2.0     2024-05-15 [1] CRAN (R 4.4.2)
+ fastmatch              1.1-6     2024-12-23 [1] CRAN (R 4.4.2)
+ fgsea                  1.32.4    2025-03-20 [1] Bioconductor 3.20 (R 4.4.2)
+ fs                     1.6.6     2025-04-12 [1] CRAN (R 4.4.2)
+ generics               0.1.4     2025-05-09 [1] CRAN (R 4.4.2)
+ GenomeInfoDb         * 1.42.1    2024-11-28 [1] Bioconductor 3.20 (R 4.4.2)
+ GenomeInfoDbData       1.2.13    2025-01-10 [1] Bioconductor
+ GenomicRanges        * 1.58.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ ggfun                  0.2.0     2025-07-15 [1] CRAN (R 4.4.2)
+ ggiraph                0.9.1     2025-09-16 [1] CRAN (R 4.4.2)
+ ggplot2              * 4.0.0     2025-09-11 [1] CRAN (R 4.4.2)
+ ggplotify              0.1.2     2023-08-09 [1] CRAN (R 4.4.2)
+ ggrepel                0.9.6     2024-09-07 [1] CRAN (R 4.4.2)
+ ggtangle               0.0.7     2025-06-30 [1] CRAN (R 4.4.2)
+ ggtree                 3.99.0    2025-09-18 [1] Github (YuLab-SMU/ggtree@3798e55)
+ glue                   1.8.0     2024-09-30 [1] CRAN (R 4.4.2)
+ GO.db                  3.20.0    2025-09-18 [1] Bioconductor
+ GOSemSim               2.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ gridGraphics           0.5-1     2020-12-13 [1] CRAN (R 4.4.2)
+ gson                   0.1.0     2023-03-07 [1] CRAN (R 4.4.2)
+ gtable                 0.3.6     2024-10-25 [1] CRAN (R 4.4.2)
+ htmltools              0.5.8.1   2024-04-04 [1] CRAN (R 4.4.2)
+ htmlwidgets            1.6.4     2023-12-06 [1] CRAN (R 4.4.2)
+ httr                   1.4.7     2023-08-15 [1] CRAN (R 4.4.2)
+ igraph                 2.1.4     2025-01-23 [1] CRAN (R 4.4.2)
+ IRanges              * 2.40.1    2024-12-05 [1] Bioconductor 3.20 (R 4.4.2)
+ jsonlite               2.0.0     2025-03-27 [1] CRAN (R 4.4.2)
+ KEGGREST               1.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ knitr                  1.50      2025-03-16 [1] CRAN (R 4.4.2)
+ lattice                0.22-5    2023-10-24 [3] CRAN (R 4.3.1)
+ lazyeval               0.2.2     2019-03-15 [1] CRAN (R 4.4.2)
+ lifecycle              1.0.4     2023-11-07 [1] CRAN (R 4.4.2)
+ magrittr               2.0.4     2025-09-12 [1] CRAN (R 4.4.2)
+ Matrix                 1.7-1     2024-10-18 [3] CRAN (R 4.4.1)
+ MatrixGenerics       * 1.18.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ matrixStats          * 1.5.0     2025-01-07 [1] CRAN (R 4.4.2)
+ memoise                2.0.1     2021-11-26 [1] CRAN (R 4.4.2)
+ nlme                   3.1-166   2024-08-14 [3] CRAN (R 4.4.2)
+ org.Hs.eg.db         * 3.20.0    2025-01-10 [1] Bioconductor
+ patchwork              1.3.2     2025-08-25 [1] CRAN (R 4.4.2)
+ pillar                 1.11.1    2025-09-17 [1] CRAN (R 4.4.2)
+ pkgconfig              2.0.3     2019-09-22 [1] CRAN (R 4.4.2)
+ plyr                   1.8.9     2023-10-02 [1] CRAN (R 4.4.2)
+ png                    0.1-8     2022-11-29 [1] CRAN (R 4.4.2)
+ purrr                  1.1.0     2025-07-10 [1] CRAN (R 4.4.2)
+ qvalue                 2.38.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ R.methodsS3            1.8.2     2022-06-13 [1] CRAN (R 4.4.2)
+ R.oo                   1.27.0    2024-11-01 [1] CRAN (R 4.4.2)
+ R.utils                2.12.3    2023-11-18 [1] CRAN (R 4.4.2)
+ R6                     2.6.1     2025-02-15 [1] CRAN (R 4.4.2)
+ rappdirs               0.3.3     2021-01-31 [1] CRAN (R 4.4.2)
+ RColorBrewer           1.1-3     2022-04-03 [1] CRAN (R 4.4.2)
+ Rcpp                   1.1.0     2025-07-02 [1] CRAN (R 4.4.2)
+ RcppEigen              0.3.4.0.2 2024-08-24 [1] CRAN (R 4.4.2)
+ RcppML               * 0.5.5     2025-09-09 [1] Github (zdebruine/RcppML@c997bcd)
+ reshape2               1.4.4     2020-04-09 [1] CRAN (R 4.4.2)
+ rlang                  1.1.6     2025-04-11 [1] CRAN (R 4.4.2)
+ RSQLite                2.4.2     2025-07-18 [1] CRAN (R 4.4.2)
+ S4Arrays               1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S4Vectors            * 0.44.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S7                     0.2.0     2024-11-07 [1] CRAN (R 4.4.2)
+ scales                 1.4.0     2025-04-24 [1] CRAN (R 4.4.2)
+ sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.4.2)
+ SingleCellExperiment * 1.28.1    2024-11-10 [1] Bioconductor 3.20 (R 4.4.2)
+ SparseArray            1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ stringi                1.8.7     2025-03-27 [1] CRAN (R 4.4.2)
+ stringr                1.5.2     2025-09-08 [1] CRAN (R 4.4.2)
+ SummarizedExperiment * 1.36.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ systemfonts            1.2.3     2025-04-30 [1] CRAN (R 4.4.2)
+ tibble                 3.3.0     2025-06-08 [1] CRAN (R 4.4.2)
+ tidyr                  1.3.1     2024-01-24 [1] CRAN (R 4.4.2)
+ tidyselect             1.2.1     2024-03-11 [1] CRAN (R 4.4.2)
+ tidytree               0.4.6     2023-12-12 [1] CRAN (R 4.4.2)
+ treeio                 1.30.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ UCSC.utils             1.2.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ uuid                   1.2-1     2024-07-29 [1] CRAN (R 4.4.2)
+ vctrs                  0.6.5     2023-12-01 [1] CRAN (R 4.4.2)
+ withr                  3.0.2     2024-10-28 [1] CRAN (R 4.4.2)
+ xfun                   0.53      2025-08-19 [1] CRAN (R 4.4.2)
+ XVector                0.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ yulab.utils            0.2.1     2025-08-19 [1] CRAN (R 4.4.2)
+ zlibbioc               1.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+
+ [1] /usr/local/lib/R/site-library
+ [2] /usr/lib/R/site-library
+ [3] /usr/lib/R/library
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[2025-09-23 11:55:05] ===== Finished GO Analysis =====

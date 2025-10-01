@@ -1,0 +1,276 @@
+[2025-09-18 13:23:02] ===== Starting GO Analysis =====
+Loading objects:
+  sce
+[2025-09-18 13:25:29] Loaded snRNA-seq object 'sce' with 36601 genes and 77604 cells
+Loading objects:
+  x
+[2025-09-18 13:25:33] Loaded NMF object 'x' with 36601 genes (W) and 80 patterns
+[2025-09-18 13:25:33] No patterns marked for discard
+[2025-09-18 13:25:33] Removing 20308 genes with no contribution across patterns
+[2025-09-18 13:25:33] Example genes removed: MIR1302-2HG, FAM138A, OR4F5, AL627309.1, AL627309.3, AL627309.2
+[2025-09-18 13:25:33] Filtering 13 mitochondrial genes
+[2025-09-18 13:25:33] Filtering to 19394 protein-coding genes
+[2025-09-18 13:25:33] Running patternMarkers() to detect marker genes per pattern
+[2025-09-18 13:25:43] Identified marker genes for 80 patterns
+[2025-09-18 13:25:43] Running GO enrichment analysis for each pattern
+[2025-09-18 13:25:43] Enriching GO for pattern nmf1 with 172 genes
+[2025-09-18 13:26:33] Enriching GO for pattern nmf2 with 144 genes
+[2025-09-18 13:26:54] Enriching GO for pattern nmf3 with 184 genes
+[2025-09-18 13:27:14] Enriching GO for pattern nmf4 with 420 genes
+[2025-09-18 13:27:37] Enriching GO for pattern nmf5 with 222 genes
+[2025-09-18 13:27:59] Enriching GO for pattern nmf6 with 74 genes
+[2025-09-18 13:28:23] Enriching GO for pattern nmf7 with 613 genes
+[2025-09-18 13:28:49] Enriching GO for pattern nmf8 with 124 genes
+[2025-09-18 13:29:13] Enriching GO for pattern nmf9 with 46 genes
+[2025-09-18 13:29:36] Enriching GO for pattern nmf10 with 184 genes
+[2025-09-18 13:30:00] Enriching GO for pattern nmf11 with 73 genes
+[2025-09-18 13:30:24] Enriching GO for pattern nmf12 with 429 genes
+[2025-09-18 13:30:51] Enriching GO for pattern nmf13 with 165 genes
+[2025-09-18 13:31:14] Enriching GO for pattern nmf14 with 695 genes
+[2025-09-18 13:31:39] Enriching GO for pattern nmf15 with 194 genes
+[2025-09-18 13:32:02] Enriching GO for pattern nmf16 with 126 genes
+[2025-09-18 13:32:25] Enriching GO for pattern nmf17 with 38 genes
+[2025-09-18 13:32:51] Enriching GO for pattern nmf18 with 105 genes
+[2025-09-18 13:33:14] Enriching GO for pattern nmf19 with 167 genes
+[2025-09-18 13:33:39] Enriching GO for pattern nmf20 with 82 genes
+[2025-09-18 13:34:02] Enriching GO for pattern nmf21 with 41 genes
+[2025-09-18 13:34:25] Enriching GO for pattern nmf22 with 103 genes
+[2025-09-18 13:34:49] Enriching GO for pattern nmf23 with 156 genes
+[2025-09-18 13:35:12] Enriching GO for pattern nmf24 with 54 genes
+[2025-09-18 13:35:37] Enriching GO for pattern nmf25 with 88 genes
+[2025-09-18 13:36:01] Enriching GO for pattern nmf26 with 53 genes
+[2025-09-18 13:36:21] Enriching GO for pattern nmf27 with 103 genes
+[2025-09-18 13:36:45] Enriching GO for pattern nmf28 with 252 genes
+[2025-09-18 13:37:10] Enriching GO for pattern nmf29 with 115 genes
+[2025-09-18 13:37:32] Enriching GO for pattern nmf30 with 25 genes
+[2025-09-18 13:37:56] Enriching GO for pattern nmf31 with 78 genes
+[2025-09-18 13:38:19] Enriching GO for pattern nmf32 with 83 genes
+[2025-09-18 13:38:44] Enriching GO for pattern nmf33 with 144 genes
+[2025-09-18 13:39:05] Enriching GO for pattern nmf34 with 12 genes
+[2025-09-18 13:39:28] Enriching GO for pattern nmf35 with 489 genes
+[2025-09-18 13:39:59] Enriching GO for pattern nmf36 with 45 genes
+[2025-09-18 13:40:23] Enriching GO for pattern nmf37 with 260 genes
+[2025-09-18 13:40:47] Enriching GO for pattern nmf38 with 365 genes
+[2025-09-18 13:41:13] Enriching GO for pattern nmf39 with 499 genes
+[2025-09-18 13:41:40] Enriching GO for pattern nmf40 with 329 genes
+[2025-09-18 13:42:06] Enriching GO for pattern nmf41 with 190 genes
+[2025-09-18 13:42:32] Enriching GO for pattern nmf42 with 39 genes
+[2025-09-18 13:42:58] Enriching GO for pattern nmf43 with 328 genes
+[2025-09-18 13:43:23] Enriching GO for pattern nmf44 with 95 genes
+[2025-09-18 13:43:45] Enriching GO for pattern nmf45 with 98 genes
+[2025-09-18 13:44:08] Enriching GO for pattern nmf46 with 46 genes
+[2025-09-18 13:44:32] Enriching GO for pattern nmf47 with 63 genes
+[2025-09-18 13:45:02] Enriching GO for pattern nmf48 with 329 genes
+[2025-09-18 13:45:28] Enriching GO for pattern nmf49 with 215 genes
+[2025-09-18 13:45:50] Enriching GO for pattern nmf50 with 218 genes
+[2025-09-18 13:46:14] Enriching GO for pattern nmf51 with 283 genes
+[2025-09-18 13:46:36] Enriching GO for pattern nmf52 with 90 genes
+[2025-09-18 13:47:00] Enriching GO for pattern nmf53 with 93 genes
+[2025-09-18 13:47:24] Enriching GO for pattern nmf54 with 59 genes
+[2025-09-18 13:47:45] Enriching GO for pattern nmf55 with 61 genes
+[2025-09-18 13:48:08] Enriching GO for pattern nmf56 with 234 genes
+[2025-09-18 13:48:34] Enriching GO for pattern nmf57 with 240 genes
+[2025-09-18 13:48:56] Enriching GO for pattern nmf58 with 94 genes
+[2025-09-18 13:49:19] Enriching GO for pattern nmf59 with 33 genes
+[2025-09-18 13:49:42] Enriching GO for pattern nmf60 with 279 genes
+[2025-09-18 13:50:06] Enriching GO for pattern nmf61 with 228 genes
+[2025-09-18 13:50:31] Enriching GO for pattern nmf62 with 38 genes
+[2025-09-18 13:50:55] Enriching GO for pattern nmf63 with 21 genes
+[2025-09-18 13:51:17] Enriching GO for pattern nmf64 with 96 genes
+[2025-09-18 13:51:41] Enriching GO for pattern nmf65 with 207 genes
+[2025-09-18 13:52:04] Enriching GO for pattern nmf66 with 236 genes
+[2025-09-18 13:52:30] Enriching GO for pattern nmf67 with 186 genes
+[2025-09-18 13:52:58] Enriching GO for pattern nmf68 with 216 genes
+[2025-09-18 13:53:21] Enriching GO for pattern nmf69 with 68 genes
+[2025-09-18 13:53:47] Enriching GO for pattern nmf70 with 226 genes
+[2025-09-18 13:54:10] Enriching GO for pattern nmf71 with 63 genes
+[2025-09-18 13:54:35] Enriching GO for pattern nmf72 with 40 genes
+[2025-09-18 13:55:02] Enriching GO for pattern nmf73 with 190 genes
+[2025-09-18 13:55:31] Enriching GO for pattern nmf74 with 144 genes
+[2025-09-18 13:55:54] Enriching GO for pattern nmf75 with 81 genes
+[2025-09-18 13:56:16] Enriching GO for pattern nmf76 with 127 genes
+[2025-09-18 13:56:41] Enriching GO for pattern nmf77 with 111 genes
+[2025-09-18 13:57:04] Enriching GO for pattern nmf78 with 290 genes
+[2025-09-18 13:57:32] Enriching GO for pattern nmf79 with 61 genes
+[2025-09-18 13:57:52] Enriching GO for pattern nmf80 with 76 genes
+[2025-09-18 13:59:26] Saved GO enrichment results to /zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/go_analysis_k_80.rda
+[2025-09-18 13:59:26] ===== Session Info =====
+R version 4.4.2 (2024-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+
+locale:
+[1] C
+
+time zone: America/New_York
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] scales_1.4.0                SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0 GenomicRanges_1.58.0       
+ [5] GenomeInfoDb_1.42.1         MatrixGenerics_1.18.0       matrixStats_1.5.0           sessioninfo_1.2.2          
+ [9] clusterProfiler_4.14.6      org.Hs.eg.db_3.20.0         AnnotationDbi_1.68.0        IRanges_2.40.1             
+[13] S4Vectors_0.44.0            Biobase_2.66.0              BiocGenerics_0.52.0         RcppML_0.5.5               
+[17] dplyr_1.1.4                 ggplot2_4.0.0              
+
+loaded via a namespace (and not attached):
+ [1] DBI_1.2.3               gson_0.1.0              rlang_1.1.6             magrittr_2.0.4         
+ [5] DOSE_4.0.1              compiler_4.4.2          RSQLite_2.4.2           png_0.1-8              
+ [9] systemfonts_1.2.3       vctrs_0.6.5             reshape2_1.4.4          stringr_1.5.2          
+[13] pkgconfig_2.0.3         crayon_1.5.3            fastmap_1.2.0           XVector_0.46.0         
+[17] enrichplot_1.26.6       UCSC.utils_1.2.0        purrr_1.1.0             bit_4.6.0              
+[21] xfun_0.53               zlibbioc_1.52.0         cachem_1.1.0            aplot_0.2.9            
+[25] jsonlite_2.0.0          blob_1.2.4              DelayedArray_0.32.0     uuid_1.2-1             
+[29] BiocParallel_1.40.0     parallel_4.4.2          R6_2.6.1                stringi_1.8.7          
+[33] RColorBrewer_1.1-3      GOSemSim_2.32.0         Rcpp_1.1.0              knitr_1.50             
+[37] ggtangle_0.0.7          R.utils_2.12.3          Matrix_1.7-1            splines_4.4.2          
+[41] igraph_2.1.4            tidyselect_1.2.1        abind_1.4-8             qvalue_2.38.0          
+[45] codetools_0.2-19        lattice_0.22-5          tibble_3.3.0            plyr_1.8.9             
+[49] treeio_1.30.0           withr_3.0.2             KEGGREST_1.46.0         S7_0.2.0               
+[53] evaluate_1.0.5          gridGraphics_0.5-1      RcppEigen_0.3.4.0.2     Biostrings_2.74.1      
+[57] pillar_1.11.1           ggtree_3.99.0           ggfun_0.2.0             generics_0.1.4         
+[61] tidytree_0.4.6          glue_1.8.0              lazyeval_0.2.2          tools_4.4.2            
+[65] data.table_1.17.8       fgsea_1.32.4            ggiraph_0.9.1           fs_1.6.6               
+[69] fastmatch_1.1-6         cowplot_1.2.0           grid_4.4.2              tidyr_1.3.1            
+[73] ape_5.8-1               nlme_3.1-166            GenomeInfoDbData_1.2.13 patchwork_1.3.2        
+[77] cli_3.6.5               rappdirs_0.3.3          S4Arrays_1.6.0          gtable_0.3.6           
+[81] R.methodsS3_1.8.2       yulab.utils_0.2.1       digest_0.6.37           SparseArray_1.6.0      
+[85] ggrepel_0.9.6           ggplotify_0.1.2         htmlwidgets_1.6.4       farver_2.1.2           
+[89] memoise_2.0.1           htmltools_0.5.8.1       R.oo_1.27.0             lifecycle_1.0.4        
+[93] httr_1.4.7              GO.db_3.20.0            bit64_4.6.0-1          
+- Session info ---------------------------------------------------------------
+ setting  value
+ version  R version 4.4.2 (2024-10-31)
+ os       Ubuntu 22.04.5 LTS
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  C
+ ctype    C
+ tz       America/New_York
+ date     2025-09-18
+ pandoc   2.9.2.1 @ /usr/bin/pandoc
+
+- Packages -------------------------------------------------------------------
+ package              * version   date (UTC) lib source
+ abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
+ AnnotationDbi        * 1.68.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ ape                    5.8-1     2024-12-16 [1] CRAN (R 4.4.2)
+ aplot                  0.2.9     2025-09-12 [1] CRAN (R 4.4.2)
+ Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocGenerics         * 0.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocParallel           1.40.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ Biostrings             2.74.1    2024-12-16 [1] Bioconductor 3.20 (R 4.4.2)
+ bit                    4.6.0     2025-03-06 [1] CRAN (R 4.4.2)
+ bit64                  4.6.0-1   2025-01-16 [1] CRAN (R 4.4.2)
+ blob                   1.2.4     2023-03-17 [1] CRAN (R 4.4.2)
+ cachem                 1.1.0     2024-05-16 [1] CRAN (R 4.4.2)
+ cli                    3.6.5     2025-04-23 [1] CRAN (R 4.4.2)
+ clusterProfiler      * 4.14.6    2025-02-27 [1] Bioconductor 3.20 (R 4.4.2)
+ codetools              0.2-19    2023-02-01 [3] CRAN (R 4.2.2)
+ cowplot                1.2.0     2025-07-07 [1] CRAN (R 4.4.2)
+ crayon                 1.5.3     2024-06-20 [1] CRAN (R 4.4.2)
+ data.table             1.17.8    2025-07-10 [1] CRAN (R 4.4.2)
+ DBI                    1.2.3     2024-06-02 [1] CRAN (R 4.4.2)
+ DelayedArray           0.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ digest                 0.6.37    2024-08-19 [1] CRAN (R 4.4.2)
+ DOSE                   4.0.1     2025-03-27 [1] Bioconductor 3.20 (R 4.4.2)
+ dplyr                * 1.1.4     2023-11-17 [1] CRAN (R 4.4.2)
+ enrichplot             1.26.6    2025-01-09 [1] Bioconductor 3.20 (R 4.4.2)
+ evaluate               1.0.5     2025-08-27 [1] CRAN (R 4.4.2)
+ farver                 2.1.2     2024-05-13 [1] CRAN (R 4.4.2)
+ fastmap                1.2.0     2024-05-15 [1] CRAN (R 4.4.2)
+ fastmatch              1.1-6     2024-12-23 [1] CRAN (R 4.4.2)
+ fgsea                  1.32.4    2025-03-20 [1] Bioconductor 3.20 (R 4.4.2)
+ fs                     1.6.6     2025-04-12 [1] CRAN (R 4.4.2)
+ generics               0.1.4     2025-05-09 [1] CRAN (R 4.4.2)
+ GenomeInfoDb         * 1.42.1    2024-11-28 [1] Bioconductor 3.20 (R 4.4.2)
+ GenomeInfoDbData       1.2.13    2025-01-10 [1] Bioconductor
+ GenomicRanges        * 1.58.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ ggfun                  0.2.0     2025-07-15 [1] CRAN (R 4.4.2)
+ ggiraph                0.9.1     2025-09-16 [1] CRAN (R 4.4.2)
+ ggplot2              * 4.0.0     2025-09-11 [1] CRAN (R 4.4.2)
+ ggplotify              0.1.2     2023-08-09 [1] CRAN (R 4.4.2)
+ ggrepel                0.9.6     2024-09-07 [1] CRAN (R 4.4.2)
+ ggtangle               0.0.7     2025-06-30 [1] CRAN (R 4.4.2)
+ ggtree                 3.99.0    2025-09-18 [1] Github (YuLab-SMU/ggtree@3798e55)
+ glue                   1.8.0     2024-09-30 [1] CRAN (R 4.4.2)
+ GO.db                  3.20.0    2025-09-18 [1] Bioconductor
+ GOSemSim               2.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ gridGraphics           0.5-1     2020-12-13 [1] CRAN (R 4.4.2)
+ gson                   0.1.0     2023-03-07 [1] CRAN (R 4.4.2)
+ gtable                 0.3.6     2024-10-25 [1] CRAN (R 4.4.2)
+ htmltools              0.5.8.1   2024-04-04 [1] CRAN (R 4.4.2)
+ htmlwidgets            1.6.4     2023-12-06 [1] CRAN (R 4.4.2)
+ httr                   1.4.7     2023-08-15 [1] CRAN (R 4.4.2)
+ igraph                 2.1.4     2025-01-23 [1] CRAN (R 4.4.2)
+ IRanges              * 2.40.1    2024-12-05 [1] Bioconductor 3.20 (R 4.4.2)
+ jsonlite               2.0.0     2025-03-27 [1] CRAN (R 4.4.2)
+ KEGGREST               1.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ knitr                  1.50      2025-03-16 [1] CRAN (R 4.4.2)
+ lattice                0.22-5    2023-10-24 [3] CRAN (R 4.3.1)
+ lazyeval               0.2.2     2019-03-15 [1] CRAN (R 4.4.2)
+ lifecycle              1.0.4     2023-11-07 [1] CRAN (R 4.4.2)
+ magrittr               2.0.4     2025-09-12 [1] CRAN (R 4.4.2)
+ Matrix                 1.7-1     2024-10-18 [3] CRAN (R 4.4.1)
+ MatrixGenerics       * 1.18.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ matrixStats          * 1.5.0     2025-01-07 [1] CRAN (R 4.4.2)
+ memoise                2.0.1     2021-11-26 [1] CRAN (R 4.4.2)
+ nlme                   3.1-166   2024-08-14 [3] CRAN (R 4.4.2)
+ org.Hs.eg.db         * 3.20.0    2025-01-10 [1] Bioconductor
+ patchwork              1.3.2     2025-08-25 [1] CRAN (R 4.4.2)
+ pillar                 1.11.1    2025-09-17 [1] CRAN (R 4.4.2)
+ pkgconfig              2.0.3     2019-09-22 [1] CRAN (R 4.4.2)
+ plyr                   1.8.9     2023-10-02 [1] CRAN (R 4.4.2)
+ png                    0.1-8     2022-11-29 [1] CRAN (R 4.4.2)
+ purrr                  1.1.0     2025-07-10 [1] CRAN (R 4.4.2)
+ qvalue                 2.38.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ R.methodsS3            1.8.2     2022-06-13 [1] CRAN (R 4.4.2)
+ R.oo                   1.27.0    2024-11-01 [1] CRAN (R 4.4.2)
+ R.utils                2.12.3    2023-11-18 [1] CRAN (R 4.4.2)
+ R6                     2.6.1     2025-02-15 [1] CRAN (R 4.4.2)
+ rappdirs               0.3.3     2021-01-31 [1] CRAN (R 4.4.2)
+ RColorBrewer           1.1-3     2022-04-03 [1] CRAN (R 4.4.2)
+ Rcpp                   1.1.0     2025-07-02 [1] CRAN (R 4.4.2)
+ RcppEigen              0.3.4.0.2 2024-08-24 [1] CRAN (R 4.4.2)
+ RcppML               * 0.5.5     2025-09-09 [1] Github (zdebruine/RcppML@c997bcd)
+ reshape2               1.4.4     2020-04-09 [1] CRAN (R 4.4.2)
+ rlang                  1.1.6     2025-04-11 [1] CRAN (R 4.4.2)
+ RSQLite                2.4.2     2025-07-18 [1] CRAN (R 4.4.2)
+ S4Arrays               1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S4Vectors            * 0.44.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S7                     0.2.0     2024-11-07 [1] CRAN (R 4.4.2)
+ scales               * 1.4.0     2025-04-24 [1] CRAN (R 4.4.2)
+ sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.4.2)
+ SingleCellExperiment * 1.28.1    2024-11-10 [1] Bioconductor 3.20 (R 4.4.2)
+ SparseArray            1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ stringi                1.8.7     2025-03-27 [1] CRAN (R 4.4.2)
+ stringr                1.5.2     2025-09-08 [1] CRAN (R 4.4.2)
+ SummarizedExperiment * 1.36.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ systemfonts            1.2.3     2025-04-30 [1] CRAN (R 4.4.2)
+ tibble                 3.3.0     2025-06-08 [1] CRAN (R 4.4.2)
+ tidyr                  1.3.1     2024-01-24 [1] CRAN (R 4.4.2)
+ tidyselect             1.2.1     2024-03-11 [1] CRAN (R 4.4.2)
+ tidytree               0.4.6     2023-12-12 [1] CRAN (R 4.4.2)
+ treeio                 1.30.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ UCSC.utils             1.2.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ uuid                   1.2-1     2024-07-29 [1] CRAN (R 4.4.2)
+ vctrs                  0.6.5     2023-12-01 [1] CRAN (R 4.4.2)
+ withr                  3.0.2     2024-10-28 [1] CRAN (R 4.4.2)
+ xfun                   0.53      2025-08-19 [1] CRAN (R 4.4.2)
+ XVector                0.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ yulab.utils            0.2.1     2025-08-19 [1] CRAN (R 4.4.2)
+ zlibbioc               1.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+
+ [1] /usr/local/lib/R/site-library
+ [2] /usr/lib/R/site-library
+ [3] /usr/lib/R/library
+
+------------------------------------------------------------------------------
+[2025-09-18 13:59:26] ===== Finished GO Analysis =====
