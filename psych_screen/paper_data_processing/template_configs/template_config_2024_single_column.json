@@ -9,7 +9,7 @@
       "files": [
         {
           "fileType": "anndata.zarr",
-          "url": "https://users.wenglab.org/kresgeb/psych_screen/spatialDLPFC/data/<<Sample_Name>>/data.h5ad.zarr",
+          "url": "https://downloads.wenglab.org/psychscreen/spatial/spatialDLPFC/data/<<Sample_Name>>/data.h5ad.zarr",
           "coordinationValues": {
             "obsType": "spot",
             "featureType": "gene",
@@ -43,7 +43,7 @@
         },
         {
           "fileType": "image.ome-zarr",
-          "url": "https://users.wenglab.org/kresgeb/psych_screen/spatialDLPFC/data/<<Sample_Name>>/image.ome.zarr"
+          "url": "https://downloads.wenglab.org/psychscreen/spatial/spatialDLPFC/data/<<Sample_Name>>/image.ome.zarr"
         }
       ]
     }
