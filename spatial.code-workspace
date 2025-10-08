@@ -11,6 +11,9 @@
 		{
 			"name": "data/zusers/kresgeb",
 			"path": "../../../data/zusers/kresgeb"
+		},
+		{
+			"path": "../../public_html/projects/downloads"
 		}
 	],
 	"settings": {}
