@@ -251,7 +251,7 @@
       "A": null
     },
     "featureSelection": {
-      "A": [
+      "gene": [
         "MBP"
       ]
     }
@@ -291,7 +291,7 @@
         "spatialTargetX": "A",
         "spatialTargetY": "A",
         "obsColorEncoding": "B",
-        "featureSelection": "A"
+        "featureSelection": "gene"
       },
       "x": 6,
       "y": 0,
@@ -323,7 +323,7 @@
         "obsType": "A",
         "obsColorEncoding": "A",
         "obsSetColor": "A",
-        "featureSelection": "A",
+        "featureSelection": "gene",
         "obsSetSelection": "A"
       },
       "x": 3,

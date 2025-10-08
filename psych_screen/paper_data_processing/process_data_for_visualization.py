@@ -16,13 +16,15 @@ from vitessce.data_utils import (
 PATHS = {
     "2021": {
         "visium_source_dir": "/data/zusers/kresgeb/psych_encode/HumanPilot10X/reorganized",
-        "output_dir": "/zata/public_html/users/kresgeb/psych_screen/HumanPilot10X",
+        # "output_dir": "/zata/public_html/users/kresgeb/psych_screen/HumanPilot10X",
+        "output_dir": "/zata/public_html/projects/downloads/psychscreen/spatial/HumanPilot10X",
         "template_config": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/template_config_2021.json",
         "full_adata_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/paper_data/2021.h5ad",
     },
     "2024": {
         "visium_source_dir": "/data/zusers/kresgeb/psych_encode/spatialDLPFC/processed-data/rerun_spaceranger",
-        "output_dir": "/zata/public_html/users/kresgeb/psych_screen/spatialDLPFC",
+        # "output_dir": "/zata/public_html/users/kresgeb/psych_screen/spatialDLPFC",
+        "output_dir": "/zata/public_html/projects/downloads/psychscreen/spatial/spatialDLPFC",
         "template_config": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/template_config_2024.json",
         "full_adata_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/paper_data/2024.h5ad", 
         "color_data_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/k16_like_manual.json", # Not currently used since all color data is in the template config
@@ -276,51 +278,51 @@ def main():
         for sample_name in sample_names:
             print(f"Processing sample: {sample_name} for year {year}")
 
-            # Filter the full AnnData object for the current sample
-            sample_adata = full_adata[full_adata.obs["sample_id"] == sample_name].copy()
+            # # Filter the full AnnData object for the current sample
+            # sample_adata = full_adata[full_adata.obs["sample_id"] == sample_name].copy()
 
-            # Get the visium data for the sample
-            visium_reference_adata = load_visium_data(visium_source_dir, sample_name)
+            # # Get the visium data for the sample
+            # visium_reference_adata = load_visium_data(visium_source_dir, sample_name)
 
-            # Index by HGNC gene names instead of Ensembl IDs
-            sample_adata.var["gene_name_orig"] = sample_adata.var["gene_name"]
-            sample_adata.var.index = sample_adata.var["gene_name"].astype(str)
-            sample_adata.var.index.name = None  # Clear index name to avoid conflict
-            sample_adata.var_names_make_unique()
+            # # Index by HGNC gene names instead of Ensembl IDs
+            # sample_adata.var["gene_name_orig"] = sample_adata.var["gene_name"]
+            # sample_adata.var.index = sample_adata.var["gene_name"].astype(str)
+            # sample_adata.var.index.name = None  # Clear index name to avoid conflict
+            # sample_adata.var_names_make_unique()
         
-            # Add the spatial and the image data to the sample AnnData object
-            sample_adata = transfer_spatial_and_image_metadata(sample_adata, visium_reference_adata, sample_name)
+            # # Add the spatial and the image data to the sample AnnData object
+            # sample_adata = transfer_spatial_and_image_metadata(sample_adata, visium_reference_adata, sample_name)
 
-            # Add segmentations to the sample AnnData object
-            sample_adata = add_segmentations(sample_adata)
+            # # Add segmentations to the sample AnnData object
+            # sample_adata = add_segmentations(sample_adata)
 
-            # Save the image (OME-Zarr format)
-            image_output_path = os.path.join(output_dir, "data", sample_name, "image.ome.zarr")
-            write_ome_zarr_image(sample_adata, image_output_path, sample_name)
+            # # Save the image (OME-Zarr format)
+            # image_output_path = os.path.join(output_dir, "data", sample_name, "image.ome.zarr")
+            # write_ome_zarr_image(sample_adata, image_output_path, sample_name)
 
-            # Determine which obs columns to keep based on the year (also renames columns)
-            obs_cols = determine_obs_cols(sample_adata, year)
+            # # Determine which obs columns to keep based on the year (also renames columns)
+            # obs_cols = determine_obs_cols(sample_adata, year)
 
-            # Remove spots with unassigned clusters/assignments
-            sample_adata = remove_unassigned_spots(sample_adata, obs_cols)
+            # # Remove spots with unassigned clusters/assignments
+            # sample_adata = remove_unassigned_spots(sample_adata, obs_cols)
 
-            # Precalculate logcounts uint8 layer (not currently used, but useful for Vitessce)
-            # sample_adata.layers["logcounts_uint8"] = to_uint8(sample_adata.layers["logcounts"], norm_along="global")
+            # # Precalculate logcounts uint8 layer (not currently used, but useful for Vitessce)
+            # # sample_adata.layers["logcounts_uint8"] = to_uint8(sample_adata.layers["logcounts"], norm_along="global")
 
-            # Optimize the AnnData object
-            optimized_adata = optimize_adata(
-                sample_adata,
-                obs_cols= obs_cols,
-                obsm_keys=["spatial", "segmentations"],
-                layer_keys=["logcounts"], # ["logcounts", "logcounts_uint8"] # Uncomment if you want to include the uint8 layer
-                optimize_X=True,
-                # Vitessce plays nicely with dense matrices saved with chunking
-                to_dense_X=True,
-            )
+            # # Optimize the AnnData object
+            # optimized_adata = optimize_adata(
+            #     sample_adata,
+            #     obs_cols= obs_cols,
+            #     obsm_keys=["spatial", "segmentations"],
+            #     layer_keys=["logcounts"], # ["logcounts", "logcounts_uint8"] # Uncomment if you want to include the uint8 layer
+            #     optimize_X=True,
+            #     # Vitessce plays nicely with dense matrices saved with chunking
+            #     to_dense_X=True,
+            # )
         
-            # Save the optimized AnnData object
-            optimized_adata_path = os.path.join(output_dir, "data", sample_name, "data.h5ad.zarr")
-            optimized_adata.write_zarr(optimized_adata_path, chunks=[optimized_adata.shape[0], 10])
+            # # Save the optimized AnnData object
+            # optimized_adata_path = os.path.join(output_dir, "data", sample_name, "data.h5ad.zarr")
+            # optimized_adata.write_zarr(optimized_adata_path, chunks=[optimized_adata.shape[0], 10])
 
             # Create the configuration file for Vitessce visualization
             create_configuration_file(year, sample_name, obs_cols)
