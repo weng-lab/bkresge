@@ -9,7 +9,7 @@
       "files": [
         {
           "fileType": "anndata.zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/spatialDLPFC/data/<<Sample_Name>>/data.h5ad.zarr",
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/spatialDLPFC/data/<<Sample_Name>>/data.h5ad.zarr",
           "coordinationValues": {
             "obsType": "spot",
             "featureType": "gene",
@@ -43,7 +43,7 @@
         },
         {
           "fileType": "image.ome-zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/spatialDLPFC/data/<<Sample_Name>>/image.ome.zarr"
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/spatialDLPFC/data/<<Sample_Name>>/image.ome.zarr"
         }
       ]
     }
@@ -541,8 +541,8 @@
         "obsSetColor": "A"
       },
       "x": 0,
-      "y": 2,
-      "w": 12,
+      "y": 0,
+      "w": 6,
       "h": 2
     },
     {
@@ -560,9 +560,9 @@
         "obsColorEncoding": "B",
         "featureSelection": "gene"
       },
-      "x": 0,
-      "y": 4,
-      "w": 12,
+      "x": 6,
+      "y": 0,
+      "w": 6,
       "h": 2
     },
     {
@@ -576,8 +576,8 @@
         "obsSetColor": "A"
       },
       "x": 0,
-      "y": 0,
-      "w": 12,
+      "y": 2,
+      "w": 3,
       "h": 2
     },
     {
@@ -591,9 +591,9 @@
         "obsSetColor": "A",
         "featureSelection": "gene"
       },
-      "x": 0,
-      "y": 6,
-      "w": 12,
+      "x": 3,
+      "y": 2,
+      "w": 9,
       "h": 2
     }
   ]

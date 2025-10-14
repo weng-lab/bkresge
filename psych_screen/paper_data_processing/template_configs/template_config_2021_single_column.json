@@ -129,7 +129,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "WM"
+            "White Matter"
           ],
           "color": [
             27,
@@ -140,7 +140,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "L1"
+            "Layer 1"
           ],
           "color": [
             223,
@@ -151,7 +151,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "L2"
+            "Layer 2"
           ],
           "color": [
             76,
@@ -162,7 +162,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "L3"
+            "Layer 3"
           ],
           "color": [
             98,
@@ -173,7 +173,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "L4"
+            "Layer 4"
           ],
           "color": [
             145,
@@ -184,7 +184,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "L5"
+            "Layer 5"
           ],
           "color": [
             247,
@@ -195,7 +195,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "L6"
+            "Layer 6"
           ],
           "color": [
             239,
@@ -209,31 +209,31 @@
       "A": [
         [
           "Manually Annotated Layers",
-          "L1"
+          "Layer 1"
         ],
         [
           "Manually Annotated Layers",
-          "L2"
+          "Layer 2"
         ],
         [
           "Manually Annotated Layers",
-          "L3"
+          "Layer 3"
         ],
         [
           "Manually Annotated Layers",
-          "L4"
+          "Layer 4"
         ],
         [
           "Manually Annotated Layers",
-          "L5"
+          "Layer 5"
         ],
         [
           "Manually Annotated Layers",
-          "L6"
+          "Layer 6"
         ],
         [
           "Manually Annotated Layers",
-          "WM"
+          "White Matter"
         ]
       ]
     },

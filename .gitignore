@@ -9,6 +9,7 @@ slurm/
 Miniforge3/
 .cache/
 .local/
+tools/
 
 
 # Types of files

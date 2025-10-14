@@ -9,7 +9,7 @@
       "files": [
         {
           "fileType": "anndata.zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/HumanPilot10X/data/<<Sample_Name>>/data.h5ad.zarr",
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/HumanPilot10X/data/<<Sample_Name>>/data.h5ad.zarr",
           "coordinationValues": {
             "obsType": "spot",
             "featureType": "gene",
@@ -35,7 +35,7 @@
         },
         {
           "fileType": "image.ome-zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/HumanPilot10X/data/<<Sample_Name>>/image.ome.zarr"
+          "url": "https://users.wenglab.org/kresgeb/psych_screen/HumanPilot10X/data/<<Sample_Name>>/image.ome.zarr"
         }
       ]
     }
@@ -129,7 +129,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "White Matter"
+            "WM"
           ],
           "color": [
             27,
@@ -140,7 +140,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "Layer 1"
+            "L1"
           ],
           "color": [
             223,
@@ -151,7 +151,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "Layer 2"
+            "L2"
           ],
           "color": [
             76,
@@ -162,7 +162,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "Layer 3"
+            "L3"
           ],
           "color": [
             98,
@@ -173,7 +173,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "Layer 4"
+            "L4"
           ],
           "color": [
             145,
@@ -184,7 +184,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "Layer 5"
+            "L5"
           ],
           "color": [
             247,
@@ -195,7 +195,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "Layer 6"
+            "L6"
           ],
           "color": [
             239,
@@ -209,31 +209,31 @@
       "A": [
         [
           "Manually Annotated Layers",
-          "Layer 1"
+          "L1"
         ],
         [
           "Manually Annotated Layers",
-          "Layer 2"
+          "L2"
         ],
         [
           "Manually Annotated Layers",
-          "Layer 3"
+          "L3"
         ],
         [
           "Manually Annotated Layers",
-          "Layer 4"
+          "L4"
         ],
         [
           "Manually Annotated Layers",
-          "Layer 5"
+          "L5"
         ],
         [
           "Manually Annotated Layers",
-          "Layer 6"
+          "L6"
         ],
         [
           "Manually Annotated Layers",
-          "White Matter"
+          "WM"
         ]
       ]
     },
@@ -274,8 +274,8 @@
         "obsSetSelection": "A"
       },
       "x": 0,
-      "y": 0,
-      "w": 6,
+      "y": 2,
+      "w": 12,
       "h": 2
     },
     {
@@ -293,9 +293,9 @@
         "obsColorEncoding": "B",
         "featureSelection": "gene"
       },
-      "x": 6,
-      "y": 0,
-      "w": 6,
+      "x": 0,
+      "y": 4,
+      "w": 12,
       "h": 2
     },
     {
@@ -310,8 +310,8 @@
         "obsSetSelection": "A"
       },
       "x": 0,
-      "y": 2,
-      "w": 3,
+      "y": 0,
+      "w": 12,
       "h": 2
     },
     {
@@ -326,9 +326,9 @@
         "featureSelection": "gene",
         "obsSetSelection": "A"
       },
-      "x": 3,
-      "y": 2,
-      "w": 9,
+      "x": 0,
+      "y": 6,
+      "w": 12,
       "h": 2
     }
   ]

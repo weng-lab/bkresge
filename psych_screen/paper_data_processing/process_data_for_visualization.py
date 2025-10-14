@@ -19,6 +19,7 @@ PATHS = {
         # "output_dir": "/zata/public_html/users/kresgeb/psych_screen/HumanPilot10X",
         "output_dir": "/zata/public_html/projects/downloads/psychscreen/spatial/HumanPilot10X",
         "template_config": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/template_config_2021.json",
+        # "template_config": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/users_template_config_2021.json",
         "full_adata_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/paper_data/2021.h5ad",
     },
     "2024": {
@@ -26,6 +27,7 @@ PATHS = {
         # "output_dir": "/zata/public_html/users/kresgeb/psych_screen/spatialDLPFC",
         "output_dir": "/zata/public_html/projects/downloads/psychscreen/spatial/spatialDLPFC",
         "template_config": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/template_config_2024.json",
+        # "template_config": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/template_configs/users_template_config_2024.json",
         "full_adata_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/paper_data/2024.h5ad", 
         "color_data_path": "/zata/zippy/kresgeb/psych_screen/paper_data_processing/colors/k16_like_manual.json", # Not currently used since all color data is in the template config
     },
@@ -109,7 +111,7 @@ def add_segmentations(adata, radius=7):
 
 def determine_obs_cols(adata, year):
     """
-    Determine which obs columns to keep based on the year. And performs renaming of specific columns.
+    Determine which obs columns to keep based on the year. And performs renaming of specific columns (and column entries).
 
     :param adata: AnnData object.
     :param year: Year of the dataset (2021 or 2024).
@@ -117,24 +119,76 @@ def determine_obs_cols(adata, year):
     """
     obs_cols = []
 
+    # BayesSpace cluster → Layer mapping
+    rename_maps = {
+        "Manual_Layers": {
+            "L1": "Layer 1",
+            "L2": "Layer 2",
+            "L3": "Layer 3",
+            "L4": "Layer 4",
+            "L5": "Layer 5",
+            "L6": "Layer 6",
+            "WM": "White Matter",
+        },
+        "BayesSpace_9": {
+            1: "~Layer 1 (cluster 1)",
+            2: "~Layer 1 (cluster 2)",
+            3: "~Layer 2 (cluster 3)",
+            4: "~Layer 5 (cluster 4)",
+            5: "~Layer 3 (cluster 5)",
+            6: "~White Matter (cluster 6)",
+            7: "~Layer 6 (cluster 7)",
+            8: "~Layer 4 (cluster 8)",
+            9: "~White Matter (cluster 9)",
+        },
+        "BayesSpace_16": {
+            1: "~Layer 1 (cluster 1)",
+            2: "~Layer 1 (cluster 2)",
+            3: "~Layer 3 (cluster 3)",
+            4: "~Layer 5 (cluster 4)",
+            5: "~Layer 4 (cluster 5)",
+            6: "~White Matter (cluster 6)",
+            7: "~Layer 6 (cluster 7)",
+            8: "~Layer 2 (cluster 8)",
+            9: "~Layer 3/4 (cluster 9)",
+            10: "~Layer 2/3 (cluster 10)",
+            11: "~White Matter (cluster 11)",
+            12: "~Layer 6 (cluster 12)",
+            13: "~White Matter (cluster 13)",
+            14: "~Layer 1 (cluster 14)",
+            15: "~White Matter (cluster 15)",
+            16: "~Layer 5 (cluster 16)",
+        },
+    }
+
     if year == "2021":
         if "spatialLIBD" in adata.obs:
             adata.obs["manual_layers"] = adata.obs["spatialLIBD"]
             obs_cols.append("manual_layers")
+            # Rename WM to White Matter in manual_layers
+            adata.obs["manual_layers"] = adata.obs["manual_layers"].cat.rename_categories(rename_maps["Manual_Layers"])
+  
+
 
     elif year == "2024":
         # Handle manual layers if they exist
         if "manual_layer_label" in adata.obs and adata.obs["manual_layer_label"].notna().any():
             adata.obs["manual_layers"] = adata.obs["manual_layer_label"]
             obs_cols.append("manual_layers")
+            # Rename WM to White Matter in manual_layers
+            adata.obs["manual_layers"] = adata.obs["manual_layers"].cat.rename_categories(rename_maps["Manual_Layers"])
 
-        # Remap BayesSpace harmony cluster columns to new names
         for k in [9, 16]:
             old_col = f"BayesSpace_harmony_{k:02d}"
             new_col = f"bayes_space_k={k}"
             if old_col in adata.obs:
                 adata.obs[new_col] = adata.obs[old_col]
                 obs_cols.append(new_col)
+                adata.obs[new_col] = adata.obs[new_col].astype("category")
+
+                # Rename cluster categories directly using layer map
+                # NOTE: L1 is actually already Layer 1 and so on, but nicer to just reuse the map
+                adata.obs[new_col] = adata.obs[new_col].cat.rename_categories(rename_maps[f"BayesSpace_{k}"])
 
     return obs_cols
 
@@ -300,8 +354,16 @@ def main():
             image_output_path = os.path.join(output_dir, "data", sample_name, "image.ome.zarr")
             write_ome_zarr_image(sample_adata, image_output_path, sample_name)
 
-            # Determine which obs columns to keep based on the year (also renames columns)
+            # Determine which obs columns to keep based on the year (also renames columns, and column categories)
             obs_cols = determine_obs_cols(sample_adata, year)
+
+            # # --- DEBUG CHECKS ---
+            # print(f"[DEBUG] Categories and head for {sample_name}:")
+            # for col in obs_cols:
+            #     print(f"  → {col} categories:")
+            #     print(f"    {list(sample_adata.obs[col].cat.categories)}")
+            #     print(f"  Head of {col}:")
+            #     print(sample_adata.obs[[col]].head(), "\n")
 
             # Remove spots with unassigned clusters/assignments
             sample_adata = remove_unassigned_spots(sample_adata, obs_cols)

@@ -152,7 +152,7 @@
         {
           "path": [
             "Manually Annotated Layers",
-            "WM"
+            "White Matter"
           ],
           "color": [
             27,
@@ -239,7 +239,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "1"
+            "~Layer 1 (cluster 1)"
           ],
           "color": [
             194,
@@ -250,7 +250,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "2"
+            "~Layer 1 (cluster 2)"
           ],
           "color": [
             231,
@@ -261,7 +261,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "3"
+            "~Layer 2 (cluster 3)"
           ],
           "color": [
             76,
@@ -272,7 +272,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "4"
+            "~Layer 5 (cluster 4)"
           ],
           "color": [
             247,
@@ -283,7 +283,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "5"
+            "~Layer 3 (cluster 5)"
           ],
           "color": [
             98,
@@ -294,7 +294,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "6"
+            "~White Matter (cluster 6)"
           ],
           "color": [
             0,
@@ -305,7 +305,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "7"
+            "~Layer 6 (cluster 7)"
           ],
           "color": [
             239,
@@ -316,7 +316,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "8"
+            "~Layer 4 (cluster 8)"
           ],
           "color": [
             145,
@@ -327,7 +327,7 @@
         {
           "path": [
             "BayesSpace (9 Clusters)",
-            "9"
+            "~White Matter (cluster 9)"
           ],
           "color": [
             69,
@@ -348,7 +348,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "1"
+            "~Layer 1 (cluster 1)"
           ],
           "color": [
             194,
@@ -359,7 +359,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "2"
+            "~Layer 1 (cluster 2)"
           ],
           "color": [
             231,
@@ -370,7 +370,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "3"
+            "~Layer 3 (cluster 3)"
           ],
           "color": [
             98,
@@ -381,7 +381,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "4"
+            "~Layer 5 (cluster 4)"
           ],
           "color": [
             247,
@@ -392,7 +392,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "5"
+            "~Layer 4 (cluster 5)"
           ],
           "color": [
             145,
@@ -403,7 +403,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "6"
+            "~White Matter (cluster 6)"
           ],
           "color": [
             0,
@@ -414,7 +414,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "7"
+            "~Layer 6 (cluster 7)"
           ],
           "color": [
             239,
@@ -425,7 +425,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "8"
+            "~Layer 2 (cluster 8)"
           ],
           "color": [
             76,
@@ -436,7 +436,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "9"
+            "~Layer 3/4 (cluster 9)"
           ],
           "color": [
             130,
@@ -447,7 +447,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "10"
+            "~Layer 2/3 (cluster 10)"
           ],
           "color": [
             116,
@@ -458,7 +458,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "11"
+            "~White Matter (cluster 11)"
           ],
           "color": [
             69,
@@ -469,7 +469,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "12"
+            "~Layer 6 (cluster 12)"
           ],
           "color": [
             239,
@@ -480,7 +480,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "13"
+            "~White Matter (cluster 13)"
           ],
           "color": [
             107,
@@ -491,7 +491,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "14"
+            "~Layer 1 (cluster 14)"
           ],
           "color": [
             223,
@@ -502,7 +502,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "15"
+            "~White Matter (cluster 15)"
           ],
           "color": [
             43,
@@ -513,7 +513,7 @@
         {
           "path": [
             "BayesSpace (16 Clusters)",
-            "16"
+            "~Layer 5 (cluster 16)"
           ],
           "color": [
             247,
