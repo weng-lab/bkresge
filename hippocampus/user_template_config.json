@@ -9,7 +9,7 @@
       "files": [
         {
           "fileType": "anndata.zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/hippocampus/data/<<SAMPLE_NAME>>/data.h5ad.zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/data.h5ad.zarr",
           "coordinationValues": {
             "obsType": "spot",
             "featureType": "gene",
@@ -39,7 +39,7 @@
         },
         {
           "fileType": "image.ome-zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
         }
       ]
     },
@@ -48,7 +48,7 @@
       "files": [
         {
           "fileType": "anndata.zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/hippocampus/data/<<SAMPLE_NAME>>/nmf_data.h5ad.zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/nmf_data.h5ad.zarr",
           "coordinationValues": {
             "obsType": "spot",
             "featureType": "gene",
@@ -68,7 +68,7 @@
         },
         {
           "fileType": "image.ome-zarr",
-          "url": "https://downloads.wenglab.org/psychscreen/spatial/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
         }
       ]
     }

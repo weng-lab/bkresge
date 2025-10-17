@@ -419,6 +419,22 @@
   },
   "layout": [
     {
+      "component": "obsSets",
+      "props": {
+        "title": "Domain Selection"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "obsType": "A",
+        "obsColorEncoding": "A",
+        "obsSetColor": "A"
+      },
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+    },
+    {
       "component": "spatial",
       "props": {
         "title": "Spatial Organization of Domains"
@@ -435,8 +451,8 @@
         "obsSetColor": "A"
       },
       "x": 0,
-      "y": 0,
-      "w": 4,
+      "y": 4,
+      "w": 12,
       "h": 6
     },
     {
@@ -455,10 +471,41 @@
         "obsColorEncoding": "B",
         "featureSelection": "gene"
       },
-      "x": 4,
-      "y": 0,
-      "w": 4,
+      "x": 0,
+      "y": 10,
+      "w": 12,
       "h": 6
+    },
+    {
+      "component": "obsSetFeatureValueDistribution",
+      "props": {
+        "title": "Gene Expression Violin Plot"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "featureSelection": "gene",
+        "obsType": "A",
+        "obsSetColor": "A"
+      },
+      "x": 0,
+      "y": 16,
+      "w": 12,
+      "h": 6
+    },
+    {
+      "component": "featureList",
+      "props": {
+        "title": "NMF Pattern Selection"
+      },
+      "coordinationScopes": {
+        "dataset": "nmf",
+        "featureSelection": "nmf",
+        "obsType": "A"
+      },
+      "x": 0,
+      "y": 22,
+      "w": 12,
+      "h": 4
     },
     {
       "component": "spatial",
@@ -476,56 +523,9 @@
         "obsColorEncoding": "B",
         "featureSelection": "nmf"
       },
-      "x": 8,
-      "y": 0,
-      "w": 4,
-      "h": 6
-    },
-    {
-      "component": "obsSets",
-      "props": {
-        "title": "Domain Selection"
-      },
-      "coordinationScopes": {
-        "dataset": "logcounts",
-        "obsType": "A",
-        "obsColorEncoding": "A",
-        "obsSetColor": "A"
-      },
       "x": 0,
-      "y": 6,
-      "w": 2,
-      "h": 6
-    },
-    {
-      "component": "obsSetFeatureValueDistribution",
-      "props": {
-        "title": "Gene Expression Violin Plot"
-      },
-      "coordinationScopes": {
-        "dataset": "logcounts",
-        "featureSelection": "gene",
-        "obsType": "A",
-        "obsSetColor": "A"
-      },
-      "x": 2,
-      "y": 6,
-      "w": 8,
-      "h": 6
-    },
-    {
-      "component": "featureList",
-      "props": {
-        "title": "NMF Pattern Selection"
-      },
-      "coordinationScopes": {
-        "dataset": "nmf",
-        "featureSelection": "nmf",
-        "obsType": "A"
-      },
-      "x": 10,
-      "y": 6,
-      "w": 2,
+      "y": 26,
+      "w": 12,
       "h": 6
     }
   ]
