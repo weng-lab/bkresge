@@ -1,0 +1,532 @@
+{
+  "version": "1.0.17",
+  "name": "Hippocampus Samples",
+  "description": "Visium Spatial Gene Expression data from 10x Genomics (LIBD)",
+  "initStrategy": "auto",
+  "datasets": [
+    {
+      "uid": "logcounts",
+      "files": [
+        {
+          "fileType": "anndata.zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/data.h5ad.zarr",
+          "coordinationValues": {
+            "obsType": "spot",
+            "featureType": "gene",
+            "featureValueType": "expression"
+          },
+          "options": {
+            "obsFeatureMatrix": {
+              "path": "layers/logcounts"
+            },
+            "obsLocations": {
+              "path": "obsm/spatial"
+            },
+            "obsSegmentations": {
+              "path": "obsm/segmentations"
+            },
+            "obsSets": [
+              {
+                "name": "Fine Domain",
+                "path": "obs/domain"
+              },
+              {
+                "name": "Broad Domain",
+                "path": "obs/broad.domain"
+              }
+            ]
+          }
+        },
+        {
+          "fileType": "image.ome-zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
+        }
+      ]
+    },
+    {
+      "uid": "nmf",
+      "files": [
+        {
+          "fileType": "anndata.zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/nmf_data.h5ad.zarr",
+          "coordinationValues": {
+            "obsType": "spot",
+            "featureType": "gene",
+            "featureValueType": "expression"
+          },
+          "options": {
+            "obsFeatureMatrix": {
+              "path": "X"
+            },
+            "obsLocations": {
+              "path": "obsm/spatial"
+            },
+            "obsSegmentations": {
+              "path": "obsm/segmentations"
+            }
+          }
+        },
+        {
+          "fileType": "image.ome-zarr",
+          "url": "https://users.wenglab.org/kresgeb/hippocampus/data/<<SAMPLE_NAME>>/image.ome.zarr"
+        }
+      ]
+    }
+  ],
+  "coordinationSpace": {
+    "dataset": {
+      "logcounts": "logcounts",
+      "nmf": "nmf"
+    },
+    "featureValueType": {
+      "A": "expression"
+    },
+    "obsType": {
+      "A": "spot"
+    },
+    "spatialSegmentationLayer": {
+      "A": {
+        "radius": 65,
+        "stroked": true,
+        "visible": true,
+        "opacity": 1
+      }
+    },
+    "spatialImageLayer": {
+      "A": [
+        {
+          "type": "raster",
+          "index": 0,
+          "colormap": null,
+          "transparentColor": null,
+          "opacity": 1,
+          "domainType": "Min/Max",
+          "channels": [
+            {
+              "selection": {
+                "c": 0
+              },
+              "color": [
+                255,
+                0,
+                0
+              ],
+              "visible": true,
+              "slider": [
+                0,
+                255
+              ]
+            },
+            {
+              "selection": {
+                "c": 1
+              },
+              "color": [
+                0,
+                255,
+                0
+              ],
+              "visible": true,
+              "slider": [
+                0,
+                255
+              ]
+            },
+            {
+              "selection": {
+                "c": 2
+              },
+              "color": [
+                0,
+                0,
+                255
+              ],
+              "visible": true,
+              "slider": [
+                0,
+                255
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "obsColorEncoding": {
+      "A": "cellSetSelection",
+      "B": "geneSelection"
+    },
+    "spatialZoom": {
+      "A": null
+    },
+    "spatialTargetX": {
+      "A": null
+    },
+    "spatialTargetY": {
+      "A": null
+    },
+    "featureSelection": {
+      "gene": [
+        "MBP"
+      ],
+      "nmf": [
+        "nmf5"
+      ]
+    },
+    "obsSetColor": {
+      "A": [
+        {
+          "path": [
+            "Fine Domain"
+          ],
+          "color": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": [
+            "Broad Domain"
+          ],
+          "color": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "path": [
+            "Broad Domain",
+            "Neuron"
+          ],
+          "color": [
+            26,
+            155,
+            109
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "CA1"
+          ],
+          "color": [
+            0,
+            221,
+            0
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "CA2.4"
+          ],
+          "color": [
+            0,
+            171,
+            0
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "GABA"
+          ],
+          "color": [
+            107,
+            253,
+            252
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "GCL"
+          ],
+          "color": [
+            0,
+            96,
+            0
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "RHP"
+          ],
+          "color": [
+            166,
+            251,
+            169
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "SUB"
+          ],
+          "color": [
+            186,
+            216,
+            165
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "SUB.RHP"
+          ],
+          "color": [
+            114,
+            164,
+            78
+          ]
+        },
+        {
+          "path": [
+            "Broad Domain",
+            "Neuropil"
+          ],
+          "color": [
+            164,
+            149,
+            122
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "ML"
+          ],
+          "color": [
+            204,
+            204,
+            204
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "SL.SR"
+          ],
+          "color": [
+            86,
+            86,
+            86
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "SLM.SGZ"
+          ],
+          "color": [
+            230,
+            180,
+            129
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "SR.SLM"
+          ],
+          "color": [
+            138,
+            138,
+            138
+          ]
+        },
+        {
+          "path": [
+            "Broad Domain",
+            "Vasc_CSF"
+          ],
+          "color": [
+            50,
+            84,
+            209
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "Choroid"
+          ],
+          "color": [
+            1,
+            19,
+            125
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "Vascular"
+          ],
+          "color": [
+            41,
+            65,
+            255
+          ]
+        },
+        {
+          "path": [
+            "Broad Domain",
+            "WM"
+          ],
+          "color": [
+            194,
+            79,
+            196
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "WM.1"
+          ],
+          "color": [
+            255,
+            100,
+            253
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "WM.2"
+          ],
+          "color": [
+            142,
+            31,
+            141
+          ]
+        },
+        {
+          "path": [
+            "Fine Domain",
+            "WM.3"
+          ],
+          "color": [
+            255,
+            155,
+            254
+          ]
+        }
+      ]
+    }
+  },
+  "layout": [
+    {
+      "component": "obsSets",
+      "props": {
+        "title": "Domain Selection"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "obsType": "A",
+        "obsColorEncoding": "A",
+        "obsSetColor": "A"
+      },
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+    },
+    {
+      "component": "spatial",
+      "props": {
+        "title": "Spatial Organization of Domains"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "obsType": "A",
+        "spatialImageLayer": "A",
+        "spatialSegmentationLayer": "A",
+        "spatialZoom": "A",
+        "spatialTargetX": "A",
+        "spatialTargetY": "A",
+        "obsColorEncoding": "A",
+        "obsSetColor": "A"
+      },
+      "x": 0,
+      "y": 4,
+      "w": 12,
+      "h": 6
+    },
+    {
+      "component": "spatial",
+      "props": {
+        "title": "Spatial Gene Expression (Log2 CPM)"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "obsType": "A",
+        "spatialImageLayer": "A",
+        "spatialSegmentationLayer": "A",
+        "spatialZoom": "A",
+        "spatialTargetX": "A",
+        "spatialTargetY": "A",
+        "obsColorEncoding": "B",
+        "featureSelection": "gene"
+      },
+      "x": 0,
+      "y": 10,
+      "w": 12,
+      "h": 6
+    },
+    {
+      "component": "obsSetFeatureValueDistribution",
+      "props": {
+        "title": "Gene Expression Violin Plot"
+      },
+      "coordinationScopes": {
+        "dataset": "logcounts",
+        "featureSelection": "gene",
+        "obsType": "A",
+        "obsSetColor": "A"
+      },
+      "x": 0,
+      "y": 16,
+      "w": 12,
+      "h": 6
+    },
+    {
+      "component": "featureList",
+      "props": {
+        "title": "NMF Pattern Selection"
+      },
+      "coordinationScopes": {
+        "dataset": "nmf",
+        "featureSelection": "nmf",
+        "obsType": "A"
+      },
+      "x": 0,
+      "y": 22,
+      "w": 12,
+      "h": 4
+    },
+    {
+      "component": "spatial",
+      "props": {
+        "title": "Spatial Non-Negative Matrix Factorization (NMF) Weights"
+      },
+      "coordinationScopes": {
+        "dataset": "nmf",
+        "obsType": "A",
+        "spatialImageLayer": "A",
+        "spatialSegmentationLayer": "A",
+        "spatialZoom": "A",
+        "spatialTargetX": "A",
+        "spatialTargetY": "A",
+        "obsColorEncoding": "B",
+        "featureSelection": "nmf"
+      },
+      "x": 0,
+      "y": 26,
+      "w": 12,
+      "h": 6
+    }
+  ]
+}
