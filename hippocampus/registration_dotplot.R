@@ -351,9 +351,81 @@ ggsave(
 
 log_msg("Dotplot successfully generated and saved.")
 
+### SRT projection spot plot ####
+log_msg("Creating SRT projection dotplot of NMF patterns by anatomical domain...")
 
+# Convert to a numeric matrix for easier manipulation
+nmf_weight_matrix_spe <- as.matrix(colData(spe)[, nmf_cols])
 
+# Binary presence/absence matrix for spots
+spots_nmf_nonzero_binary <- nmf_weight_matrix_spe > 0
 
+# Add domain information to the binary matrix
+spots_nmf_presence <- data.frame(
+    domain = colData(spe)$domain,
+    spots_nmf_nonzero_binary,
+    check.names = FALSE
+)
+
+# Summarize spot-level NMF pattern presence proportion by domain
+log_msg("Summarizing SRT NMF pattern presence per anatomical domain...")
+
+# Summarize presence per domain
+spots_nmf_prop_summary <- spots_nmf_presence %>%
+    group_by(domain) %>%
+    add_tally(name = "total") %>%
+    group_by(domain, total) %>%
+    summarise(across(all_of(nmf_cols), sum), .groups = "drop") %>%
+    tidyr::pivot_longer(
+        cols = all_of(nmf_cols),
+        names_to = "nmf",
+        values_to = "n"
+    ) %>%
+    mutate(prop = n / total)
+
+log_msg("Summarizing average scaled NMF weights per domain...")
+
+# Scale weights across all spots (columns)
+nmf_scaled_matrix_spe <- apply(nmf_weight_matrix_spe, 2, scale)
+
+# Add domain information
+spots_nmf_scaled <- data.frame(
+    domain = colData(spe)$domain,
+    nmf_scaled_matrix_spe,
+    check.names = FALSE
+)
+
+# Summarize average scaled NMF weights by domain
+spots_nmf_scaled_summary <- spots_nmf_scaled %>%
+    group_by(domain) %>%
+    summarise(across(all_of(nmf_cols), mean), .groups = "drop") %>%
+    tidyr::pivot_longer(
+        cols = all_of(nmf_cols),
+        names_to = "nmf",
+        values_to = "scaled_avg"
+    )
+
+log_msg("Merging proportion and scaled summaries for spot dotplot...")
+
+# Merge summaries
+spot_dot_df <- left_join(
+    spots_nmf_prop_summary[, c("domain", "nmf", "prop")],
+    spots_nmf_scaled_summary[, c("domain", "nmf", "scaled_avg")],
+    by = c("domain", "nmf")
+)
+
+# Restrict to high-abundance nmfs, keeping the same ordering from previous plot
+spot_dot_df <- spot_dot_df %>%
+    filter(!is.na(nmf) & nmf %in% high_abundance_nmf) %>%
+    mutate(
+        nmf_f = factor(nmf, levels = nmf_order[nmf_order %in% high_abundance_nmf]),
+        domain = factor(domain, levels = unique(domain))
+    )
+
+# Confirm inclusion counts
+log_msg(sprintf("Spot dotplot includes %d high-abundance NMF patterns across %d domains.",
+                length(unique(spot_dot_df$nmf_f)),
+                length(unique(spot_dot_df$domain))))
 
 # Session info
 log_msg("===== Session Info =====")

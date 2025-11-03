@@ -1,24 +1,29 @@
-[2025-10-20 16:32:07] Loading in data...
+[2025-10-22 13:00:05] Loading in data...
 Loading objects:
   spatial_hpc_snrna_seq
 Loading objects:
   spatial_hpc_spe
-[2025-10-20 16:35:44] Data loading complete
-[2025-10-20 16:35:44] Found 100 nmf patterns
-[2025-10-20 16:35:44] Creating ECDF plot for nonzero NMF pattern weights...
-[2025-10-20 16:35:44] Saving ECDF plot to /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/plots/ecdf_nonzero_nuclei_spots_nmf_patterns_faceted.pdf
-[2025-10-20 16:35:45] Preparing data for dotplot of NMF pattern presence by cell type...
-[2025-10-20 16:35:45] Summarizing NMF pattern presence per cell type...
-[2025-10-20 16:35:45] NMF pattern proportion summary created successfully
-[2025-10-20 16:35:45] Preparing data for dotplot of average scaled NMF weights by cell type...
-[2025-10-20 16:35:49] Summarizing average scaled NMF weights per cell type...
-[2025-10-20 16:35:49] Average scaled NMF weight summary created successfully
+[2025-10-22 13:03:32] Data loading complete
+[2025-10-22 13:03:32] Found 100 nmf patterns
+[2025-10-22 13:03:32] Creating ECDF plot for nonzero NMF pattern weights...
+[2025-10-22 13:03:33] Saving ECDF plot to /zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/plots/ecdf_nonzero_nuclei_spots_nmf_patterns_faceted.pdf
+[2025-10-22 13:03:33] Preparing data for dotplot of NMF pattern presence by cell type...
+[2025-10-22 13:03:34] Summarizing NMF pattern presence per cell type...
+[2025-10-22 13:03:34] NMF pattern proportion summary created successfully
+[2025-10-22 13:03:34] Preparing data for dotplot of average scaled NMF weights by cell type...
+[2025-10-22 13:03:37] Summarizing average scaled NMF weights per cell type...
+[2025-10-22 13:03:37] Average scaled NMF weight summary created successfully
 fitting ...
   |                                                                                                                      |                                                                                                              |   0%  |                                                                                                                      |=====================================                                                                         |  33%  |                                                                                                                      |=========================================================================                                     |  67%  |                                                                                                                      |==============================================================================================================| 100%
-[2025-10-20 16:35:49] Identified 58 specific and 42 general NMF patterns based on entropy.
-[2025-10-20 16:35:49] Ordering complete: 97 total NMFs (manual: 3, low: 29, high: 68)
-[2025-10-20 16:35:49] Dotplot successfully generated and saved.
-[2025-10-20 16:35:49] ===== Session Info =====
+[2025-10-22 13:03:37] Identified 58 specific and 42 general NMF patterns based on entropy.
+[2025-10-22 13:03:37] Ordering complete: 97 total NMFs (manual: 3, low: 29, high: 68)
+[2025-10-22 13:03:37] Dotplot successfully generated and saved.
+[2025-10-22 13:03:37] Creating SRT projection dotplot of NMF patterns by anatomical domain...
+[2025-10-22 13:03:38] Summarizing SRT NMF pattern presence per anatomical domain...
+[2025-10-22 13:03:38] Summarizing average scaled NMF weights per domain...
+[2025-10-22 13:03:41] Merging proportion and scaled summaries for spot dotplot...
+[2025-10-22 13:03:41] Spot dotplot includes 68 high-abundance NMF patterns across 16 domains.
+[2025-10-22 13:03:41] ===== Session Info =====
 R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
@@ -59,7 +64,7 @@ loaded via a namespace (and not attached):
 [49] beachmat_2.22.0         irlba_2.3.5.1           rlang_1.1.6             Rcpp_1.1.0             
 [53] glue_1.8.0              jsonlite_2.0.0          R6_2.6.1                systemfonts_1.2.3      
 [57] zlibbioc_1.52.0        
-- Session info ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Session info ------------------------------------------------------------------------------------------------------------------------------------------
  setting  value
  version  R version 4.4.2 (2024-10-31)
  os       Ubuntu 22.04.5 LTS
@@ -69,10 +74,10 @@ loaded via a namespace (and not attached):
  collate  C
  ctype    C
  tz       America/New_York
- date     2025-10-20
+ date     2025-10-22
  pandoc   2.9.2.1 @ /usr/bin/pandoc
 
-- Packages -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Packages ----------------------------------------------------------------------------------------------------------------------------------------------
  package              * version date (UTC) lib source
  abind                  1.4-8   2024-09-12 [1] CRAN (R 4.4.2)
  beachmat               2.22.0  2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
@@ -151,5 +156,5 @@ loaded via a namespace (and not attached):
  [2] /usr/lib/R/site-library
  [3] /usr/lib/R/library
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[2025-10-20 16:35:50] ===== Finished Making Plots=====
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+[2025-10-22 13:03:41] ===== Finished Making Plots=====
