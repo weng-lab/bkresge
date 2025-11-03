@@ -29,9 +29,10 @@ log_msg(sprintf("Seed: %d", seed))
 options(RcppML.verbose = TRUE)
 
 # Paths
-nmf_path <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x_k_80.rda"
+nmf_path <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda"
 srt_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
-proj_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj_srt_k_80.rda"
+proj_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj.rda"
+srt_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/srt_with_nmf.rda"
 
 log_msg("===== Starting Projection =====")
 
@@ -102,8 +103,14 @@ colData(srt) <- cbind(colData(srt), proj)
 
 # Save result
 log_msg("Saving results...")
-save(srt, proj, file = proj_out)
+save(proj, file = proj_out)
 log_msg(paste("Projection saved to:", proj_out))
+
+# Save updated SRT with NMF projections
+log_msg(paste("Saving SRT with NMF projections to:", srt_out))
+save(srt, file = srt_out)
+log_msg(paste("SRT with NMF projections saved to:", srt_out))
+
 
 # Session info
 print(sessionInfo())

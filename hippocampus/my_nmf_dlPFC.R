@@ -32,6 +32,7 @@ options(RcppML.verbose = TRUE)
 # Paths
 snrna_seq_data_path <- "/data/zusers/kresgeb/psych_encode/spatialDLPFC_snRNAseq_fetch/2024_snRNA.RData"
 path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda"
+path_for_appended_snrna <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/snrna_with_nmf.rda"
 # path_for_x <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x_k_80.rda"
 
 # k <- 100
@@ -85,6 +86,16 @@ log_msg(sprintf("NMF completed in %.2f minutes", as.numeric(elapsed)))
 log_msg(paste("Saving NMF result to:", path_for_x))
 save(x, file = path_for_x)
 log_msg("Save complete.")
+
+# Append NMF results to SingleCellExperiment object and save
+nmf_matrix <- as.matrix(t(x$H))
+colnames(nmf_matrix) <- paste0("nmf", seq_len(ncol(nmf_matrix)))
+log_msg("Appending NMF results to SingleCellExperiment object...")
+colData(snrna) <- cbind(colData(snrna), nmf_matrix)
+log_msg(paste("Saving updated SingleCellExperiment to:", path_for_appended_snrna))
+save(snrna, file = path_for_appended_snrna)
+log_msg("Save complete.")
+
 
 # Session info
 log_msg("===== Session Info =====")
