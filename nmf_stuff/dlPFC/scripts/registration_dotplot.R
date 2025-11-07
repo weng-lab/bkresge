@@ -1,44 +1,44 @@
-library(SingleCellExperiment)
-library(SpatialExperiment)
-library(dplyr)
-library(ggplot2)
-library(scater)
-library(sessioninfo)
-library(mclust)
-library(viridis)
+suppressPackageStartupMessages({
+    library(here)
+    library(SingleCellExperiment)
+    library(SpatialExperiment)
+    library(dplyr)
+    library(ggplot2)
+    library(scater)
+    library(sessioninfo)
+    library(mclust)
+    library(viridis)
+})
+
+# Set the project root for 'here' package
+here::i_am("scripts/registration_dotplot.R")
+
+# Load shared utility functions
+source(here("scripts", "utils.R"))
+
+# Logging
+log_file <- setup_log(prefix = "registration_dotplot")
 
 ##### Paths
-log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/registration_dotplot.log"
-hpc_spe_path <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_spe.Rdata"
-hpc_sce_path <- "/data/zusers/kresgeb/hippocampus/R_download/spatial_hpc_snrna_seq.Rdata"
-dlpfc_spe_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
-dlpfc_sce_path <- "/data/zusers/kresgeb/psych_encode/spatialDLPFC_snRNAseq_fetch/2024_snRNA.RData"
-plot_dir <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/HPC/plots"
+dlpfc_spe_path <- here("data", "srt_with_nmf.rda")
+dlpfc_sce_path <- here("data", "snrna_with_nmf.rds")
 
-##### Logging
-# Open log file (append = FALSE to overwrite each run)
-sink(log_file, append = FALSE, split = TRUE) # split=TRUE keeps console + file
-options(width = 120)
-log_msg <- function(msg) {
-    cat(sprintf("[%s] %s\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), msg))
-    flush.console()
-}
+# The column in colData(sce) that has the cell type annotations
+cell_type_col_name <- "cellType_hc"
+domain_col_name <- "BayesSpace_harmony_09"
 
-##### Loading data
-load_and_rename <- function(path, new_name) {
-    obj_names <- load(path, verbose = TRUE)
-    if (length(obj_names) != 1) {
-        stop(paste("Expected 1 object in", path, "but got", length(obj_names)))
+get_col <- function(obj, colname) {
+    if (!colname %in% colnames(colData(obj))) {
+        stop(sprintf("Column '%s' not found in colData", colname))
     }
-    assign(new_name, get(obj_names), envir = .GlobalEnv)
-    rm(list = obj_names, envir = .GlobalEnv) # clean up original name
+    return(as.factor(colData(obj)[[colname]]))
 }
+
 
 log_msg("Loading in data...")
-dataset <- "HPC"
-load_and_rename(hpc_sce_path, "sce")
-load_and_rename(hpc_spe_path, "spe")
-
+dataset <- "dlPFC"
+load_and_rename(dlpfc_spe_path, "spe", verbose = TRUE)
+sce <- readRDS(dlpfc_sce_path)
 log_msg("Data loading complete")
 
 # Identify the NMF pattern columns (look like nmf1, nmf47, etc.)
@@ -75,7 +75,7 @@ p_ecdf <- ggplot(nonzero_df, aes(x = log10(nonzero_count))) +
     ) +
     theme_minimal()
 
-ecdf_plot_file <- file.path(plot_dir, "ecdf_nonzero_nuclei_spots_nmf_patterns_faceted.pdf")
+ecdf_plot_file <- here("output", "plots", "ecdf_nonzero_nuclei_spots_nmf_patterns_faceted.pdf")
 # Save as PDF (one page, two facets stacked)
 log_msg(sprintf("Saving ECDF plot to %s", ecdf_plot_file))
 ggsave(
@@ -100,7 +100,7 @@ nuclei_nmf_nonzero_binary <- nmf_weight_matrix > 0
 
 # Add cell type information to the binary matrix
 nuclei_nmf_presence <- data.frame(
-    superfine_cell_class = colData(sce)$superfine.cell.class,
+    cell_type = get_col(sce, cell_type_col_name),
     nuclei_nmf_nonzero_binary,
     check.names = FALSE
 )
@@ -115,11 +115,11 @@ log_msg("Summarizing NMF pattern presence per cell type...")
 # - prop: n / total (proportion of nuclei with nonzero weights)
 nuclei_nmf_prop_summary <- nuclei_nmf_presence %>%
     # Group by cell type to calculate per-cluster statistics
-    group_by(superfine_cell_class) %>%
+    group_by(cell_type) %>%
     # Add total nuclei count for each cell type
     add_tally(name = "total") %>%
     # Group by cell type and total for summarization
-    group_by(superfine_cell_class, total) %>%
+    group_by(cell_type, total) %>%
     # Summarize: for each nmf column, count TRUE values (sum since TRUE == 1)
     summarize(across(all_of(nmf_cols), sum), .groups = "drop") %>%
     # Pivot to long format: one row per cell type -> nmf pattern
@@ -140,7 +140,7 @@ nmf_scaled_matrix <- apply(nmf_weight_matrix, 2, scale)
 
 # Add cell type information to the scaled matrix
 nuclei_nmf_scaled <- data.frame(
-    superfine_cell_class = colData(sce)$superfine.cell.class,
+    cell_type = get_col(sce, cell_type_col_name),
     nmf_scaled_matrix,
     check.names = FALSE,
     row.names = rownames(colData(sce)) # keep nuclei barcodes as row names
@@ -151,7 +151,7 @@ log_msg("Summarizing average scaled NMF weights per cell type...")
 
 nuclei_nmf_scaled_summary <- nuclei_nmf_scaled %>%
     # Group by cell type
-    group_by(superfine_cell_class) %>%
+    group_by(cell_type) %>%
     # For each nmf column, compute mean scaled weight
     summarize(across(all_of(nmf_cols), mean), .groups = "drop") %>%
     # Pivot to long format
@@ -170,7 +170,10 @@ log_msg("Average scaled NMF weight summary created successfully")
 ## Deciding on NMF pattern order ##
 if (dataset == "HPC") {
     manual_removed_nmf <- c("nmf2", "nmf3", "nmf16") # NA patterns identified manually
-    sex_specific_nmf <- c("nmf28", "nmf37") # add sex specific patterns
+    manual_isolated_nmf <- c("nmf28", "nmf37") # add sex specific patterns
+} else if (dataset == "dlPFC") {
+    manual_removed_nmf <- c()
+    manual_isolated_nmf <- c()
 } else {
     stop(sprintf("Dataset: %s not recognized for cell type ordering.", dataset))
 }
@@ -222,13 +225,21 @@ specificity_df$pattern_type <- ifelse(
     "general", "specific"
 )
 
-# # Optional: visualize the split
-# ggplot(specificity_df, aes(x = entropy, fill = pattern_type)) +
-#   geom_histogram(bins = 30, color = "white", position = "identity", alpha = 0.6) +
-#   scale_fill_manual(values = c("specific" = "#E69F00", "general" = "#56B4E9")) +
-#   theme_minimal(base_size = 14) +
-#   labs(title = "Bimodal entropy split: General vs Specific patterns",
-#        x = "Entropy", y = "Count", fill = "Pattern type")
+# Optional: visualize the split
+split_plot <- ggplot(specificity_df, aes(x = entropy, fill = pattern_type)) +
+    geom_histogram(bins = 30, color = "white", position = "identity", alpha = 0.6) +
+    scale_fill_manual(values = c("specific" = "#E69F00", "general" = "#56B4E9")) +
+    theme_minimal(base_size = 14) +
+    labs(
+        title = "Bimodal entropy split: General vs Specific patterns",
+        x = "Entropy", y = "Count", fill = "Pattern type"
+    )
+
+ggsave(
+    filename = here("output", "plots", "dotplot_entropy_bimodal_split.pdf"),
+    plot = split_plot,
+    height = 6, width = 8
+)
 
 log_msg(sprintf(
     "Identified %d specific and %d general NMF patterns based on entropy.",
@@ -247,13 +258,13 @@ nmf_info <- data.frame(
     left_join(specificity_df[, c("nmf", "pattern_type")], by = "nmf")
 
 ## Compute a "staircase" index for ordering within specific patterns ##
-# Use the center of mass of scaled_avg across superfine cell classes
+# Use the center of mass of scaled_avg across cell types
 # (higher y-position = later in order)
 
 staircase_df <- nuclei_nmf_scaled_summary %>%
     group_by(nmf) %>%
     summarize(center_of_mass = weighted.mean(
-        x = as.numeric(factor(superfine_cell_class)),
+        x = as.numeric(factor(cell_type)),
         w = pmax(scaled_avg, 0)
     )) %>%
     ungroup()
@@ -272,7 +283,7 @@ nmf_info <- nmf_info %>%
 nmf_info <- nmf_info %>%
     mutate(
         order_group = case_when(
-            nmf %in% sex_specific_nmf ~ 0,
+            nmf %in% manual_isolated_nmf ~ 0,
             abundance == "low" & pattern_type == "general" ~ 1,
             abundance == "low" & pattern_type == "specific" ~ 2,
             abundance == "high" & pattern_type == "general" ~ 3,
@@ -297,17 +308,17 @@ log_msg(sprintf(
 ### Prepare dotplot dataframe ###
 
 dot_df <- left_join(
-    nuclei_nmf_prop_summary[, c("superfine_cell_class", "nmf", "prop")],
-    nuclei_nmf_scaled_summary[, c("superfine_cell_class", "nmf", "scaled_avg")],
-    by = c("superfine_cell_class", "nmf")
+    nuclei_nmf_prop_summary[, c("cell_type", "nmf", "prop")],
+    nuclei_nmf_scaled_summary[, c("cell_type", "nmf", "scaled_avg")],
+    by = c("cell_type", "nmf")
 )
 
 # Make the factors ordered
 dot_df <- dot_df %>%
     mutate(
         nmf_f = factor(nmf, levels = nmf_order),
-        superfine_cell_class = factor(superfine_cell_class,
-            levels = unique(superfine_cell_class)
+        cell_type = factor(cell_type,
+            levels = unique(cell_type)
         ) # bottom-up order (as in original)
     )
 
@@ -318,7 +329,7 @@ dot_df <- dot_df %>%
 ### Plot dotplot ###
 
 p1 <- ggplot(dot_df, aes(
-    x = nmf_f, y = superfine_cell_class,
+    x = nmf_f, y = cell_type,
     size = prop, color = scaled_avg
 )) +
     geom_point(stroke = 0, alpha = 0.9) +
@@ -343,7 +354,7 @@ p1 <- ggplot(dot_df, aes(
 ### Save plot ###
 
 ggsave(
-    filename = file.path(plot_dir, "dotplot_nmf_patterns_by_cell_type.pdf"),
+    filename = here("output", "plots", "dotplot_nmf_patterns_by_cell_type.pdf"),
     plot = p1,
     height = 8,
     width = 16
@@ -362,7 +373,7 @@ spots_nmf_nonzero_binary <- nmf_weight_matrix_spe > 0
 
 # Add domain information to the binary matrix
 spots_nmf_presence <- data.frame(
-    domain = colData(spe)$domain,
+    domain = get_col(spe, domain_col_name),
     spots_nmf_nonzero_binary,
     check.names = FALSE
 )
@@ -390,7 +401,7 @@ nmf_scaled_matrix_spe <- apply(nmf_weight_matrix_spe, 2, scale)
 
 # Add domain information
 spots_nmf_scaled <- data.frame(
-    domain = colData(spe)$domain,
+    domain = get_col(spe, domain_col_name),
     nmf_scaled_matrix_spe,
     check.names = FALSE
 )
@@ -428,6 +439,37 @@ log_msg(sprintf(
     length(unique(spot_dot_df$nmf_f)),
     length(unique(spot_dot_df$domain))
 ))
+# Plot spot dotplot
+p2 <- ggplot(spot_dot_df, aes(
+    x = nmf_f, y = domain,
+    size = prop, color = scaled_avg
+)) +
+    geom_point(stroke = 0, alpha = 0.9) +
+    scale_size(range = c(0, 3), name = "Proportion") +
+    scale_color_viridis_c(option = "F", direction = -1, name = "Scaled avg") +
+    theme_bw(base_size = 12) +
+    theme(
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        axis.text.y = element_text(size = 8),
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = "right"
+    ) +
+    labs(
+        title = "Dotplot of NMF patterns vs. SRT anatomical domains",
+        subtitle = sprintf(
+            "High-abundance NMF patterns only (dataset: %s)",
+            dataset
+        )
+    )
+
+# Save spot dotplot
+ggsave(
+    filename = here("output", "plots", "dotplot_nmf_patterns_by_srt_domain.pdf"),
+    plot = p2,
+    height = 6,
+    width = 12
+)
 
 # Session info
 log_msg("===== Session Info =====")

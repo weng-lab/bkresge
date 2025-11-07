@@ -1,0 +1,725 @@
+{
+    "version": "1.0.17",
+    "name": "dlPFC Samples",
+    "description": "Applying methodolgy from the hippocampus paper to the dlPFC data",
+    "initStrategy": "auto",
+    "datasets": [
+        {
+            "uid": "logcounts",
+            "files": [
+                {
+                    "fileType": "anndata.zarr",
+                    "url": "https://users.wenglab.org/kresgeb/dlpfc_nmf/data/<<SAMPLE_NAME>>/data.h5ad.zarr",
+                    "coordinationValues": {
+                        "obsType": "spot",
+                        "featureType": "gene",
+                        "featureValueType": "expression"
+                    },
+                    "options": {
+                        "obsFeatureMatrix": {
+                            "path": "layers/logcounts"
+                        },
+                        "obsLocations": {
+                            "path": "obsm/spatial"
+                        },
+                        "obsSegmentations": {
+                            "path": "obsm/segmentations"
+                        },
+                        "obsSets": [
+                            {
+                                "name": "Manually Annotated Layers",
+                                "path": "obs/manual_layers"
+                            },
+                            {
+                                "name": "BayesSpace (9 Clusters)",
+                                "path": "obs/bayes_space_k=9"
+                            },
+                            {
+                                "name": "BayesSpace (16 Clusters)",
+                                "path": "obs/bayes_space_k=16"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "fileType": "image.ome-zarr",
+                    "url": "https://users.wenglab.org/kresgeb/dlpfc_nmf/data/<<SAMPLE_NAME>>/image.ome.zarr"
+                }
+            ]
+        },
+        {
+            "uid": "nmf",
+            "files": [
+                {
+                    "fileType": "anndata.zarr",
+                    "url": "https://users.wenglab.org/kresgeb/dlpfc_nmf/data/<<SAMPLE_NAME>>/nmf_data.h5ad.zarr",
+                    "coordinationValues": {
+                        "obsType": "spot",
+                        "featureType": "gene",
+                        "featureValueType": "expression"
+                    },
+                    "options": {
+                        "obsFeatureMatrix": {
+                            "path": "X"
+                        },
+                        "obsLocations": {
+                            "path": "obsm/spatial"
+                        },
+                        "obsSegmentations": {
+                            "path": "obsm/segmentations"
+                        },
+                        "obsSets": [
+                            {
+                                "name": "Manually Annotated Layers",
+                                "path": "obs/manual_layers"
+                            },
+                            {
+                                "name": "BayesSpace (9 Clusters)",
+                                "path": "obs/bayes_space_k=9"
+                            },
+                            {
+                                "name": "BayesSpace (16 Clusters)",
+                                "path": "obs/bayes_space_k=16"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "fileType": "image.ome-zarr",
+                    "url": "https://users.wenglab.org/kresgeb/dlpfc_nmf/data/<<SAMPLE_NAME>>/image.ome.zarr"
+                }
+            ]
+        }
+    ],
+    "coordinationSpace": {
+        "dataset": {
+            "logcounts": "logcounts",
+            "nmf": "nmf"
+        },
+        "featureValueType": {
+            "A": "expression"
+        },
+        "obsType": {
+            "A": "spot"
+        },
+        "spatialSegmentationLayer": {
+            "A": {
+                "radius": 65,
+                "stroked": true,
+                "visible": true,
+                "opacity": 1
+            }
+        },
+        "spatialImageLayer": {
+            "A": [
+                {
+                    "type": "raster",
+                    "index": 0,
+                    "colormap": null,
+                    "transparentColor": null,
+                    "opacity": 1,
+                    "domainType": "Min/Max",
+                    "channels": [
+                        {
+                            "selection": {
+                                "c": 0
+                            },
+                            "color": [
+                                255,
+                                0,
+                                0
+                            ],
+                            "visible": true,
+                            "slider": [
+                                0,
+                                255
+                            ]
+                        },
+                        {
+                            "selection": {
+                                "c": 1
+                            },
+                            "color": [
+                                0,
+                                255,
+                                0
+                            ],
+                            "visible": true,
+                            "slider": [
+                                0,
+                                255
+                            ]
+                        },
+                        {
+                            "selection": {
+                                "c": 2
+                            },
+                            "color": [
+                                0,
+                                0,
+                                255
+                            ],
+                            "visible": true,
+                            "slider": [
+                                0,
+                                255
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "obsSetColor": {
+            "A": [
+                {
+                    "path": [
+                        "Manually Annotated Layers"
+                    ],
+                    "color": [
+                        255,
+                        255,
+                        255
+                    ]
+                },
+                {
+                    "path": [
+                        "Manually Annotated Layers",
+                        "WM"
+                    ],
+                    "color": [
+                        27,
+                        27,
+                        27
+                    ]
+                },
+                {
+                    "path": [
+                        "Manually Annotated Layers",
+                        "Layer 1"
+                    ],
+                    "color": [
+                        223,
+                        54,
+                        126
+                    ]
+                },
+                {
+                    "path": [
+                        "Manually Annotated Layers",
+                        "Layer 2"
+                    ],
+                    "color": [
+                        76,
+                        121,
+                        180
+                    ]
+                },
+                {
+                    "path": [
+                        "Manually Annotated Layers",
+                        "Layer 3"
+                    ],
+                    "color": [
+                        98,
+                        174,
+                        82
+                    ]
+                },
+                {
+                    "path": [
+                        "Manually Annotated Layers",
+                        "Layer 4"
+                    ],
+                    "color": [
+                        145,
+                        78,
+                        161
+                    ]
+                },
+                {
+                    "path": [
+                        "Manually Annotated Layers",
+                        "Layer 5"
+                    ],
+                    "color": [
+                        247,
+                        220,
+                        56
+                    ]
+                },
+                {
+                    "path": [
+                        "Manually Annotated Layers",
+                        "Layer 6"
+                    ],
+                    "color": [
+                        239,
+                        140,
+                        40
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)"
+                    ],
+                    "color": [
+                        255,
+                        255,
+                        255
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "1"
+                    ],
+                    "color": [
+                        194,
+                        30,
+                        101
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "2"
+                    ],
+                    "color": [
+                        231,
+                        101,
+                        157
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "3"
+                    ],
+                    "color": [
+                        76,
+                        121,
+                        180
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "4"
+                    ],
+                    "color": [
+                        247,
+                        220,
+                        56
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "5"
+                    ],
+                    "color": [
+                        98,
+                        174,
+                        82
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "6"
+                    ],
+                    "color": [
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "7"
+                    ],
+                    "color": [
+                        239,
+                        140,
+                        40
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "8"
+                    ],
+                    "color": [
+                        145,
+                        78,
+                        161
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (9 Clusters)",
+                        "9"
+                    ],
+                    "color": [
+                        69,
+                        69,
+                        69
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)"
+                    ],
+                    "color": [
+                        255,
+                        255,
+                        255
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "1"
+                    ],
+                    "color": [
+                        194,
+                        30,
+                        101
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "2"
+                    ],
+                    "color": [
+                        231,
+                        101,
+                        157
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "3"
+                    ],
+                    "color": [
+                        98,
+                        174,
+                        82
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "4"
+                    ],
+                    "color": [
+                        247,
+                        220,
+                        56
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "5"
+                    ],
+                    "color": [
+                        145,
+                        78,
+                        161
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "6"
+                    ],
+                    "color": [
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "7"
+                    ],
+                    "color": [
+                        239,
+                        140,
+                        40
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "8"
+                    ],
+                    "color": [
+                        76,
+                        121,
+                        180
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "9"
+                    ],
+                    "color": [
+                        130,
+                        118,
+                        174
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "10"
+                    ],
+                    "color": [
+                        116,
+                        218,
+                        174
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "11"
+                    ],
+                    "color": [
+                        69,
+                        69,
+                        69
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "12"
+                    ],
+                    "color": [
+                        239,
+                        140,
+                        40
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "13"
+                    ],
+                    "color": [
+                        107,
+                        107,
+                        107
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "14"
+                    ],
+                    "color": [
+                        223,
+                        54,
+                        126
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "15"
+                    ],
+                    "color": [
+                        43,
+                        43,
+                        43
+                    ]
+                },
+                {
+                    "path": [
+                        "BayesSpace (16 Clusters)",
+                        "16"
+                    ],
+                    "color": [
+                        247,
+                        220,
+                        56
+                    ]
+                }
+            ]
+        },
+        "obsColorEncoding": {
+            "A": "cellSetSelection",
+            "B": "geneSelection"
+        },
+        "spatialZoom": {
+            "A": null
+        },
+        "spatialTargetX": {
+            "A": null
+        },
+        "spatialTargetY": {
+            "A": null
+        },
+        "featureSelection": {
+            "gene": [
+                "MBP"
+            ],
+            "nmf": [
+                "nmf1"
+            ]
+        }
+    },
+    "layout": [
+        {
+            "component": "obsSets",
+            "props": {
+                "title": "Domains / Layers"
+            },
+            "coordinationScopes": {
+                "dataset": "logcounts",
+                "obsType": "A",
+                "obsColorEncoding": "A",
+                "obsSetColor": "A"
+            },
+            "x": 0,
+            "y": 0,
+            "w": 6,
+            "h": 4
+        },
+        {
+            "component": "spatial",
+            "props": {
+                "title": "Spatial Organization of Layers"
+            },
+            "coordinationScopes": {
+                "dataset": "logcounts",
+                "obsType": "A",
+                "spatialImageLayer": "A",
+                "spatialSegmentationLayer": "A",
+                "spatialZoom": "A",
+                "spatialTargetX": "A",
+                "spatialTargetY": "A",
+                "obsColorEncoding": "A",
+                "obsSetColor": "A"
+            },
+            "x": 6,
+            "y": 0,
+            "w": 6,
+            "h": 4
+        },
+        {
+            "component": "featureList",
+            "props": {
+                "title": "NMF Selection"
+            },
+            "coordinationScopes": {
+                "dataset": "nmf",
+                "featureSelection": "nmf",
+                "obsType": "A"
+            },
+            "x": 0,
+            "y": 4,
+            "w": 3,
+            "h": 4
+        },
+        {
+            "component": "spatial",
+            "props": {
+                "title": "Spatial NMF Expression"
+            },
+            "coordinationScopes": {
+                "dataset": "nmf",
+                "obsType": "A",
+                "spatialImageLayer": "A",
+                "spatialSegmentationLayer": "A",
+                "spatialZoom": "A",
+                "spatialTargetX": "A",
+                "spatialTargetY": "A",
+                "obsColorEncoding": "B",
+                "featureSelection": "nmf"
+            },
+            "x": 3,
+            "y": 4,
+            "w": 6,
+            "h": 4
+        },
+        {
+            "component": "obsSetFeatureValueDistribution",
+            "props": {
+                "title": "NMF Expression by Domain"
+            },
+            "coordinationScopes": {
+                "dataset": "nmf",
+                "obsType": "A",
+                "obsColorEncoding": "A",
+                "obsSetColor": "A",
+                "featureSelection": "nmf"
+            },
+            "x": 9,
+            "y": 4,
+            "w": 3,
+            "h": 4
+        },
+        {
+            "component": "featureList",
+            "props": {
+                "title": "Gene Selection"
+            },
+            "coordinationScopes": {
+                "dataset": "logcounts",
+                "featureSelection": "gene",
+                "obsType": "A"
+            },
+            "x": 0,
+            "y": 8,
+            "w": 3,
+            "h": 4
+        },
+        {
+            "component": "spatial",
+            "props": {
+                "title": "Spatial Gene Expression (Log2 CPM)"
+            },
+            "coordinationScopes": {
+                "dataset": "logcounts",
+                "obsType": "A",
+                "spatialImageLayer": "A",
+                "spatialSegmentationLayer": "A",
+                "spatialZoom": "A",
+                "spatialTargetX": "A",
+                "spatialTargetY": "A",
+                "obsColorEncoding": "B",
+                "featureSelection": "gene"
+            },
+            "x": 3,
+            "y": 8,
+            "w": 6,
+            "h": 4
+        },
+        {
+            "component": "obsSetFeatureValueDistribution",
+            "props": {
+                "title": "Gene Expression by Domain"
+            },
+            "coordinationScopes": {
+                "dataset": "logcounts",
+                "obsType": "A",
+                "obsColorEncoding": "A",
+                "obsSetColor": "A",
+                "featureSelection": "gene"
+            },
+            "x": 9,
+            "y": 8,
+            "w": 3,
+            "h": 4
+        }
+    ]
+}

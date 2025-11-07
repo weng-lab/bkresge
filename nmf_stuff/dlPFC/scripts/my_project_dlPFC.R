@@ -1,20 +1,22 @@
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages({
+    library(here)
     library(SpatialExperiment)
     library(SingleCellExperiment)
     library(RcppML)
     library(Matrix)
     library(sessioninfo)
 })
+
+# Set the project root for 'here' package
+here::i_am("scripts/my_project_dlPFC.R")
+
+# Load shared utility functions
+source(here("scripts", "utils.R"))
+
 # Logging
-log_file <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/projection_k_80.log"
-sink(log_file, append = FALSE, split = TRUE)
-options(width = 120)
-log_msg <- function(msg) {
-    cat(sprintf("[%s] %s\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), msg))
-    flush.console()
-}
+log_file <- setup_log(prefix = "projection")
 
 # Threads
 threads <- 64
@@ -29,21 +31,21 @@ log_msg(sprintf("Seed: %d", seed))
 options(RcppML.verbose = TRUE)
 
 # Paths
-nmf_path <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/nmf_x.rda"
+nmf_path <- here("data", "nmf_x.rds")
 srt_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
-proj_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/proj.rda"
-srt_out <- "/zata/zippy/kresgeb/hippocampus/my_output/nmf/2024_dlpfc/srt_with_nmf.rda"
+proj_out <- here("data", "srt_projection_h.rds")
+srt_out <- here("data", "srt_with_nmf.rda")
 
 log_msg("===== Starting Projection =====")
 
 # Load NMF object
-load(nmf_path, verbose = TRUE)
-stopifnot(exists("x"))
+log_msg(paste("Loading NMF object from:", nmf_path))
+nmf_x <- readRDS(file = nmf_path)
 log_msg("Loaded NMF object")
 
 # Load SRT object
-obj_names <- load(srt_path, verbose = TRUE)
-srt <- get(obj_names)
+log_msg(paste("Loading SRT object from:", srt_path))
+load_and_rename(srt_path, new_names = "srt")
 stopifnot(inherits(srt, "SpatialExperiment"))
 log_msg("Loaded SRT object")
 
@@ -75,11 +77,11 @@ log_msg("Rowname replacement complete")
 
 # Match genes
 log_msg("Determining the common genes...")
-common_genes <- intersect(rownames(x@w), rownames(srt))
+common_genes <- intersect(rownames(nmf_x@w), rownames(srt))
 log_msg(sprintf("Number of common genes: %d", length(common_genes)))
 
 log_msg("Filtering w and Y by common genes...")
-w <- x@w[common_genes, ]
+w <- nmf_x@w[common_genes, ]
 log_msg(sprintf("Dimensions of w: %s", dim(w)))
 Y <- assay(srt, "logcounts")[common_genes, ]
 log_msg(sprintf("Dimensions of Y: %s", dim(Y)))
@@ -102,14 +104,15 @@ log_msg("Rescaling complete")
 colData(srt) <- cbind(colData(srt), proj)
 
 # Save result
-log_msg("Saving results...")
-save(proj, file = proj_out)
-log_msg(paste("Projection saved to:", proj_out))
+log_msg(paste("Saving projection to:", proj_out))
+saveRDS(proj, file = proj_out)
+log_msg("Save complete.")
 
 # Save updated SRT with NMF projections
+# Would prefer to saveRDS for consistency, but saving as .rda since there is LoadedSpatialImage incompatibility (stores as a ref in memory??)
 log_msg(paste("Saving SRT with NMF projections to:", srt_out))
 save(srt, file = srt_out)
-log_msg(paste("SRT with NMF projections saved to:", srt_out))
+log_msg("Save complete.")
 
 
 # Session info
@@ -117,4 +120,4 @@ print(sessionInfo())
 print(session_info())
 log_msg("===== Finished Projection =====")
 
-sink()
+close_log()
