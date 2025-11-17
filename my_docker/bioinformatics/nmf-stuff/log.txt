@@ -1,0 +1,105 @@
+#0 building with "rootless" instance using docker driver
+
+#1 [internal] load build definition from dockerfile
+#1 transferring dockerfile: 4.80kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/rocker/r-ver:4.4.2
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [ 1/16] FROM docker.io/rocker/r-ver:4.4.2@sha256:df26749182af64d5263bf64149d51a427b476ed28c4e046997143be3f97fdd7c
+#4 DONE 0.0s
+
+#5 [ 4/16] RUN R -e "options(warn=2); install.packages(c('BiocManager', 'remotes'))"
+#5 CACHED
+
+#6 [ 5/16] RUN R -e "options(warn=2); BiocManager::install(version = '3.20')"
+#6 CACHED
+
+#7 [ 2/16] RUN apt update && apt install -y     curl     gpg     git     vim     wget     cmake     btop
+#7 CACHED
+
+#8 [ 3/16] RUN apt update && apt install -y     python3 python3-pip python3-dev     libbz2-dev     liblzma-dev     libhdf5-dev     libsodium-dev     libmagick++-dev
+#8 CACHED
+
+#9 [ 7/16] RUN R -e "options(warn=2); install.packages(c('magick'))"
+#9 CACHED
+
+#10 [11/16] RUN pip install --no-cache-dir --break-system-packages    packaging==24.0     jupyterlab     bash_kernel     jupyterlab-git     ipywidgets     jupyterlab-fasta     ipysheet     jupyterlab-horizon-theme     jupyterlab-lsp     'python-lsp-server[all]'     jupyterlab_vim     jupyterlab_execute_time     jupytext     ipykernel     snakemake     scanpy     squidpy     numpy     pandas     polars     scipy     matplotlib     seaborn     scikit-learn     plotly     black     isort     tqdm     icecream
+#10 CACHED
+
+#11 [10/16] RUN R -e "options(warn=2); remotes::install_github('zdebruine/RcppML@c997bcdd205cf03e105efa91c944da0e2c9068e0')"
+#11 CACHED
+
+#12 [12/16] RUN pip install --upgrade --break-system-packages spatialdata
+#12 CACHED
+
+#13 [ 6/16] RUN R -e "options(warn=2); install.packages(c('languageserver'))"
+#13 CACHED
+
+#14 [ 8/16] RUN R -e "options(warn=2); BiocManager::install(c('spatialLIBD', 'SpatialExperiment', 'zellkonverter'))"
+#14 CACHED
+
+#15 [13/16] RUN pip install --no-cache-dir --break-system-packages     anndata     zarr     vitessce
+#15 CACHED
+
+#16 [ 9/16] RUN R -e "options(warn=2); install.packages(c('tidyverse', 'duckplyr', 'ape', 'phylotools', 'ggsci', 'ggstatsplot', 'gganimate', 'ggthemes', 'ggrepel', 'ggforce', 'cowplot', 'tidytree', 'data.table', 'scales', 'DT', 'pheatmap', 'ggwordcloud', 'wordcloud', 'wordcloud2', 'microplot', 'rmeta', 'plotly', 'ggstar', 'ggnewscale', 'ggalluvial', 'TDbook', 'aplot', 'patchwork', 'igraph', 'ggraph', 'R.utils', 'ggpubr', 'UpSetR', 'ComplexUpset', 'ggVennDiagram', 'IRkernel'))"
+#16 CACHED
+
+#17 [14/16] RUN git clone https://git.bioconductor.org/packages/humanHippocampus2024 /tmp/hh     && cd /tmp/hh     && git checkout RELEASE_3_21     && git checkout 39f0a1c     && R CMD INSTALL .     && rm -rf /tmp/hh
+#17 CACHED
+
+#18 [15/16] RUN R -q -e "print(packageDescription('humanHippocampus2024'))"
+#18 0.537 > print(packageDescription('humanHippocampus2024'))
+#18 0.545 Package: humanHippocampus2024
+#18 0.545 Title: Access to SRT and snRNA-seq data from spatial_HPC project
+#18 0.545 Version: 1.0.0
+#18 0.545 Date: 2024-09-20
+#18 0.545 Authors@R: person( given = "Christine", family = "Hou", email =
+#18 0.545         "chris2018hou@gmail.com", role = c("aut", "cre"), comment =
+#18 0.545         c(ORCID = "0009-0001-5350-0629") )
+#18 0.545 Description: This is an ExperimentHub Data package that helps to access
+#18 0.545         the spatially-resolved transcriptomics and single-nucleus RNA
+#18 0.545         sequencing data.  The datasets are generated from adjacent
+#18 0.545         tissue sections of the anterior human hippocampus across ten
+#18 0.545         adult neurotypical donors. The datasets are based on
+#18 0.545         [spatial_hpc](https://github.com/LieberInstitute/spatial_hpc)
+#18 0.545         project by Lieber Institute for Brain Development (LIBD)
+#18 0.545         researchers and collaborators.
+#18 0.545 License: Artistic-2.0
+#18 0.545 Encoding: UTF-8
+#18 0.545 Roxygen: list(markdown = TRUE)
+#18 0.545 Depends: R (>= 4.4)
+#18 0.545 RoxygenNote: 7.3.2
+#18 0.545 Imports: ExperimentHub, SummarizedExperiment,SpatialExperiment
+#18 0.545 Suggests: testthat (>= 3.0.0), sessioninfo, rmarkdown, knitr,
+#18 0.545         BiocStyle, ExperimentHubData, AnnotationHubData, RefManageR
+#18 0.545 Config/testthat/edition: 3
+#18 0.545 BugReports: https://support.bioconductor.org/t/humanHippocampus2024
+#18 0.545 biocViews: ExperimentHub, SequencingData, SpatialData, ExpressionData,
+#18 0.545         Tissue, RNASeqData
+#18 0.545 URL: https://github.com/LieberInstitute/spatial_hpc,
+#18 0.545         https://christinehou11.github.io/humanHippocampus2024/
+#18 0.545 VignetteBuilder: knitr
+#18 0.545 Author: Christine Hou [aut, cre]
+#18 0.545         (<https://orcid.org/0009-0001-5350-0629>)
+#18 0.545 Maintainer: Christine Hou <chris2018hou@gmail.com>
+#18 0.545 Built: R 4.4.2; ; 2025-11-17 19:37:43 UTC; unix
+#18 0.545 
+#18 0.545 -- File: /usr/local/lib/R/site-library/humanHippocampus2024/Meta/package.rds 
+#18 0.545 > 
+#18 0.545 > 
+#18 DONE 0.6s
+
+#19 [16/16] RUN mkdir -p /data /zata
+#19 DONE 0.3s
+
+#20 exporting to image
+#20 exporting layers 0.0s done
+#20 writing image sha256:d2c501a21f70f85b1a5268a266a752ed6520887b84a585c144402b6617262951 done
+#20 naming to docker.io/autumnusomega/bioinformatics:nmf-stuff done
+#20 DONE 0.0s

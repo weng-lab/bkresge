@@ -1,13 +1,20 @@
 {
 	"folders": [
 		{
+			"name": "Zippy Home",
 			"path": "."
 		},
 		{
+			"name": "My Data",
 			"path": "../../../data/zusers/kresgeb"
 		},
 		{
+			"name": "My Public HTML",
 			"path": "/zata/public_html/users/kresgeb"
+		},
+		{
+			"name": "Public HTML (psychscreen)",
+			"path": "/zata/public_html/projects/downloads/psychscreen"
 		}
 	],
 	"settings": {}

@@ -1,0 +1,146 @@
+FROM rocker/r-ver:4.4.2
+
+# Prevent interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ="America/New_York"
+
+# Install system packages
+RUN apt update && apt install -y \
+    curl \
+    gpg \
+    git \
+    vim \
+    wget \
+    cmake \
+    btop
+
+# Install system libraries
+RUN apt update && apt install -y \
+    python3 python3-pip python3-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libhdf5-dev \
+    libsodium-dev \
+    libmagick++-dev 
+#    libfftw3-dev
+
+# Get BiocManager and remotes
+RUN R -e "options(warn=2); install.packages(c('BiocManager', 'remotes'))"
+RUN R -e "options(warn=2); BiocManager::install(version = '3.20')"
+
+# Needed for R editor support
+RUN R -e "options(warn=2); install.packages(c('languageserver'))"
+
+# Needed to load and convert paper data
+RUN R -e "options(warn=2); install.packages(c('magick'))"
+RUN R -e "options(warn=2); BiocManager::install(c('spatialLIBD', 'SpatialExperiment', 'zellkonverter'))"
+# Verified the save version with the live container that pulled the first time (where it is pulling from could change I suppose)
+# Clone Bioconductor repo and checkout exact version for HPC data
+RUN git clone https://git.bioconductor.org/packages/humanHippocampus2024 /tmp/hh \
+    && cd /tmp/hh \
+    && git checkout RELEASE_3_21 \
+    && git checkout 39f0a1c \
+    && R CMD INSTALL . \
+    && rm -rf /tmp/hh
+
+# Normal R things (plotting, data handling, etc.)
+RUN R -e "options(warn=2); install.packages(c('tidyverse', 'duckplyr', 'ape', 'phylotools', 'ggsci', 'ggstatsplot', 'gganimate', 'ggthemes', 'ggrepel', 'ggforce', 'cowplot', 'tidytree', 'data.table', 'scales', 'DT', 'pheatmap', 'ggwordcloud', 'wordcloud', 'wordcloud2', 'microplot', 'rmeta', 'plotly', 'ggstar', 'ggnewscale', 'ggalluvial', 'TDbook', 'aplot', 'patchwork', 'igraph', 'ggraph', 'R.utils', 'ggpubr', 'UpSetR', 'ComplexUpset', 'ggVennDiagram', 'IRkernel'))"
+
+# NMF packages
+RUN R -e "options(warn=2); remotes::install_github('zdebruine/RcppML@c997bcdd205cf03e105efa91c944da0e2c9068e0')"
+
+# # Needed, otherwise pip tries to uninstall packaging which is a core dependency (with no RECORD)
+# RUN pip install --no-cache-dir --break-system-packages \
+#     packaging==24.0
+#PIP_NO_UNINSTALL=packaging \
+# Have to use --break-system-packages due to PEP 668 enforcement since this is a system Python (base image) and I do not want to use a virtualenv
+# Note the removed `pip install --upgrade pip --break-system-packages &&` since there is no RECORD file (the version of pip the base image comes with is fine)
+# Install core Python packages (curated from Christian's base image)
+RUN pip install --no-cache-dir --break-system-packages\
+    # Pin packaging at top to prevent uninstalling it (core dependency with no RECORD file)
+    packaging==24.0 \
+    # Jupyter 
+    jupyterlab \
+    bash_kernel \
+    jupyterlab-git \
+    ipywidgets \
+    jupyterlab-fasta \
+    ipysheet \
+    jupyterlab-horizon-theme \
+    jupyterlab-lsp \
+    'python-lsp-server[all]' \
+    jupyterlab_vim \
+    jupyterlab_execute_time \
+    jupytext \
+    ipykernel \
+    # Core bioinformatics packages
+    # biopython \
+    # pysam \
+    # HTSeq \
+    # pyfaidx \
+    # pyBigWig \
+    # pyliftover \
+    # deeptools \
+    # PyVCF3 \
+    # pyfastx \
+    # pyensembl \
+    snakemake \
+    scanpy \
+    squidpy \
+    # bioframe \
+    # pybigtools \
+    # pybedtools \
+    # gffutils \
+    # Data science
+    numpy \
+    pandas \
+    polars \
+    scipy \
+    matplotlib \
+    seaborn \
+    scikit-learn \
+    plotly \
+    # Machine learning
+    # tensorflow \
+    # tensorflow-probability \
+    # torch \
+    # torchvision \
+    # jax \
+    # Dev tools
+    black \
+    isort \
+    tqdm \
+    icecream
+
+# Needed, otherwise importing squidpy gives errors
+RUN pip install --upgrade --break-system-packages spatialdata 
+
+# Needed for Vitessce on the Python side
+RUN pip install --no-cache-dir --break-system-packages \
+    anndata \
+    zarr \
+    vitessce
+#    spatialde \
+#    SpaGCN
+
+# Mount points
+RUN mkdir -p /data /zata
+
+# # R libraries that are needed for paper data conversion
+# RUN R -e "options(warn=2); install.packages(c('magick'))"
+# RUN R -e "options(warn=2); BiocManager::install(c('zellkonverter', 'SpatialExperiment', 'spatialLIBD', 'BayesSpace'))"
+# RUN R -e "options(warn=2); BiocManager::install(c('PCAtools', 'harmony'))"
+
+# # Spatial Diff Gene Exp
+# RUN R -e "options(warn=2); devtools::install_github('vitessce/vitessceR')"
+# RUN R -e "options(warn=2); devtools::install_github('xzhoulab/SPARK')"
+# RUN R -e "options(warn=2); BiocManager::install(c('nnSVG'))"
+
+# # Cluster comparison pipeline
+# RUN R -e "options(warn=2); BiocManager::install(c('ggspavis', 'EBImage'))"
+# RUN R -e "options(warn=2); BiocManager::install(c('SC3'))"
+
+# # Needed for R editor support
+# RUN R -e "options(warn=2); install.packages(c('languageserver'))"
+
+
