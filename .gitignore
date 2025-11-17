@@ -10,6 +10,7 @@ Miniforge3/
 .cache/
 .local/
 tools/
+longer_than_scratch_junk/
 
 
 # Types of files
