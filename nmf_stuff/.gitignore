@@ -3,3 +3,6 @@
 *.RData
 *.Rdata
 *.rds
+# Ignore batched plots for now
+dlPFC/output/registration_dotplot
+dlPFC/output/batched_registration_dotplot
