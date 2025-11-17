@@ -10,7 +10,8 @@ suppressPackageStartupMessages({
 })
 
 # Set the project root for 'here' package
-here::i_am("scripts/my_nmf_dlPFC.R")
+my_relative_path <- "scripts/my_nmf_dlPFC.R"
+here::i_am(my_relative_path)
 
 # Load shared utility functions
 source(here("scripts", "utils.R"))
@@ -77,7 +78,7 @@ elapsed <- difftime(end_time, start_time, units = "mins")
 log_msg(sprintf("NMF completed in %.2f minutes", as.numeric(elapsed)))
 
 # Save result
-log_msg(paste("Saving NMF result to:", normalizePath(path_for_x, mustWork = FALSE)))
+log_msg(paste("Saving NMF result to:", path_for_x))
 saveRDS(x, file = path_for_x)
 log_msg("Save complete.")
 
@@ -88,10 +89,12 @@ colnames(nmf_matrix) <- paste0("nmf", seq_len(ncol(nmf_matrix)))
 log_msg("Appending NMF results to SingleCellExperiment object...")
 colData(snrna) <- cbind(colData(snrna), nmf_matrix)
 
-log_msg(paste("Saving updated SingleCellExperiment to:", normalizePath(path_for_appended_snrna, mustWork = FALSE)))
+log_msg(paste("Saving updated SingleCellExperiment to:", path_for_appended_snrna))
 saveRDS(snrna, file = path_for_appended_snrna)
 log_msg("Save complete.")
 
+# Save snapshot of this script for reproducibility
+snapshot_script(here(my_relative_path))
 
 # Session info
 log_msg("===== Session Info =====")

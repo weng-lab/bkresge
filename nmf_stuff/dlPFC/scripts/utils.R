@@ -53,6 +53,9 @@ load_and_rename <- function(path, new_names = NULL, envir = .GlobalEnv, overwrit
 
     if (verbose) message(sprintf("Loading objects from: %s", path))
 
+    # Capture objects that already exist before loading
+    pre_existing <- ls(envir = envir)
+
     # Load all objects directly into target environment
     obj_names <- load(path, envir = envir, verbose = verbose)
     n <- length(obj_names)
@@ -75,8 +78,11 @@ load_and_rename <- function(path, new_names = NULL, envir = .GlobalEnv, overwrit
         new <- new_names[i]
         obj <- get(orig, envir = envir)
 
-        if (exists(new, envir = envir) && !overwrite) {
-            stop(sprintf("Object '%s' already exists in the target environment.", new))
+        # Check if the target name existed BEFORE the load (not just after)
+        existed_before <- new %in% pre_existing
+
+        if (existed_before && !overwrite) {
+            stop(sprintf("Object '%s' already existed in the target environment before loading.", new))
         }
 
         if (orig != new) {
@@ -98,4 +104,23 @@ load_and_rename <- function(path, new_names = NULL, envir = .GlobalEnv, overwrit
 
     if (verbose) message("Finished loading objects.\n")
     invisible(mget(new_names, envir = envir))
+}
+
+
+#---------------------------------------------------------------
+# Utility: snapshot_script
+#---------------------------------------------------------------
+# Copies the current script to the log for reproducibility
+snapshot_script <- function(script_path) {
+    if (!file.exists(script_path)) {
+        warning(sprintf("Script file not found: %s", script_path))
+        return(NULL)
+    }
+    script_name <- basename(script_path)
+    log_msg(sprintf("======Snapshot of script: %s======", script_name))
+    # Write the script content to the log using
+    cat("\n----- Begin Script Snapshot -----\n")
+    script_content <- readLines(script_path)
+    cat(script_content, sep = "\n")
+    cat("\n----- End Script Snapshot -----\n\n")
 }

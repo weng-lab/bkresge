@@ -10,14 +10,21 @@ suppressPackageStartupMessages({
     library(viridis)
 })
 
+
 # Set the project root for 'here' package
-here::i_am("scripts/registration_dotplot.R")
+my_relative_path <- "scripts/registration_dotplot.R"
+here::i_am(my_relative_path)
 
 # Load shared utility functions
 source(here("scripts", "utils.R"))
 
 # Logging
 log_file <- setup_log(prefix = "registration_dotplot")
+
+snapshot_script(here(my_relative_path))
+log_msg("===== Session Info =====")
+print(sessionInfo())
+print(session_info())
 
 ##### Paths
 dlpfc_spe_path <- here("data", "srt_with_nmf.rda")
@@ -471,10 +478,6 @@ ggsave(
     width = 12
 )
 
-# Session info
-log_msg("===== Session Info =====")
-print(sessionInfo())
-print(session_info())
 log_msg("===== Finished Making Plots=====")
 
 # Close sink
