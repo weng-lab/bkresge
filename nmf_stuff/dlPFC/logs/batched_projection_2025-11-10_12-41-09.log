@@ -1,0 +1,1470 @@
+[2025-11-10 12:41:09] Log file created: /zata/zippy/kresgeb/nmf_stuff/dlPFC/logs/batched_projection_2025-11-10_12-41-09.log
+[2025-11-10 12:41:09] ======Snapshot of script: batched_projection.R======
+
+----- Begin Script Snapshot -----
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages({
+    library(here)
+    library(SpatialExperiment)
+    library(SingleCellExperiment)
+    library(RcppML)
+    library(Matrix)
+    library(sessioninfo)
+})
+
+# --------------------------------------------------------------
+# Set project root and import utilities
+# --------------------------------------------------------------
+my_relative_path <- "scripts/batched_projection.R"
+here::i_am(my_relative_path)
+source(here("scripts", "utils.R"))
+
+# --------------------------------------------------------------
+# Global setup
+# --------------------------------------------------------------
+threads <- 64
+options(RcppML.threads = threads)
+options(RcppML.verbose = TRUE)
+
+setup_log(prefix = "batched_projection")
+snapshot_script(here(my_relative_path))
+print(sessionInfo())
+print(session_info())
+log_msg(sprintf("Running batched projection with %d threads", threads))
+
+# --------------------------------------------------------------
+# Paths and parameters
+# --------------------------------------------------------------
+nmf_summary_csv <- here("data", "batched_nmf", "summary.csv")
+srt_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
+proj_outdir <- here("data", "batched_projection")
+summary_csv <- file.path(proj_outdir, "summary.csv")
+
+if (!dir.exists(proj_outdir)) {
+    dir.create(proj_outdir, recursive = TRUE)
+}
+
+# --------------------------------------------------------------
+# Load SRT once
+# --------------------------------------------------------------
+log_msg("===== Loading and processing SRT object =====")
+log_msg(paste("Loading SRT object from:", srt_path))
+load_and_rename(srt_path, new_names = "srt")
+stopifnot(inherits(srt, "SpatialExperiment"))
+
+# The object uses Ensebml IDs as rownames
+# I should not ever WANT this,
+# so lets just replace them with the gene_names right now
+# Replace Ensembl IDs with gene_name as rownames
+log_msg("Replacing rownames(srt) with gene_name from rowData...")
+gene_names <- as.character(rowData(srt)$gene_name)
+na_idx <- which(is.na(gene_names) | gene_names == "")
+if (length(na_idx) > 0) {
+    gene_names[na_idx] <- rownames(srt)[na_idx] # fallback to Ensembl IDs
+    log_msg(sprintf("Replaced %d NA/blank gene_name entries with Ensembl IDs", length(na_idx)))
+}
+# Make names unique (adds .1, .2, etc. suffixes)
+gene_names <- make.unique(gene_names)
+
+# apply new rownames
+rownames(srt) <- gene_names
+log_msg("SRT preprocessing complete.")
+
+# --------------------------------------------------------------
+# Load NMF batch summary
+# --------------------------------------------------------------
+if (!file.exists(nmf_summary_csv)) {
+    stop("NMF summary CSV not found at: ", nmf_summary_csv)
+}
+nmf_summary <- read.csv(nmf_summary_csv)
+log_msg(sprintf("Loaded %d NMF runs from summary.", nrow(nmf_summary)))
+
+# --------------------------------------------------------------
+# Initialize output summary CSV
+# --------------------------------------------------------------
+if (!file.exists(summary_csv)) {
+    write.table(
+        data.frame(
+            timestamp = character(), k = integer(), seed = integer(),
+            tol = numeric(), elapsed_min = numeric(),
+            nmf_input = character(), projection_output = character(),
+            n_common_genes = integer()
+        ),
+        file = summary_csv, sep = ",", row.names = FALSE, col.names = TRUE
+    )
+    log_msg(paste("Initialized projection summary CSV at:", summary_csv))
+} else {
+    log_msg(paste("Appending to existing projection summary CSV at:", summary_csv))
+}
+
+# --------------------------------------------------------------
+# Run projections for each NMF result
+# --------------------------------------------------------------
+for (i in seq_len(nrow(nmf_summary))) {
+    nmf_path <- nmf_summary$output_path[i]
+    k <- nmf_summary$k[i]
+    seed <- nmf_summary$seed[i]
+    tol <- nmf_summary$tol[i]
+
+    run_prefix <- sprintf("proj_k%d_seed%d_tol%.0e", k, seed, tol)
+    proj_out_path <- file.path(proj_outdir, paste0(run_prefix, ".rds"))
+
+    log_msg("--------------------------------------------")
+    log_msg(sprintf(
+        "Starting projection %d / %d: k=%d, seed=%d, tol=%.0e",
+        i, nrow(nmf_summary), k, seed, tol
+    ))
+    log_msg("--------------------------------------------")
+
+    start_time <- Sys.time()
+
+    # Load NMF model
+    nmf_x <- readRDS(nmf_path)
+    w <- nmf_x@w
+
+    # Match genes
+    common_genes <- intersect(rownames(w), rownames(srt))
+    log_msg(sprintf("Common genes: %d", length(common_genes)))
+
+    w <- w[common_genes, , drop = FALSE]
+    Y <- assay(srt, "logcounts")[common_genes, , drop = FALSE]
+
+    # Projection
+    log_msg("Projecting SRT into snRNA NMF basis...")
+    set.seed(seed)
+    proj <- project(w, Y, L1 = 0)
+    proj <- t(proj)
+
+    # Rescale so loadings per spot sum to 1
+    proj <- apply(proj, 2, function(z) z / sum(z))
+    log_msg("Projection complete and rescaled.")
+
+    # Save result
+    saveRDS(proj, proj_out_path)
+    log_msg(paste("Saved projection result to:", proj_out_path))
+
+    end_time <- Sys.time()
+    elapsed <- as.numeric(difftime(end_time, start_time, units = "mins"))
+
+    # Append run metadata
+    new_row <- data.frame(
+        timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        k = k, seed = seed, tol = tol,
+        elapsed_min = elapsed,
+        nmf_input = nmf_path,
+        projection_output = proj_out_path,
+        n_common_genes = length(common_genes)
+    )
+
+    write.table(
+        new_row,
+        file = summary_csv,
+        sep = ",", row.names = FALSE, col.names = FALSE, append = TRUE
+    )
+    log_msg("Appended projection metadata to summary.csv")
+}
+
+log_msg("===== Finished batched projection =====")
+close_log()
+
+----- End Script Snapshot -----
+
+R version 4.4.2 (2024-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+
+locale:
+[1] C
+
+time zone: America/New_York
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] sessioninfo_1.2.2           Matrix_1.7-1                RcppML_0.5.5                SpatialExperiment_1.16.0   
+ [5] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0 Biobase_2.66.0              GenomicRanges_1.58.0       
+ [9] GenomeInfoDb_1.42.1         IRanges_2.40.1              S4Vectors_0.44.0            BiocGenerics_0.52.0        
+[13] MatrixGenerics_1.18.0       matrixStats_1.5.0           here_1.0.1                 
+
+loaded via a namespace (and not attached):
+ [1] jsonlite_2.0.0          compiler_4.4.2          rjson_0.2.23            crayon_1.5.3           
+ [5] Rcpp_1.1.0              magick_2.8.6            lattice_0.22-5          R6_2.6.1               
+ [9] XVector_0.46.0          S4Arrays_1.6.0          RcppEigen_0.3.4.0.2     knitr_1.50             
+[13] DelayedArray_0.32.0     rprojroot_2.1.1         GenomeInfoDbData_1.2.13 xfun_0.53              
+[17] SparseArray_1.6.0       cli_3.6.5               magrittr_2.0.4          zlibbioc_1.52.0        
+[21] grid_4.4.2              evaluate_1.0.5          abind_1.4-8             httr_1.4.7             
+[25] tools_4.4.2             UCSC.utils_1.2.0       
+- Session info ---------------------------------------------------------------
+ setting  value
+ version  R version 4.4.2 (2024-10-31)
+ os       Ubuntu 22.04.5 LTS
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  C
+ ctype    C
+ tz       America/New_York
+ date     2025-11-10
+ pandoc   2.9.2.1 @ /usr/bin/pandoc
+
+- Packages -------------------------------------------------------------------
+ package              * version   date (UTC) lib source
+ abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
+ Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocGenerics         * 0.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ cli                    3.6.5     2025-04-23 [1] CRAN (R 4.4.2)
+ crayon                 1.5.3     2024-06-20 [1] CRAN (R 4.4.2)
+ DelayedArray           0.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ evaluate               1.0.5     2025-08-27 [1] CRAN (R 4.4.2)
+ GenomeInfoDb         * 1.42.1    2024-11-28 [1] Bioconductor 3.20 (R 4.4.2)
+ GenomeInfoDbData       1.2.13    2025-01-10 [1] Bioconductor
+ GenomicRanges        * 1.58.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ here                 * 1.0.1     2020-12-13 [1] CRAN (R 4.4.2)
+ httr                   1.4.7     2023-08-15 [1] CRAN (R 4.4.2)
+ IRanges              * 2.40.1    2024-12-05 [1] Bioconductor 3.20 (R 4.4.2)
+ jsonlite               2.0.0     2025-03-27 [1] CRAN (R 4.4.2)
+ knitr                  1.50      2025-03-16 [1] CRAN (R 4.4.2)
+ lattice                0.22-5    2023-10-24 [3] CRAN (R 4.3.1)
+ magick                 2.8.6     2025-03-23 [1] CRAN (R 4.4.2)
+ magrittr               2.0.4     2025-09-12 [1] CRAN (R 4.4.2)
+ Matrix               * 1.7-1     2024-10-18 [3] CRAN (R 4.4.1)
+ MatrixGenerics       * 1.18.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ matrixStats          * 1.5.0     2025-01-07 [1] CRAN (R 4.4.2)
+ R6                     2.6.1     2025-02-15 [1] CRAN (R 4.4.2)
+ Rcpp                   1.1.0     2025-07-02 [1] CRAN (R 4.4.2)
+ RcppEigen              0.3.4.0.2 2024-08-24 [1] CRAN (R 4.4.2)
+ RcppML               * 0.5.5     2025-09-09 [1] Github (zdebruine/RcppML@c997bcd)
+ rjson                  0.2.23    2024-09-16 [1] CRAN (R 4.4.2)
+ rprojroot              2.1.1     2025-08-26 [1] CRAN (R 4.4.2)
+ S4Arrays               1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S4Vectors            * 0.44.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.4.2)
+ SingleCellExperiment * 1.28.1    2024-11-10 [1] Bioconductor 3.20 (R 4.4.2)
+ SparseArray            1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SpatialExperiment    * 1.16.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SummarizedExperiment * 1.36.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ UCSC.utils             1.2.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ xfun                   0.53      2025-08-19 [1] CRAN (R 4.4.2)
+ XVector                0.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ zlibbioc               1.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+
+ [1] /usr/local/lib/R/site-library
+ [2] /usr/lib/R/site-library
+ [3] /usr/lib/R/library
+
+------------------------------------------------------------------------------
+[2025-11-10 12:41:09] Running batched projection with 64 threads
+[2025-11-10 12:41:09] ===== Loading and processing SRT object =====
+[2025-11-10 12:41:09] Loading SRT object from: /data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData
+[2025-11-10 12:43:15] Replacing rownames(srt) with gene_name from rowData...
+[2025-11-10 12:43:15] SRT preprocessing complete.
+[2025-11-10 12:43:15] Loaded 150 NMF runs from summary.
+[2025-11-10 12:43:15] Initialized projection summary CSV at: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/summary.csv
+[2025-11-10 12:43:15] --------------------------------------------
+[2025-11-10 12:43:15] Starting projection 1 / 150: k=10, seed=42, tol=1e-05
+[2025-11-10 12:43:15] --------------------------------------------
+[2025-11-10 12:43:16] Common genes: 28907
+[2025-11-10 12:43:19] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:43:20] Projection complete and rescaled.
+[2025-11-10 12:43:21] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-05.rds
+[2025-11-10 12:43:21] Appended projection metadata to summary.csv
+[2025-11-10 12:43:21] --------------------------------------------
+[2025-11-10 12:43:21] Starting projection 2 / 150: k=20, seed=42, tol=1e-05
+[2025-11-10 12:43:21] --------------------------------------------
+[2025-11-10 12:43:21] Common genes: 28907
+[2025-11-10 12:43:24] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:43:26] Projection complete and rescaled.
+[2025-11-10 12:43:26] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-05.rds
+[2025-11-10 12:43:26] Appended projection metadata to summary.csv
+[2025-11-10 12:43:26] --------------------------------------------
+[2025-11-10 12:43:26] Starting projection 3 / 150: k=30, seed=42, tol=1e-05
+[2025-11-10 12:43:26] --------------------------------------------
+[2025-11-10 12:43:26] Common genes: 28907
+[2025-11-10 12:43:29] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:43:32] Projection complete and rescaled.
+[2025-11-10 12:43:33] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-05.rds
+[2025-11-10 12:43:33] Appended projection metadata to summary.csv
+[2025-11-10 12:43:33] --------------------------------------------
+[2025-11-10 12:43:33] Starting projection 4 / 150: k=40, seed=42, tol=1e-05
+[2025-11-10 12:43:33] --------------------------------------------
+[2025-11-10 12:43:33] Common genes: 28907
+[2025-11-10 12:43:35] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:43:37] Projection complete and rescaled.
+[2025-11-10 12:43:37] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-05.rds
+[2025-11-10 12:43:37] Appended projection metadata to summary.csv
+[2025-11-10 12:43:37] --------------------------------------------
+[2025-11-10 12:43:37] Starting projection 5 / 150: k=50, seed=42, tol=1e-05
+[2025-11-10 12:43:37] --------------------------------------------
+[2025-11-10 12:43:38] Common genes: 28907
+[2025-11-10 12:43:40] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:43:42] Projection complete and rescaled.
+[2025-11-10 12:43:43] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-05.rds
+[2025-11-10 12:43:43] Appended projection metadata to summary.csv
+[2025-11-10 12:43:43] --------------------------------------------
+[2025-11-10 12:43:43] Starting projection 6 / 150: k=60, seed=42, tol=1e-05
+[2025-11-10 12:43:43] --------------------------------------------
+[2025-11-10 12:43:43] Common genes: 28907
+[2025-11-10 12:43:45] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:43:47] Projection complete and rescaled.
+[2025-11-10 12:43:49] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-05.rds
+[2025-11-10 12:43:49] Appended projection metadata to summary.csv
+[2025-11-10 12:43:49] --------------------------------------------
+[2025-11-10 12:43:49] Starting projection 7 / 150: k=70, seed=42, tol=1e-05
+[2025-11-10 12:43:49] --------------------------------------------
+[2025-11-10 12:43:49] Common genes: 28907
+[2025-11-10 12:43:52] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:43:54] Projection complete and rescaled.
+[2025-11-10 12:43:56] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-05.rds
+[2025-11-10 12:43:56] Appended projection metadata to summary.csv
+[2025-11-10 12:43:56] --------------------------------------------
+[2025-11-10 12:43:56] Starting projection 8 / 150: k=80, seed=42, tol=1e-05
+[2025-11-10 12:43:56] --------------------------------------------
+[2025-11-10 12:43:56] Common genes: 28907
+[2025-11-10 12:43:59] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:01] Projection complete and rescaled.
+[2025-11-10 12:44:03] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-05.rds
+[2025-11-10 12:44:03] Appended projection metadata to summary.csv
+[2025-11-10 12:44:03] --------------------------------------------
+[2025-11-10 12:44:03] Starting projection 9 / 150: k=90, seed=42, tol=1e-05
+[2025-11-10 12:44:03] --------------------------------------------
+[2025-11-10 12:44:03] Common genes: 28907
+[2025-11-10 12:44:06] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:11] Projection complete and rescaled.
+[2025-11-10 12:44:13] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-05.rds
+[2025-11-10 12:44:13] Appended projection metadata to summary.csv
+[2025-11-10 12:44:13] --------------------------------------------
+[2025-11-10 12:44:13] Starting projection 10 / 150: k=100, seed=42, tol=1e-05
+[2025-11-10 12:44:13] --------------------------------------------
+[2025-11-10 12:44:13] Common genes: 28907
+[2025-11-10 12:44:15] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:18] Projection complete and rescaled.
+[2025-11-10 12:44:21] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-05.rds
+[2025-11-10 12:44:21] Appended projection metadata to summary.csv
+[2025-11-10 12:44:21] --------------------------------------------
+[2025-11-10 12:44:21] Starting projection 11 / 150: k=10, seed=1029, tol=1e-05
+[2025-11-10 12:44:21] --------------------------------------------
+[2025-11-10 12:44:21] Common genes: 28907
+[2025-11-10 12:44:23] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:24] Projection complete and rescaled.
+[2025-11-10 12:44:24] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-05.rds
+[2025-11-10 12:44:24] Appended projection metadata to summary.csv
+[2025-11-10 12:44:24] --------------------------------------------
+[2025-11-10 12:44:24] Starting projection 12 / 150: k=20, seed=1029, tol=1e-05
+[2025-11-10 12:44:24] --------------------------------------------
+[2025-11-10 12:44:24] Common genes: 28907
+[2025-11-10 12:44:29] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:30] Projection complete and rescaled.
+[2025-11-10 12:44:31] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-05.rds
+[2025-11-10 12:44:31] Appended projection metadata to summary.csv
+[2025-11-10 12:44:31] --------------------------------------------
+[2025-11-10 12:44:31] Starting projection 13 / 150: k=30, seed=1029, tol=1e-05
+[2025-11-10 12:44:31] --------------------------------------------
+[2025-11-10 12:44:31] Common genes: 28907
+[2025-11-10 12:44:33] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:34] Projection complete and rescaled.
+[2025-11-10 12:44:35] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-05.rds
+[2025-11-10 12:44:35] Appended projection metadata to summary.csv
+[2025-11-10 12:44:35] --------------------------------------------
+[2025-11-10 12:44:35] Starting projection 14 / 150: k=40, seed=1029, tol=1e-05
+[2025-11-10 12:44:35] --------------------------------------------
+[2025-11-10 12:44:35] Common genes: 28907
+[2025-11-10 12:44:37] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:39] Projection complete and rescaled.
+[2025-11-10 12:44:40] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-05.rds
+[2025-11-10 12:44:40] Appended projection metadata to summary.csv
+[2025-11-10 12:44:40] --------------------------------------------
+[2025-11-10 12:44:40] Starting projection 15 / 150: k=50, seed=1029, tol=1e-05
+[2025-11-10 12:44:40] --------------------------------------------
+[2025-11-10 12:44:40] Common genes: 28907
+[2025-11-10 12:44:43] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:45] Projection complete and rescaled.
+[2025-11-10 12:44:46] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-05.rds
+[2025-11-10 12:44:46] Appended projection metadata to summary.csv
+[2025-11-10 12:44:46] --------------------------------------------
+[2025-11-10 12:44:46] Starting projection 16 / 150: k=60, seed=1029, tol=1e-05
+[2025-11-10 12:44:46] --------------------------------------------
+[2025-11-10 12:44:46] Common genes: 28907
+[2025-11-10 12:44:48] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:50] Projection complete and rescaled.
+[2025-11-10 12:44:51] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-05.rds
+[2025-11-10 12:44:51] Appended projection metadata to summary.csv
+[2025-11-10 12:44:51] --------------------------------------------
+[2025-11-10 12:44:51] Starting projection 17 / 150: k=70, seed=1029, tol=1e-05
+[2025-11-10 12:44:51] --------------------------------------------
+[2025-11-10 12:44:52] Common genes: 28907
+[2025-11-10 12:44:56] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:44:58] Projection complete and rescaled.
+[2025-11-10 12:44:59] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-05.rds
+[2025-11-10 12:44:59] Appended projection metadata to summary.csv
+[2025-11-10 12:44:59] --------------------------------------------
+[2025-11-10 12:44:59] Starting projection 18 / 150: k=80, seed=1029, tol=1e-05
+[2025-11-10 12:44:59] --------------------------------------------
+[2025-11-10 12:45:00] Common genes: 28907
+[2025-11-10 12:45:02] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:05] Projection complete and rescaled.
+[2025-11-10 12:45:06] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-05.rds
+[2025-11-10 12:45:06] Appended projection metadata to summary.csv
+[2025-11-10 12:45:06] --------------------------------------------
+[2025-11-10 12:45:06] Starting projection 19 / 150: k=90, seed=1029, tol=1e-05
+[2025-11-10 12:45:06] --------------------------------------------
+[2025-11-10 12:45:07] Common genes: 28907
+[2025-11-10 12:45:09] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:13] Projection complete and rescaled.
+[2025-11-10 12:45:14] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-05.rds
+[2025-11-10 12:45:14] Appended projection metadata to summary.csv
+[2025-11-10 12:45:14] --------------------------------------------
+[2025-11-10 12:45:14] Starting projection 20 / 150: k=100, seed=1029, tol=1e-05
+[2025-11-10 12:45:14] --------------------------------------------
+[2025-11-10 12:45:15] Common genes: 28907
+[2025-11-10 12:45:18] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:21] Projection complete and rescaled.
+[2025-11-10 12:45:23] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-05.rds
+[2025-11-10 12:45:23] Appended projection metadata to summary.csv
+[2025-11-10 12:45:23] --------------------------------------------
+[2025-11-10 12:45:23] Starting projection 21 / 150: k=10, seed=31415, tol=1e-05
+[2025-11-10 12:45:23] --------------------------------------------
+[2025-11-10 12:45:23] Common genes: 28907
+[2025-11-10 12:45:26] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:27] Projection complete and rescaled.
+[2025-11-10 12:45:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-05.rds
+[2025-11-10 12:45:27] Appended projection metadata to summary.csv
+[2025-11-10 12:45:27] --------------------------------------------
+[2025-11-10 12:45:27] Starting projection 22 / 150: k=20, seed=31415, tol=1e-05
+[2025-11-10 12:45:27] --------------------------------------------
+[2025-11-10 12:45:28] Common genes: 28907
+[2025-11-10 12:45:31] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:32] Projection complete and rescaled.
+[2025-11-10 12:45:33] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-05.rds
+[2025-11-10 12:45:33] Appended projection metadata to summary.csv
+[2025-11-10 12:45:33] --------------------------------------------
+[2025-11-10 12:45:33] Starting projection 23 / 150: k=30, seed=31415, tol=1e-05
+[2025-11-10 12:45:33] --------------------------------------------
+[2025-11-10 12:45:33] Common genes: 28907
+[2025-11-10 12:45:35] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:36] Projection complete and rescaled.
+[2025-11-10 12:45:37] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-05.rds
+[2025-11-10 12:45:37] Appended projection metadata to summary.csv
+[2025-11-10 12:45:37] --------------------------------------------
+[2025-11-10 12:45:37] Starting projection 24 / 150: k=40, seed=31415, tol=1e-05
+[2025-11-10 12:45:37] --------------------------------------------
+[2025-11-10 12:45:37] Common genes: 28907
+[2025-11-10 12:45:40] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:42] Projection complete and rescaled.
+[2025-11-10 12:45:43] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-05.rds
+[2025-11-10 12:45:43] Appended projection metadata to summary.csv
+[2025-11-10 12:45:43] --------------------------------------------
+[2025-11-10 12:45:43] Starting projection 25 / 150: k=50, seed=31415, tol=1e-05
+[2025-11-10 12:45:43] --------------------------------------------
+[2025-11-10 12:45:43] Common genes: 28907
+[2025-11-10 12:45:46] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:47] Projection complete and rescaled.
+[2025-11-10 12:45:48] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-05.rds
+[2025-11-10 12:45:48] Appended projection metadata to summary.csv
+[2025-11-10 12:45:48] --------------------------------------------
+[2025-11-10 12:45:48] Starting projection 26 / 150: k=60, seed=31415, tol=1e-05
+[2025-11-10 12:45:48] --------------------------------------------
+[2025-11-10 12:45:49] Common genes: 28907
+[2025-11-10 12:45:51] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:53] Projection complete and rescaled.
+[2025-11-10 12:45:54] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-05.rds
+[2025-11-10 12:45:54] Appended projection metadata to summary.csv
+[2025-11-10 12:45:54] --------------------------------------------
+[2025-11-10 12:45:54] Starting projection 27 / 150: k=70, seed=31415, tol=1e-05
+[2025-11-10 12:45:54] --------------------------------------------
+[2025-11-10 12:45:54] Common genes: 28907
+[2025-11-10 12:45:57] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:45:59] Projection complete and rescaled.
+[2025-11-10 12:46:01] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-05.rds
+[2025-11-10 12:46:01] Appended projection metadata to summary.csv
+[2025-11-10 12:46:01] --------------------------------------------
+[2025-11-10 12:46:01] Starting projection 28 / 150: k=80, seed=31415, tol=1e-05
+[2025-11-10 12:46:01] --------------------------------------------
+[2025-11-10 12:46:01] Common genes: 28907
+[2025-11-10 12:46:07] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:09] Projection complete and rescaled.
+[2025-11-10 12:46:11] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-05.rds
+[2025-11-10 12:46:11] Appended projection metadata to summary.csv
+[2025-11-10 12:46:11] --------------------------------------------
+[2025-11-10 12:46:11] Starting projection 29 / 150: k=90, seed=31415, tol=1e-05
+[2025-11-10 12:46:11] --------------------------------------------
+[2025-11-10 12:46:11] Common genes: 28907
+[2025-11-10 12:46:14] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:17] Projection complete and rescaled.
+[2025-11-10 12:46:19] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-05.rds
+[2025-11-10 12:46:19] Appended projection metadata to summary.csv
+[2025-11-10 12:46:19] --------------------------------------------
+[2025-11-10 12:46:19] Starting projection 30 / 150: k=100, seed=31415, tol=1e-05
+[2025-11-10 12:46:19] --------------------------------------------
+[2025-11-10 12:46:20] Common genes: 28907
+[2025-11-10 12:46:22] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:24] Projection complete and rescaled.
+[2025-11-10 12:46:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-05.rds
+[2025-11-10 12:46:27] Appended projection metadata to summary.csv
+[2025-11-10 12:46:27] --------------------------------------------
+[2025-11-10 12:46:27] Starting projection 31 / 150: k=10, seed=120301, tol=1e-05
+[2025-11-10 12:46:27] --------------------------------------------
+[2025-11-10 12:46:27] Common genes: 28907
+[2025-11-10 12:46:29] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:30] Projection complete and rescaled.
+[2025-11-10 12:46:30] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-05.rds
+[2025-11-10 12:46:30] Appended projection metadata to summary.csv
+[2025-11-10 12:46:30] --------------------------------------------
+[2025-11-10 12:46:30] Starting projection 32 / 150: k=20, seed=120301, tol=1e-05
+[2025-11-10 12:46:30] --------------------------------------------
+[2025-11-10 12:46:31] Common genes: 28907
+[2025-11-10 12:46:33] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:34] Projection complete and rescaled.
+[2025-11-10 12:46:35] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-05.rds
+[2025-11-10 12:46:35] Appended projection metadata to summary.csv
+[2025-11-10 12:46:35] --------------------------------------------
+[2025-11-10 12:46:35] Starting projection 33 / 150: k=30, seed=120301, tol=1e-05
+[2025-11-10 12:46:35] --------------------------------------------
+[2025-11-10 12:46:35] Common genes: 28907
+[2025-11-10 12:46:40] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:42] Projection complete and rescaled.
+[2025-11-10 12:46:42] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-05.rds
+[2025-11-10 12:46:42] Appended projection metadata to summary.csv
+[2025-11-10 12:46:42] --------------------------------------------
+[2025-11-10 12:46:42] Starting projection 34 / 150: k=40, seed=120301, tol=1e-05
+[2025-11-10 12:46:42] --------------------------------------------
+[2025-11-10 12:46:43] Common genes: 28907
+[2025-11-10 12:46:45] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:47] Projection complete and rescaled.
+[2025-11-10 12:46:47] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-05.rds
+[2025-11-10 12:46:47] Appended projection metadata to summary.csv
+[2025-11-10 12:46:47] --------------------------------------------
+[2025-11-10 12:46:47] Starting projection 35 / 150: k=50, seed=120301, tol=1e-05
+[2025-11-10 12:46:47] --------------------------------------------
+[2025-11-10 12:46:48] Common genes: 28907
+[2025-11-10 12:46:50] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:52] Projection complete and rescaled.
+[2025-11-10 12:46:53] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-05.rds
+[2025-11-10 12:46:53] Appended projection metadata to summary.csv
+[2025-11-10 12:46:53] --------------------------------------------
+[2025-11-10 12:46:53] Starting projection 36 / 150: k=60, seed=120301, tol=1e-05
+[2025-11-10 12:46:53] --------------------------------------------
+[2025-11-10 12:46:53] Common genes: 28907
+[2025-11-10 12:46:56] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:46:57] Projection complete and rescaled.
+[2025-11-10 12:46:58] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-05.rds
+[2025-11-10 12:46:58] Appended projection metadata to summary.csv
+[2025-11-10 12:46:58] --------------------------------------------
+[2025-11-10 12:46:58] Starting projection 37 / 150: k=70, seed=120301, tol=1e-05
+[2025-11-10 12:46:58] --------------------------------------------
+[2025-11-10 12:46:59] Common genes: 28907
+[2025-11-10 12:47:01] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:03] Projection complete and rescaled.
+[2025-11-10 12:47:04] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed120301_tol1e-05.rds
+[2025-11-10 12:47:04] Appended projection metadata to summary.csv
+[2025-11-10 12:47:04] --------------------------------------------
+[2025-11-10 12:47:04] Starting projection 38 / 150: k=80, seed=120301, tol=1e-05
+[2025-11-10 12:47:04] --------------------------------------------
+[2025-11-10 12:47:05] Common genes: 28907
+[2025-11-10 12:47:07] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:10] Projection complete and rescaled.
+[2025-11-10 12:47:11] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed120301_tol1e-05.rds
+[2025-11-10 12:47:11] Appended projection metadata to summary.csv
+[2025-11-10 12:47:11] --------------------------------------------
+[2025-11-10 12:47:11] Starting projection 39 / 150: k=90, seed=120301, tol=1e-05
+[2025-11-10 12:47:11] --------------------------------------------
+[2025-11-10 12:47:12] Common genes: 28907
+[2025-11-10 12:47:14] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:16] Projection complete and rescaled.
+[2025-11-10 12:47:18] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed120301_tol1e-05.rds
+[2025-11-10 12:47:18] Appended projection metadata to summary.csv
+[2025-11-10 12:47:18] --------------------------------------------
+[2025-11-10 12:47:18] Starting projection 40 / 150: k=100, seed=120301, tol=1e-05
+[2025-11-10 12:47:18] --------------------------------------------
+[2025-11-10 12:47:19] Common genes: 28907
+[2025-11-10 12:47:21] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:24] Projection complete and rescaled.
+[2025-11-10 12:47:26] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed120301_tol1e-05.rds
+[2025-11-10 12:47:26] Appended projection metadata to summary.csv
+[2025-11-10 12:47:26] --------------------------------------------
+[2025-11-10 12:47:26] Starting projection 41 / 150: k=10, seed=2025, tol=1e-05
+[2025-11-10 12:47:26] --------------------------------------------
+[2025-11-10 12:47:27] Common genes: 28907
+[2025-11-10 12:47:28] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:29] Projection complete and rescaled.
+[2025-11-10 12:47:30] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed2025_tol1e-05.rds
+[2025-11-10 12:47:30] Appended projection metadata to summary.csv
+[2025-11-10 12:47:30] --------------------------------------------
+[2025-11-10 12:47:30] Starting projection 42 / 150: k=20, seed=2025, tol=1e-05
+[2025-11-10 12:47:30] --------------------------------------------
+[2025-11-10 12:47:30] Common genes: 28907
+[2025-11-10 12:47:32] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:33] Projection complete and rescaled.
+[2025-11-10 12:47:34] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed2025_tol1e-05.rds
+[2025-11-10 12:47:34] Appended projection metadata to summary.csv
+[2025-11-10 12:47:34] --------------------------------------------
+[2025-11-10 12:47:34] Starting projection 43 / 150: k=30, seed=2025, tol=1e-05
+[2025-11-10 12:47:34] --------------------------------------------
+[2025-11-10 12:47:34] Common genes: 28907
+[2025-11-10 12:47:36] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:37] Projection complete and rescaled.
+[2025-11-10 12:47:38] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed2025_tol1e-05.rds
+[2025-11-10 12:47:38] Appended projection metadata to summary.csv
+[2025-11-10 12:47:38] --------------------------------------------
+[2025-11-10 12:47:38] Starting projection 44 / 150: k=40, seed=2025, tol=1e-05
+[2025-11-10 12:47:38] --------------------------------------------
+[2025-11-10 12:47:38] Common genes: 28907
+[2025-11-10 12:47:40] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:44] Projection complete and rescaled.
+[2025-11-10 12:47:45] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed2025_tol1e-05.rds
+[2025-11-10 12:47:45] Appended projection metadata to summary.csv
+[2025-11-10 12:47:45] --------------------------------------------
+[2025-11-10 12:47:45] Starting projection 45 / 150: k=50, seed=2025, tol=1e-05
+[2025-11-10 12:47:45] --------------------------------------------
+[2025-11-10 12:47:46] Common genes: 28907
+[2025-11-10 12:47:47] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:49] Projection complete and rescaled.
+[2025-11-10 12:47:50] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed2025_tol1e-05.rds
+[2025-11-10 12:47:50] Appended projection metadata to summary.csv
+[2025-11-10 12:47:50] --------------------------------------------
+[2025-11-10 12:47:50] Starting projection 46 / 150: k=60, seed=2025, tol=1e-05
+[2025-11-10 12:47:50] --------------------------------------------
+[2025-11-10 12:47:50] Common genes: 28907
+[2025-11-10 12:47:53] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:47:55] Projection complete and rescaled.
+[2025-11-10 12:47:56] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed2025_tol1e-05.rds
+[2025-11-10 12:47:56] Appended projection metadata to summary.csv
+[2025-11-10 12:47:56] --------------------------------------------
+[2025-11-10 12:47:56] Starting projection 47 / 150: k=70, seed=2025, tol=1e-05
+[2025-11-10 12:47:56] --------------------------------------------
+[2025-11-10 12:47:57] Common genes: 28907
+[2025-11-10 12:47:59] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:01] Projection complete and rescaled.
+[2025-11-10 12:48:02] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed2025_tol1e-05.rds
+[2025-11-10 12:48:02] Appended projection metadata to summary.csv
+[2025-11-10 12:48:02] --------------------------------------------
+[2025-11-10 12:48:02] Starting projection 48 / 150: k=80, seed=2025, tol=1e-05
+[2025-11-10 12:48:02] --------------------------------------------
+[2025-11-10 12:48:03] Common genes: 28907
+[2025-11-10 12:48:04] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:06] Projection complete and rescaled.
+[2025-11-10 12:48:08] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed2025_tol1e-05.rds
+[2025-11-10 12:48:08] Appended projection metadata to summary.csv
+[2025-11-10 12:48:08] --------------------------------------------
+[2025-11-10 12:48:08] Starting projection 49 / 150: k=90, seed=2025, tol=1e-05
+[2025-11-10 12:48:08] --------------------------------------------
+[2025-11-10 12:48:09] Common genes: 28907
+[2025-11-10 12:48:11] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:13] Projection complete and rescaled.
+[2025-11-10 12:48:15] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed2025_tol1e-05.rds
+[2025-11-10 12:48:15] Appended projection metadata to summary.csv
+[2025-11-10 12:48:15] --------------------------------------------
+[2025-11-10 12:48:15] Starting projection 50 / 150: k=100, seed=2025, tol=1e-05
+[2025-11-10 12:48:15] --------------------------------------------
+[2025-11-10 12:48:15] Common genes: 28907
+[2025-11-10 12:48:17] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:20] Projection complete and rescaled.
+[2025-11-10 12:48:22] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed2025_tol1e-05.rds
+[2025-11-10 12:48:22] Appended projection metadata to summary.csv
+[2025-11-10 12:48:22] --------------------------------------------
+[2025-11-10 12:48:22] Starting projection 51 / 150: k=10, seed=42, tol=1e-06
+[2025-11-10 12:48:22] --------------------------------------------
+[2025-11-10 12:48:22] Common genes: 28907
+[2025-11-10 12:48:24] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:25] Projection complete and rescaled.
+[2025-11-10 12:48:26] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-06.rds
+[2025-11-10 12:48:26] Appended projection metadata to summary.csv
+[2025-11-10 12:48:26] --------------------------------------------
+[2025-11-10 12:48:26] Starting projection 52 / 150: k=20, seed=42, tol=1e-06
+[2025-11-10 12:48:26] --------------------------------------------
+[2025-11-10 12:48:26] Common genes: 28907
+[2025-11-10 12:48:28] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:29] Projection complete and rescaled.
+[2025-11-10 12:48:30] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-06.rds
+[2025-11-10 12:48:30] Appended projection metadata to summary.csv
+[2025-11-10 12:48:30] --------------------------------------------
+[2025-11-10 12:48:30] Starting projection 53 / 150: k=30, seed=42, tol=1e-06
+[2025-11-10 12:48:30] --------------------------------------------
+[2025-11-10 12:48:30] Common genes: 28907
+[2025-11-10 12:48:32] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:33] Projection complete and rescaled.
+[2025-11-10 12:48:34] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-06.rds
+[2025-11-10 12:48:34] Appended projection metadata to summary.csv
+[2025-11-10 12:48:34] --------------------------------------------
+[2025-11-10 12:48:34] Starting projection 54 / 150: k=40, seed=42, tol=1e-06
+[2025-11-10 12:48:34] --------------------------------------------
+[2025-11-10 12:48:34] Common genes: 28907
+[2025-11-10 12:48:37] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:38] Projection complete and rescaled.
+[2025-11-10 12:48:39] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-06.rds
+[2025-11-10 12:48:39] Appended projection metadata to summary.csv
+[2025-11-10 12:48:39] --------------------------------------------
+[2025-11-10 12:48:39] Starting projection 55 / 150: k=50, seed=42, tol=1e-06
+[2025-11-10 12:48:39] --------------------------------------------
+[2025-11-10 12:48:39] Common genes: 28907
+[2025-11-10 12:48:41] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:46] Projection complete and rescaled.
+[2025-11-10 12:48:47] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-06.rds
+[2025-11-10 12:48:47] Appended projection metadata to summary.csv
+[2025-11-10 12:48:47] --------------------------------------------
+[2025-11-10 12:48:47] Starting projection 56 / 150: k=60, seed=42, tol=1e-06
+[2025-11-10 12:48:47] --------------------------------------------
+[2025-11-10 12:48:47] Common genes: 28907
+[2025-11-10 12:48:50] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:52] Projection complete and rescaled.
+[2025-11-10 12:48:53] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-06.rds
+[2025-11-10 12:48:53] Appended projection metadata to summary.csv
+[2025-11-10 12:48:53] --------------------------------------------
+[2025-11-10 12:48:53] Starting projection 57 / 150: k=70, seed=42, tol=1e-06
+[2025-11-10 12:48:53] --------------------------------------------
+[2025-11-10 12:48:53] Common genes: 28907
+[2025-11-10 12:48:56] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:48:58] Projection complete and rescaled.
+[2025-11-10 12:49:00] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-06.rds
+[2025-11-10 12:49:00] Appended projection metadata to summary.csv
+[2025-11-10 12:49:00] --------------------------------------------
+[2025-11-10 12:49:00] Starting projection 58 / 150: k=80, seed=42, tol=1e-06
+[2025-11-10 12:49:00] --------------------------------------------
+[2025-11-10 12:49:00] Common genes: 28907
+[2025-11-10 12:49:03] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:04] Projection complete and rescaled.
+[2025-11-10 12:49:06] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-06.rds
+[2025-11-10 12:49:06] Appended projection metadata to summary.csv
+[2025-11-10 12:49:06] --------------------------------------------
+[2025-11-10 12:49:06] Starting projection 59 / 150: k=90, seed=42, tol=1e-06
+[2025-11-10 12:49:06] --------------------------------------------
+[2025-11-10 12:49:06] Common genes: 28907
+[2025-11-10 12:49:08] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:11] Projection complete and rescaled.
+[2025-11-10 12:49:13] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-06.rds
+[2025-11-10 12:49:13] Appended projection metadata to summary.csv
+[2025-11-10 12:49:13] --------------------------------------------
+[2025-11-10 12:49:13] Starting projection 60 / 150: k=100, seed=42, tol=1e-06
+[2025-11-10 12:49:13] --------------------------------------------
+[2025-11-10 12:49:14] Common genes: 28907
+[2025-11-10 12:49:16] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:21] Projection complete and rescaled.
+[2025-11-10 12:49:23] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-06.rds
+[2025-11-10 12:49:23] Appended projection metadata to summary.csv
+[2025-11-10 12:49:23] --------------------------------------------
+[2025-11-10 12:49:23] Starting projection 61 / 150: k=10, seed=1029, tol=1e-06
+[2025-11-10 12:49:23] --------------------------------------------
+[2025-11-10 12:49:24] Common genes: 28907
+[2025-11-10 12:49:26] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:27] Projection complete and rescaled.
+[2025-11-10 12:49:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-06.rds
+[2025-11-10 12:49:27] Appended projection metadata to summary.csv
+[2025-11-10 12:49:27] --------------------------------------------
+[2025-11-10 12:49:27] Starting projection 62 / 150: k=20, seed=1029, tol=1e-06
+[2025-11-10 12:49:27] --------------------------------------------
+[2025-11-10 12:49:28] Common genes: 28907
+[2025-11-10 12:49:30] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:31] Projection complete and rescaled.
+[2025-11-10 12:49:31] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-06.rds
+[2025-11-10 12:49:31] Appended projection metadata to summary.csv
+[2025-11-10 12:49:31] --------------------------------------------
+[2025-11-10 12:49:31] Starting projection 63 / 150: k=30, seed=1029, tol=1e-06
+[2025-11-10 12:49:31] --------------------------------------------
+[2025-11-10 12:49:32] Common genes: 28907
+[2025-11-10 12:49:34] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:35] Projection complete and rescaled.
+[2025-11-10 12:49:36] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-06.rds
+[2025-11-10 12:49:36] Appended projection metadata to summary.csv
+[2025-11-10 12:49:36] --------------------------------------------
+[2025-11-10 12:49:36] Starting projection 64 / 150: k=40, seed=1029, tol=1e-06
+[2025-11-10 12:49:36] --------------------------------------------
+[2025-11-10 12:49:36] Common genes: 28907
+[2025-11-10 12:49:39] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:40] Projection complete and rescaled.
+[2025-11-10 12:49:41] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-06.rds
+[2025-11-10 12:49:41] Appended projection metadata to summary.csv
+[2025-11-10 12:49:41] --------------------------------------------
+[2025-11-10 12:49:41] Starting projection 65 / 150: k=50, seed=1029, tol=1e-06
+[2025-11-10 12:49:41] --------------------------------------------
+[2025-11-10 12:49:42] Common genes: 28907
+[2025-11-10 12:49:44] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:45] Projection complete and rescaled.
+[2025-11-10 12:49:46] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-06.rds
+[2025-11-10 12:49:46] Appended projection metadata to summary.csv
+[2025-11-10 12:49:46] --------------------------------------------
+[2025-11-10 12:49:46] Starting projection 66 / 150: k=60, seed=1029, tol=1e-06
+[2025-11-10 12:49:46] --------------------------------------------
+[2025-11-10 12:49:47] Common genes: 28907
+[2025-11-10 12:49:49] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:51] Projection complete and rescaled.
+[2025-11-10 12:49:52] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-06.rds
+[2025-11-10 12:49:52] Appended projection metadata to summary.csv
+[2025-11-10 12:49:52] --------------------------------------------
+[2025-11-10 12:49:52] Starting projection 67 / 150: k=70, seed=1029, tol=1e-06
+[2025-11-10 12:49:52] --------------------------------------------
+[2025-11-10 12:49:53] Common genes: 28907
+[2025-11-10 12:49:55] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:49:57] Projection complete and rescaled.
+[2025-11-10 12:49:59] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-06.rds
+[2025-11-10 12:49:59] Appended projection metadata to summary.csv
+[2025-11-10 12:49:59] --------------------------------------------
+[2025-11-10 12:49:59] Starting projection 68 / 150: k=80, seed=1029, tol=1e-06
+[2025-11-10 12:49:59] --------------------------------------------
+[2025-11-10 12:49:59] Common genes: 28907
+[2025-11-10 12:50:01] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:04] Projection complete and rescaled.
+[2025-11-10 12:50:05] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-06.rds
+[2025-11-10 12:50:05] Appended projection metadata to summary.csv
+[2025-11-10 12:50:05] --------------------------------------------
+[2025-11-10 12:50:05] Starting projection 69 / 150: k=90, seed=1029, tol=1e-06
+[2025-11-10 12:50:05] --------------------------------------------
+[2025-11-10 12:50:06] Common genes: 28907
+[2025-11-10 12:50:09] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:11] Projection complete and rescaled.
+[2025-11-10 12:50:13] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-06.rds
+[2025-11-10 12:50:13] Appended projection metadata to summary.csv
+[2025-11-10 12:50:13] --------------------------------------------
+[2025-11-10 12:50:13] Starting projection 70 / 150: k=100, seed=1029, tol=1e-06
+[2025-11-10 12:50:13] --------------------------------------------
+[2025-11-10 12:50:14] Common genes: 28907
+[2025-11-10 12:50:16] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:19] Projection complete and rescaled.
+[2025-11-10 12:50:21] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-06.rds
+[2025-11-10 12:50:21] Appended projection metadata to summary.csv
+[2025-11-10 12:50:21] --------------------------------------------
+[2025-11-10 12:50:21] Starting projection 71 / 150: k=10, seed=31415, tol=1e-06
+[2025-11-10 12:50:21] --------------------------------------------
+[2025-11-10 12:50:21] Common genes: 28907
+[2025-11-10 12:50:23] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:24] Projection complete and rescaled.
+[2025-11-10 12:50:25] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-06.rds
+[2025-11-10 12:50:25] Appended projection metadata to summary.csv
+[2025-11-10 12:50:25] --------------------------------------------
+[2025-11-10 12:50:25] Starting projection 72 / 150: k=20, seed=31415, tol=1e-06
+[2025-11-10 12:50:25] --------------------------------------------
+[2025-11-10 12:50:25] Common genes: 28907
+[2025-11-10 12:50:27] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:28] Projection complete and rescaled.
+[2025-11-10 12:50:29] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-06.rds
+[2025-11-10 12:50:29] Appended projection metadata to summary.csv
+[2025-11-10 12:50:29] --------------------------------------------
+[2025-11-10 12:50:29] Starting projection 73 / 150: k=30, seed=31415, tol=1e-06
+[2025-11-10 12:50:29] --------------------------------------------
+[2025-11-10 12:50:29] Common genes: 28907
+[2025-11-10 12:50:32] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:33] Projection complete and rescaled.
+[2025-11-10 12:50:34] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-06.rds
+[2025-11-10 12:50:34] Appended projection metadata to summary.csv
+[2025-11-10 12:50:34] --------------------------------------------
+[2025-11-10 12:50:34] Starting projection 74 / 150: k=40, seed=31415, tol=1e-06
+[2025-11-10 12:50:34] --------------------------------------------
+[2025-11-10 12:50:34] Common genes: 28907
+[2025-11-10 12:50:39] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:41] Projection complete and rescaled.
+[2025-11-10 12:50:42] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-06.rds
+[2025-11-10 12:50:42] Appended projection metadata to summary.csv
+[2025-11-10 12:50:42] --------------------------------------------
+[2025-11-10 12:50:42] Starting projection 75 / 150: k=50, seed=31415, tol=1e-06
+[2025-11-10 12:50:42] --------------------------------------------
+[2025-11-10 12:50:42] Common genes: 28907
+[2025-11-10 12:50:44] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:46] Projection complete and rescaled.
+[2025-11-10 12:50:47] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-06.rds
+[2025-11-10 12:50:47] Appended projection metadata to summary.csv
+[2025-11-10 12:50:47] --------------------------------------------
+[2025-11-10 12:50:47] Starting projection 76 / 150: k=60, seed=31415, tol=1e-06
+[2025-11-10 12:50:47] --------------------------------------------
+[2025-11-10 12:50:47] Common genes: 28907
+[2025-11-10 12:50:50] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:52] Projection complete and rescaled.
+[2025-11-10 12:50:53] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-06.rds
+[2025-11-10 12:50:53] Appended projection metadata to summary.csv
+[2025-11-10 12:50:53] --------------------------------------------
+[2025-11-10 12:50:53] Starting projection 77 / 150: k=70, seed=31415, tol=1e-06
+[2025-11-10 12:50:53] --------------------------------------------
+[2025-11-10 12:50:53] Common genes: 28907
+[2025-11-10 12:50:56] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:50:58] Projection complete and rescaled.
+[2025-11-10 12:50:59] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-06.rds
+[2025-11-10 12:50:59] Appended projection metadata to summary.csv
+[2025-11-10 12:50:59] --------------------------------------------
+[2025-11-10 12:50:59] Starting projection 78 / 150: k=80, seed=31415, tol=1e-06
+[2025-11-10 12:50:59] --------------------------------------------
+[2025-11-10 12:51:00] Common genes: 28907
+[2025-11-10 12:51:02] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:04] Projection complete and rescaled.
+[2025-11-10 12:51:06] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-06.rds
+[2025-11-10 12:51:06] Appended projection metadata to summary.csv
+[2025-11-10 12:51:06] --------------------------------------------
+[2025-11-10 12:51:06] Starting projection 79 / 150: k=90, seed=31415, tol=1e-06
+[2025-11-10 12:51:06] --------------------------------------------
+[2025-11-10 12:51:07] Common genes: 28907
+[2025-11-10 12:51:08] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:10] Projection complete and rescaled.
+[2025-11-10 12:51:12] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-06.rds
+[2025-11-10 12:51:12] Appended projection metadata to summary.csv
+[2025-11-10 12:51:12] --------------------------------------------
+[2025-11-10 12:51:12] Starting projection 80 / 150: k=100, seed=31415, tol=1e-06
+[2025-11-10 12:51:12] --------------------------------------------
+[2025-11-10 12:51:13] Common genes: 28907
+[2025-11-10 12:51:15] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:18] Projection complete and rescaled.
+[2025-11-10 12:51:20] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-06.rds
+[2025-11-10 12:51:20] Appended projection metadata to summary.csv
+[2025-11-10 12:51:20] --------------------------------------------
+[2025-11-10 12:51:20] Starting projection 81 / 150: k=10, seed=120301, tol=1e-06
+[2025-11-10 12:51:20] --------------------------------------------
+[2025-11-10 12:51:20] Common genes: 28907
+[2025-11-10 12:51:22] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:23] Projection complete and rescaled.
+[2025-11-10 12:51:23] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-06.rds
+[2025-11-10 12:51:23] Appended projection metadata to summary.csv
+[2025-11-10 12:51:23] --------------------------------------------
+[2025-11-10 12:51:23] Starting projection 82 / 150: k=20, seed=120301, tol=1e-06
+[2025-11-10 12:51:23] --------------------------------------------
+[2025-11-10 12:51:24] Common genes: 28907
+[2025-11-10 12:51:26] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:27] Projection complete and rescaled.
+[2025-11-10 12:51:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-06.rds
+[2025-11-10 12:51:27] Appended projection metadata to summary.csv
+[2025-11-10 12:51:27] --------------------------------------------
+[2025-11-10 12:51:27] Starting projection 83 / 150: k=30, seed=120301, tol=1e-06
+[2025-11-10 12:51:27] --------------------------------------------
+[2025-11-10 12:51:28] Common genes: 28907
+[2025-11-10 12:51:30] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:31] Projection complete and rescaled.
+[2025-11-10 12:51:31] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-06.rds
+[2025-11-10 12:51:31] Appended projection metadata to summary.csv
+[2025-11-10 12:51:31] --------------------------------------------
+[2025-11-10 12:51:31] Starting projection 84 / 150: k=40, seed=120301, tol=1e-06
+[2025-11-10 12:51:31] --------------------------------------------
+[2025-11-10 12:51:32] Common genes: 28907
+[2025-11-10 12:51:34] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:35] Projection complete and rescaled.
+[2025-11-10 12:51:36] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-06.rds
+[2025-11-10 12:51:36] Appended projection metadata to summary.csv
+[2025-11-10 12:51:36] --------------------------------------------
+[2025-11-10 12:51:36] Starting projection 85 / 150: k=50, seed=120301, tol=1e-06
+[2025-11-10 12:51:36] --------------------------------------------
+[2025-11-10 12:51:36] Common genes: 28907
+[2025-11-10 12:51:41] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:42] Projection complete and rescaled.
+[2025-11-10 12:51:43] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-06.rds
+[2025-11-10 12:51:43] Appended projection metadata to summary.csv
+[2025-11-10 12:51:43] --------------------------------------------
+[2025-11-10 12:51:43] Starting projection 86 / 150: k=60, seed=120301, tol=1e-06
+[2025-11-10 12:51:43] --------------------------------------------
+[2025-11-10 12:51:43] Common genes: 28907
+[2025-11-10 12:51:45] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:47] Projection complete and rescaled.
+[2025-11-10 12:51:48] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-06.rds
+[2025-11-10 12:51:48] Appended projection metadata to summary.csv
+[2025-11-10 12:51:48] --------------------------------------------
+[2025-11-10 12:51:48] Starting projection 87 / 150: k=70, seed=120301, tol=1e-06
+[2025-11-10 12:51:48] --------------------------------------------
+[2025-11-10 12:51:49] Common genes: 28907
+[2025-11-10 12:51:51] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:53] Projection complete and rescaled.
+[2025-11-10 12:51:55] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed120301_tol1e-06.rds
+[2025-11-10 12:51:55] Appended projection metadata to summary.csv
+[2025-11-10 12:51:55] --------------------------------------------
+[2025-11-10 12:51:55] Starting projection 88 / 150: k=80, seed=120301, tol=1e-06
+[2025-11-10 12:51:55] --------------------------------------------
+[2025-11-10 12:51:55] Common genes: 28907
+[2025-11-10 12:51:57] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:51:59] Projection complete and rescaled.
+[2025-11-10 12:52:00] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed120301_tol1e-06.rds
+[2025-11-10 12:52:00] Appended projection metadata to summary.csv
+[2025-11-10 12:52:00] --------------------------------------------
+[2025-11-10 12:52:00] Starting projection 89 / 150: k=90, seed=120301, tol=1e-06
+[2025-11-10 12:52:00] --------------------------------------------
+[2025-11-10 12:52:01] Common genes: 28907
+[2025-11-10 12:52:03] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:06] Projection complete and rescaled.
+[2025-11-10 12:52:08] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed120301_tol1e-06.rds
+[2025-11-10 12:52:08] Appended projection metadata to summary.csv
+[2025-11-10 12:52:08] --------------------------------------------
+[2025-11-10 12:52:08] Starting projection 90 / 150: k=100, seed=120301, tol=1e-06
+[2025-11-10 12:52:08] --------------------------------------------
+[2025-11-10 12:52:08] Common genes: 28907
+[2025-11-10 12:52:10] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:12] Projection complete and rescaled.
+[2025-11-10 12:52:14] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed120301_tol1e-06.rds
+[2025-11-10 12:52:14] Appended projection metadata to summary.csv
+[2025-11-10 12:52:14] --------------------------------------------
+[2025-11-10 12:52:14] Starting projection 91 / 150: k=10, seed=2025, tol=1e-06
+[2025-11-10 12:52:14] --------------------------------------------
+[2025-11-10 12:52:14] Common genes: 28907
+[2025-11-10 12:52:16] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:17] Projection complete and rescaled.
+[2025-11-10 12:52:18] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed2025_tol1e-06.rds
+[2025-11-10 12:52:18] Appended projection metadata to summary.csv
+[2025-11-10 12:52:18] --------------------------------------------
+[2025-11-10 12:52:18] Starting projection 92 / 150: k=20, seed=2025, tol=1e-06
+[2025-11-10 12:52:18] --------------------------------------------
+[2025-11-10 12:52:18] Common genes: 28907
+[2025-11-10 12:52:20] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:21] Projection complete and rescaled.
+[2025-11-10 12:52:21] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed2025_tol1e-06.rds
+[2025-11-10 12:52:21] Appended projection metadata to summary.csv
+[2025-11-10 12:52:21] --------------------------------------------
+[2025-11-10 12:52:21] Starting projection 93 / 150: k=30, seed=2025, tol=1e-06
+[2025-11-10 12:52:21] --------------------------------------------
+[2025-11-10 12:52:21] Common genes: 28907
+[2025-11-10 12:52:23] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:24] Projection complete and rescaled.
+[2025-11-10 12:52:25] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed2025_tol1e-06.rds
+[2025-11-10 12:52:25] Appended projection metadata to summary.csv
+[2025-11-10 12:52:25] --------------------------------------------
+[2025-11-10 12:52:25] Starting projection 94 / 150: k=40, seed=2025, tol=1e-06
+[2025-11-10 12:52:25] --------------------------------------------
+[2025-11-10 12:52:25] Common genes: 28907
+[2025-11-10 12:52:27] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:28] Projection complete and rescaled.
+[2025-11-10 12:52:29] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed2025_tol1e-06.rds
+[2025-11-10 12:52:29] Appended projection metadata to summary.csv
+[2025-11-10 12:52:29] --------------------------------------------
+[2025-11-10 12:52:29] Starting projection 95 / 150: k=50, seed=2025, tol=1e-06
+[2025-11-10 12:52:29] --------------------------------------------
+[2025-11-10 12:52:29] Common genes: 28907
+[2025-11-10 12:52:31] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:33] Projection complete and rescaled.
+[2025-11-10 12:52:34] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed2025_tol1e-06.rds
+[2025-11-10 12:52:34] Appended projection metadata to summary.csv
+[2025-11-10 12:52:34] --------------------------------------------
+[2025-11-10 12:52:34] Starting projection 96 / 150: k=60, seed=2025, tol=1e-06
+[2025-11-10 12:52:34] --------------------------------------------
+[2025-11-10 12:52:34] Common genes: 28907
+[2025-11-10 12:52:36] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:37] Projection complete and rescaled.
+[2025-11-10 12:52:38] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed2025_tol1e-06.rds
+[2025-11-10 12:52:38] Appended projection metadata to summary.csv
+[2025-11-10 12:52:38] --------------------------------------------
+[2025-11-10 12:52:38] Starting projection 97 / 150: k=70, seed=2025, tol=1e-06
+[2025-11-10 12:52:38] --------------------------------------------
+[2025-11-10 12:52:39] Common genes: 28907
+[2025-11-10 12:52:43] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:45] Projection complete and rescaled.
+[2025-11-10 12:52:46] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed2025_tol1e-06.rds
+[2025-11-10 12:52:46] Appended projection metadata to summary.csv
+[2025-11-10 12:52:46] --------------------------------------------
+[2025-11-10 12:52:46] Starting projection 98 / 150: k=80, seed=2025, tol=1e-06
+[2025-11-10 12:52:46] --------------------------------------------
+[2025-11-10 12:52:47] Common genes: 28907
+[2025-11-10 12:52:49] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:51] Projection complete and rescaled.
+[2025-11-10 12:52:53] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed2025_tol1e-06.rds
+[2025-11-10 12:52:53] Appended projection metadata to summary.csv
+[2025-11-10 12:52:53] --------------------------------------------
+[2025-11-10 12:52:53] Starting projection 99 / 150: k=90, seed=2025, tol=1e-06
+[2025-11-10 12:52:53] --------------------------------------------
+[2025-11-10 12:52:54] Common genes: 28907
+[2025-11-10 12:52:56] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:52:59] Projection complete and rescaled.
+[2025-11-10 12:53:01] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed2025_tol1e-06.rds
+[2025-11-10 12:53:01] Appended projection metadata to summary.csv
+[2025-11-10 12:53:01] --------------------------------------------
+[2025-11-10 12:53:01] Starting projection 100 / 150: k=100, seed=2025, tol=1e-06
+[2025-11-10 12:53:01] --------------------------------------------
+[2025-11-10 12:53:01] Common genes: 28907
+[2025-11-10 12:53:03] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:06] Projection complete and rescaled.
+[2025-11-10 12:53:08] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed2025_tol1e-06.rds
+[2025-11-10 12:53:08] Appended projection metadata to summary.csv
+[2025-11-10 12:53:08] --------------------------------------------
+[2025-11-10 12:53:08] Starting projection 101 / 150: k=10, seed=42, tol=1e-07
+[2025-11-10 12:53:08] --------------------------------------------
+[2025-11-10 12:53:08] Common genes: 28907
+[2025-11-10 12:53:11] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:12] Projection complete and rescaled.
+[2025-11-10 12:53:12] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-07.rds
+[2025-11-10 12:53:12] Appended projection metadata to summary.csv
+[2025-11-10 12:53:12] --------------------------------------------
+[2025-11-10 12:53:12] Starting projection 102 / 150: k=20, seed=42, tol=1e-07
+[2025-11-10 12:53:12] --------------------------------------------
+[2025-11-10 12:53:12] Common genes: 28907
+[2025-11-10 12:53:15] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:16] Projection complete and rescaled.
+[2025-11-10 12:53:16] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-07.rds
+[2025-11-10 12:53:16] Appended projection metadata to summary.csv
+[2025-11-10 12:53:16] --------------------------------------------
+[2025-11-10 12:53:16] Starting projection 103 / 150: k=30, seed=42, tol=1e-07
+[2025-11-10 12:53:16] --------------------------------------------
+[2025-11-10 12:53:17] Common genes: 28907
+[2025-11-10 12:53:19] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:20] Projection complete and rescaled.
+[2025-11-10 12:53:21] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-07.rds
+[2025-11-10 12:53:21] Appended projection metadata to summary.csv
+[2025-11-10 12:53:21] --------------------------------------------
+[2025-11-10 12:53:21] Starting projection 104 / 150: k=40, seed=42, tol=1e-07
+[2025-11-10 12:53:21] --------------------------------------------
+[2025-11-10 12:53:21] Common genes: 28907
+[2025-11-10 12:53:23] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:24] Projection complete and rescaled.
+[2025-11-10 12:53:25] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-07.rds
+[2025-11-10 12:53:25] Appended projection metadata to summary.csv
+[2025-11-10 12:53:25] --------------------------------------------
+[2025-11-10 12:53:25] Starting projection 105 / 150: k=50, seed=42, tol=1e-07
+[2025-11-10 12:53:25] --------------------------------------------
+[2025-11-10 12:53:26] Common genes: 28907
+[2025-11-10 12:53:28] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:29] Projection complete and rescaled.
+[2025-11-10 12:53:30] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-07.rds
+[2025-11-10 12:53:30] Appended projection metadata to summary.csv
+[2025-11-10 12:53:30] --------------------------------------------
+[2025-11-10 12:53:30] Starting projection 106 / 150: k=60, seed=42, tol=1e-07
+[2025-11-10 12:53:30] --------------------------------------------
+[2025-11-10 12:53:31] Common genes: 28907
+[2025-11-10 12:53:33] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:38] Projection complete and rescaled.
+[2025-11-10 12:53:39] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-07.rds
+[2025-11-10 12:53:39] Appended projection metadata to summary.csv
+[2025-11-10 12:53:39] --------------------------------------------
+[2025-11-10 12:53:39] Starting projection 107 / 150: k=70, seed=42, tol=1e-07
+[2025-11-10 12:53:39] --------------------------------------------
+[2025-11-10 12:53:39] Common genes: 28907
+[2025-11-10 12:53:42] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:44] Projection complete and rescaled.
+[2025-11-10 12:53:45] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-07.rds
+[2025-11-10 12:53:45] Appended projection metadata to summary.csv
+[2025-11-10 12:53:45] --------------------------------------------
+[2025-11-10 12:53:45] Starting projection 108 / 150: k=80, seed=42, tol=1e-07
+[2025-11-10 12:53:45] --------------------------------------------
+[2025-11-10 12:53:46] Common genes: 28907
+[2025-11-10 12:53:48] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:51] Projection complete and rescaled.
+[2025-11-10 12:53:52] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-07.rds
+[2025-11-10 12:53:52] Appended projection metadata to summary.csv
+[2025-11-10 12:53:52] --------------------------------------------
+[2025-11-10 12:53:52] Starting projection 109 / 150: k=90, seed=42, tol=1e-07
+[2025-11-10 12:53:52] --------------------------------------------
+[2025-11-10 12:53:53] Common genes: 28907
+[2025-11-10 12:53:55] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:53:57] Projection complete and rescaled.
+[2025-11-10 12:53:59] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-07.rds
+[2025-11-10 12:53:59] Appended projection metadata to summary.csv
+[2025-11-10 12:53:59] --------------------------------------------
+[2025-11-10 12:53:59] Starting projection 110 / 150: k=100, seed=42, tol=1e-07
+[2025-11-10 12:53:59] --------------------------------------------
+[2025-11-10 12:54:00] Common genes: 28907
+[2025-11-10 12:54:01] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:04] Projection complete and rescaled.
+[2025-11-10 12:54:06] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-07.rds
+[2025-11-10 12:54:06] Appended projection metadata to summary.csv
+[2025-11-10 12:54:06] --------------------------------------------
+[2025-11-10 12:54:06] Starting projection 111 / 150: k=10, seed=1029, tol=1e-07
+[2025-11-10 12:54:06] --------------------------------------------
+[2025-11-10 12:54:06] Common genes: 28907
+[2025-11-10 12:54:08] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:09] Projection complete and rescaled.
+[2025-11-10 12:54:09] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-07.rds
+[2025-11-10 12:54:09] Appended projection metadata to summary.csv
+[2025-11-10 12:54:09] --------------------------------------------
+[2025-11-10 12:54:09] Starting projection 112 / 150: k=20, seed=1029, tol=1e-07
+[2025-11-10 12:54:09] --------------------------------------------
+[2025-11-10 12:54:09] Common genes: 28907
+[2025-11-10 12:54:12] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:13] Projection complete and rescaled.
+[2025-11-10 12:54:13] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-07.rds
+[2025-11-10 12:54:13] Appended projection metadata to summary.csv
+[2025-11-10 12:54:13] --------------------------------------------
+[2025-11-10 12:54:13] Starting projection 113 / 150: k=30, seed=1029, tol=1e-07
+[2025-11-10 12:54:13] --------------------------------------------
+[2025-11-10 12:54:13] Common genes: 28907
+[2025-11-10 12:54:15] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:17] Projection complete and rescaled.
+[2025-11-10 12:54:17] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-07.rds
+[2025-11-10 12:54:17] Appended projection metadata to summary.csv
+[2025-11-10 12:54:17] --------------------------------------------
+[2025-11-10 12:54:17] Starting projection 114 / 150: k=40, seed=1029, tol=1e-07
+[2025-11-10 12:54:17] --------------------------------------------
+[2025-11-10 12:54:18] Common genes: 28907
+[2025-11-10 12:54:20] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:21] Projection complete and rescaled.
+[2025-11-10 12:54:22] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-07.rds
+[2025-11-10 12:54:22] Appended projection metadata to summary.csv
+[2025-11-10 12:54:22] --------------------------------------------
+[2025-11-10 12:54:22] Starting projection 115 / 150: k=50, seed=1029, tol=1e-07
+[2025-11-10 12:54:22] --------------------------------------------
+[2025-11-10 12:54:22] Common genes: 28907
+[2025-11-10 12:54:24] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:26] Projection complete and rescaled.
+[2025-11-10 12:54:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-07.rds
+[2025-11-10 12:54:27] Appended projection metadata to summary.csv
+[2025-11-10 12:54:27] --------------------------------------------
+[2025-11-10 12:54:27] Starting projection 116 / 150: k=60, seed=1029, tol=1e-07
+[2025-11-10 12:54:27] --------------------------------------------
+[2025-11-10 12:54:27] Common genes: 28907
+[2025-11-10 12:54:29] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:31] Projection complete and rescaled.
+[2025-11-10 12:54:32] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-07.rds
+[2025-11-10 12:54:32] Appended projection metadata to summary.csv
+[2025-11-10 12:54:32] --------------------------------------------
+[2025-11-10 12:54:32] Starting projection 117 / 150: k=70, seed=1029, tol=1e-07
+[2025-11-10 12:54:32] --------------------------------------------
+[2025-11-10 12:54:33] Common genes: 28907
+[2025-11-10 12:54:35] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:36] Projection complete and rescaled.
+[2025-11-10 12:54:38] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-07.rds
+[2025-11-10 12:54:38] Appended projection metadata to summary.csv
+[2025-11-10 12:54:38] --------------------------------------------
+[2025-11-10 12:54:38] Starting projection 118 / 150: k=80, seed=1029, tol=1e-07
+[2025-11-10 12:54:38] --------------------------------------------
+[2025-11-10 12:54:38] Common genes: 28907
+[2025-11-10 12:54:43] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:45] Projection complete and rescaled.
+[2025-11-10 12:54:47] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-07.rds
+[2025-11-10 12:54:47] Appended projection metadata to summary.csv
+[2025-11-10 12:54:47] --------------------------------------------
+[2025-11-10 12:54:47] Starting projection 119 / 150: k=90, seed=1029, tol=1e-07
+[2025-11-10 12:54:47] --------------------------------------------
+[2025-11-10 12:54:47] Common genes: 28907
+[2025-11-10 12:54:49] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:52] Projection complete and rescaled.
+[2025-11-10 12:54:54] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-07.rds
+[2025-11-10 12:54:54] Appended projection metadata to summary.csv
+[2025-11-10 12:54:54] --------------------------------------------
+[2025-11-10 12:54:54] Starting projection 120 / 150: k=100, seed=1029, tol=1e-07
+[2025-11-10 12:54:54] --------------------------------------------
+[2025-11-10 12:54:54] Common genes: 28907
+[2025-11-10 12:54:56] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:54:59] Projection complete and rescaled.
+[2025-11-10 12:55:01] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-07.rds
+[2025-11-10 12:55:01] Appended projection metadata to summary.csv
+[2025-11-10 12:55:01] --------------------------------------------
+[2025-11-10 12:55:01] Starting projection 121 / 150: k=10, seed=31415, tol=1e-07
+[2025-11-10 12:55:01] --------------------------------------------
+[2025-11-10 12:55:01] Common genes: 28907
+[2025-11-10 12:55:03] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:04] Projection complete and rescaled.
+[2025-11-10 12:55:05] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-07.rds
+[2025-11-10 12:55:05] Appended projection metadata to summary.csv
+[2025-11-10 12:55:05] --------------------------------------------
+[2025-11-10 12:55:05] Starting projection 122 / 150: k=20, seed=31415, tol=1e-07
+[2025-11-10 12:55:05] --------------------------------------------
+[2025-11-10 12:55:05] Common genes: 28907
+[2025-11-10 12:55:07] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:08] Projection complete and rescaled.
+[2025-11-10 12:55:09] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-07.rds
+[2025-11-10 12:55:09] Appended projection metadata to summary.csv
+[2025-11-10 12:55:09] --------------------------------------------
+[2025-11-10 12:55:09] Starting projection 123 / 150: k=30, seed=31415, tol=1e-07
+[2025-11-10 12:55:09] --------------------------------------------
+[2025-11-10 12:55:09] Common genes: 28907
+[2025-11-10 12:55:11] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:12] Projection complete and rescaled.
+[2025-11-10 12:55:13] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-07.rds
+[2025-11-10 12:55:13] Appended projection metadata to summary.csv
+[2025-11-10 12:55:13] --------------------------------------------
+[2025-11-10 12:55:13] Starting projection 124 / 150: k=40, seed=31415, tol=1e-07
+[2025-11-10 12:55:13] --------------------------------------------
+[2025-11-10 12:55:13] Common genes: 28907
+[2025-11-10 12:55:15] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:17] Projection complete and rescaled.
+[2025-11-10 12:55:17] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-07.rds
+[2025-11-10 12:55:17] Appended projection metadata to summary.csv
+[2025-11-10 12:55:17] --------------------------------------------
+[2025-11-10 12:55:17] Starting projection 125 / 150: k=50, seed=31415, tol=1e-07
+[2025-11-10 12:55:17] --------------------------------------------
+[2025-11-10 12:55:18] Common genes: 28907
+[2025-11-10 12:55:20] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:21] Projection complete and rescaled.
+[2025-11-10 12:55:22] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-07.rds
+[2025-11-10 12:55:22] Appended projection metadata to summary.csv
+[2025-11-10 12:55:22] --------------------------------------------
+[2025-11-10 12:55:22] Starting projection 126 / 150: k=60, seed=31415, tol=1e-07
+[2025-11-10 12:55:22] --------------------------------------------
+[2025-11-10 12:55:23] Common genes: 28907
+[2025-11-10 12:55:25] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:26] Projection complete and rescaled.
+[2025-11-10 12:55:28] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-07.rds
+[2025-11-10 12:55:28] Appended projection metadata to summary.csv
+[2025-11-10 12:55:28] --------------------------------------------
+[2025-11-10 12:55:28] Starting projection 127 / 150: k=70, seed=31415, tol=1e-07
+[2025-11-10 12:55:28] --------------------------------------------
+[2025-11-10 12:55:28] Common genes: 28907
+[2025-11-10 12:55:30] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:32] Projection complete and rescaled.
+[2025-11-10 12:55:33] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-07.rds
+[2025-11-10 12:55:33] Appended projection metadata to summary.csv
+[2025-11-10 12:55:33] --------------------------------------------
+[2025-11-10 12:55:33] Starting projection 128 / 150: k=80, seed=31415, tol=1e-07
+[2025-11-10 12:55:33] --------------------------------------------
+[2025-11-10 12:55:36] Common genes: 28907
+[2025-11-10 12:55:38] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:40] Projection complete and rescaled.
+[2025-11-10 12:55:41] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-07.rds
+[2025-11-10 12:55:41] Appended projection metadata to summary.csv
+[2025-11-10 12:55:41] --------------------------------------------
+[2025-11-10 12:55:41] Starting projection 129 / 150: k=90, seed=31415, tol=1e-07
+[2025-11-10 12:55:41] --------------------------------------------
+[2025-11-10 12:55:42] Common genes: 28907
+[2025-11-10 12:55:44] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:47] Projection complete and rescaled.
+[2025-11-10 12:55:49] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-07.rds
+[2025-11-10 12:55:49] Appended projection metadata to summary.csv
+[2025-11-10 12:55:49] --------------------------------------------
+[2025-11-10 12:55:49] Starting projection 130 / 150: k=100, seed=31415, tol=1e-07
+[2025-11-10 12:55:49] --------------------------------------------
+[2025-11-10 12:55:49] Common genes: 28907
+[2025-11-10 12:55:51] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:54] Projection complete and rescaled.
+[2025-11-10 12:55:56] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-07.rds
+[2025-11-10 12:55:56] Appended projection metadata to summary.csv
+[2025-11-10 12:55:56] --------------------------------------------
+[2025-11-10 12:55:56] Starting projection 131 / 150: k=10, seed=120301, tol=1e-07
+[2025-11-10 12:55:56] --------------------------------------------
+[2025-11-10 12:55:56] Common genes: 28907
+[2025-11-10 12:55:58] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:55:59] Projection complete and rescaled.
+[2025-11-10 12:55:59] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-07.rds
+[2025-11-10 12:55:59] Appended projection metadata to summary.csv
+[2025-11-10 12:55:59] --------------------------------------------
+[2025-11-10 12:55:59] Starting projection 132 / 150: k=20, seed=120301, tol=1e-07
+[2025-11-10 12:55:59] --------------------------------------------
+[2025-11-10 12:55:59] Common genes: 28907
+[2025-11-10 12:56:01] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:03] Projection complete and rescaled.
+[2025-11-10 12:56:03] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-07.rds
+[2025-11-10 12:56:03] Appended projection metadata to summary.csv
+[2025-11-10 12:56:03] --------------------------------------------
+[2025-11-10 12:56:03] Starting projection 133 / 150: k=30, seed=120301, tol=1e-07
+[2025-11-10 12:56:03] --------------------------------------------
+[2025-11-10 12:56:03] Common genes: 28907
+[2025-11-10 12:56:05] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:06] Projection complete and rescaled.
+[2025-11-10 12:56:07] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-07.rds
+[2025-11-10 12:56:07] Appended projection metadata to summary.csv
+[2025-11-10 12:56:07] --------------------------------------------
+[2025-11-10 12:56:07] Starting projection 134 / 150: k=40, seed=120301, tol=1e-07
+[2025-11-10 12:56:07] --------------------------------------------
+[2025-11-10 12:56:07] Common genes: 28907
+[2025-11-10 12:56:09] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:10] Projection complete and rescaled.
+[2025-11-10 12:56:11] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-07.rds
+[2025-11-10 12:56:11] Appended projection metadata to summary.csv
+[2025-11-10 12:56:11] --------------------------------------------
+[2025-11-10 12:56:11] Starting projection 135 / 150: k=50, seed=120301, tol=1e-07
+[2025-11-10 12:56:11] --------------------------------------------
+[2025-11-10 12:56:12] Common genes: 28907
+[2025-11-10 12:56:14] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:15] Projection complete and rescaled.
+[2025-11-10 12:56:16] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-07.rds
+[2025-11-10 12:56:16] Appended projection metadata to summary.csv
+[2025-11-10 12:56:16] --------------------------------------------
+[2025-11-10 12:56:16] Starting projection 136 / 150: k=60, seed=120301, tol=1e-07
+[2025-11-10 12:56:16] --------------------------------------------
+[2025-11-10 12:56:17] Common genes: 28907
+[2025-11-10 12:56:19] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:20] Projection complete and rescaled.
+[2025-11-10 12:56:22] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-07.rds
+[2025-11-10 12:56:22] Appended projection metadata to summary.csv
+[2025-11-10 12:56:22] --------------------------------------------
+[2025-11-10 12:56:22] Starting projection 137 / 150: k=70, seed=120301, tol=1e-07
+[2025-11-10 12:56:22] --------------------------------------------
+[2025-11-10 12:56:22] Common genes: 28907
+[2025-11-10 12:56:24] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:26] Projection complete and rescaled.
+[2025-11-10 12:56:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed120301_tol1e-07.rds
+[2025-11-10 12:56:27] Appended projection metadata to summary.csv
+[2025-11-10 12:56:27] --------------------------------------------
+[2025-11-10 12:56:27] Starting projection 138 / 150: k=80, seed=120301, tol=1e-07
+[2025-11-10 12:56:27] --------------------------------------------
+[2025-11-10 12:56:28] Common genes: 28907
+[2025-11-10 12:56:30] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:32] Projection complete and rescaled.
+[2025-11-10 12:56:34] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed120301_tol1e-07.rds
+[2025-11-10 12:56:34] Appended projection metadata to summary.csv
+[2025-11-10 12:56:34] --------------------------------------------
+[2025-11-10 12:56:34] Starting projection 139 / 150: k=90, seed=120301, tol=1e-07
+[2025-11-10 12:56:34] --------------------------------------------
+[2025-11-10 12:56:34] Common genes: 28907
+[2025-11-10 12:56:36] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:38] Projection complete and rescaled.
+[2025-11-10 12:56:40] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed120301_tol1e-07.rds
+[2025-11-10 12:56:40] Appended projection metadata to summary.csv
+[2025-11-10 12:56:40] --------------------------------------------
+[2025-11-10 12:56:40] Starting projection 140 / 150: k=100, seed=120301, tol=1e-07
+[2025-11-10 12:56:40] --------------------------------------------
+[2025-11-10 12:56:41] Common genes: 28907
+[2025-11-10 12:56:42] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:48] Projection complete and rescaled.
+[2025-11-10 12:56:50] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed120301_tol1e-07.rds
+[2025-11-10 12:56:50] Appended projection metadata to summary.csv
+[2025-11-10 12:56:50] --------------------------------------------
+[2025-11-10 12:56:50] Starting projection 141 / 150: k=10, seed=2025, tol=1e-07
+[2025-11-10 12:56:50] --------------------------------------------
+[2025-11-10 12:56:50] Common genes: 28907
+[2025-11-10 12:56:52] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:53] Projection complete and rescaled.
+[2025-11-10 12:56:53] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed2025_tol1e-07.rds
+[2025-11-10 12:56:53] Appended projection metadata to summary.csv
+[2025-11-10 12:56:53] --------------------------------------------
+[2025-11-10 12:56:53] Starting projection 142 / 150: k=20, seed=2025, tol=1e-07
+[2025-11-10 12:56:53] --------------------------------------------
+[2025-11-10 12:56:54] Common genes: 28907
+[2025-11-10 12:56:56] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:56:57] Projection complete and rescaled.
+[2025-11-10 12:56:57] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed2025_tol1e-07.rds
+[2025-11-10 12:56:57] Appended projection metadata to summary.csv
+[2025-11-10 12:56:57] --------------------------------------------
+[2025-11-10 12:56:57] Starting projection 143 / 150: k=30, seed=2025, tol=1e-07
+[2025-11-10 12:56:57] --------------------------------------------
+[2025-11-10 12:56:58] Common genes: 28907
+[2025-11-10 12:57:00] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:01] Projection complete and rescaled.
+[2025-11-10 12:57:02] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed2025_tol1e-07.rds
+[2025-11-10 12:57:02] Appended projection metadata to summary.csv
+[2025-11-10 12:57:02] --------------------------------------------
+[2025-11-10 12:57:02] Starting projection 144 / 150: k=40, seed=2025, tol=1e-07
+[2025-11-10 12:57:02] --------------------------------------------
+[2025-11-10 12:57:03] Common genes: 28907
+[2025-11-10 12:57:04] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:06] Projection complete and rescaled.
+[2025-11-10 12:57:07] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed2025_tol1e-07.rds
+[2025-11-10 12:57:07] Appended projection metadata to summary.csv
+[2025-11-10 12:57:07] --------------------------------------------
+[2025-11-10 12:57:07] Starting projection 145 / 150: k=50, seed=2025, tol=1e-07
+[2025-11-10 12:57:07] --------------------------------------------
+[2025-11-10 12:57:07] Common genes: 28907
+[2025-11-10 12:57:09] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:10] Projection complete and rescaled.
+[2025-11-10 12:57:12] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed2025_tol1e-07.rds
+[2025-11-10 12:57:12] Appended projection metadata to summary.csv
+[2025-11-10 12:57:12] --------------------------------------------
+[2025-11-10 12:57:12] Starting projection 146 / 150: k=60, seed=2025, tol=1e-07
+[2025-11-10 12:57:12] --------------------------------------------
+[2025-11-10 12:57:12] Common genes: 28907
+[2025-11-10 12:57:14] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:15] Projection complete and rescaled.
+[2025-11-10 12:57:17] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed2025_tol1e-07.rds
+[2025-11-10 12:57:17] Appended projection metadata to summary.csv
+[2025-11-10 12:57:17] --------------------------------------------
+[2025-11-10 12:57:17] Starting projection 147 / 150: k=70, seed=2025, tol=1e-07
+[2025-11-10 12:57:17] --------------------------------------------
+[2025-11-10 12:57:17] Common genes: 28907
+[2025-11-10 12:57:20] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:21] Projection complete and rescaled.
+[2025-11-10 12:57:23] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed2025_tol1e-07.rds
+[2025-11-10 12:57:23] Appended projection metadata to summary.csv
+[2025-11-10 12:57:23] --------------------------------------------
+[2025-11-10 12:57:23] Starting projection 148 / 150: k=80, seed=2025, tol=1e-07
+[2025-11-10 12:57:23] --------------------------------------------
+[2025-11-10 12:57:23] Common genes: 28907
+[2025-11-10 12:57:25] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:27] Projection complete and rescaled.
+[2025-11-10 12:57:29] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed2025_tol1e-07.rds
+[2025-11-10 12:57:29] Appended projection metadata to summary.csv
+[2025-11-10 12:57:29] --------------------------------------------
+[2025-11-10 12:57:29] Starting projection 149 / 150: k=90, seed=2025, tol=1e-07
+[2025-11-10 12:57:29] --------------------------------------------
+[2025-11-10 12:57:30] Common genes: 28907
+[2025-11-10 12:57:31] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:34] Projection complete and rescaled.
+[2025-11-10 12:57:36] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed2025_tol1e-07.rds
+[2025-11-10 12:57:36] Appended projection metadata to summary.csv
+[2025-11-10 12:57:36] --------------------------------------------
+[2025-11-10 12:57:36] Starting projection 150 / 150: k=100, seed=2025, tol=1e-07
+[2025-11-10 12:57:36] --------------------------------------------
+[2025-11-10 12:57:37] Common genes: 28907
+[2025-11-10 12:57:39] Projecting SRT into snRNA NMF basis...
+[2025-11-10 12:57:41] Projection complete and rescaled.
+[2025-11-10 12:57:43] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed2025_tol1e-07.rds
+[2025-11-10 12:57:43] Appended projection metadata to summary.csv
+[2025-11-10 12:57:43] ===== Finished batched projection =====

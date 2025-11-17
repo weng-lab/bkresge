@@ -1,0 +1,1859 @@
+[2025-11-13 09:35:41] Log file created: /zata/zippy/kresgeb/nmf_stuff/dlPFC/logs/batched_projection_2025-11-13_09-35-41.log
+[2025-11-13 09:35:41] ======Snapshot of script: batched_projection.R======
+
+----- Begin Script Snapshot -----
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages({
+    library(here)
+    library(SpatialExperiment)
+    library(SingleCellExperiment)
+    library(RcppML)
+    library(sessioninfo)
+    library(duckplyr)
+    library(readr)
+})
+
+# --------------------------------------------------------------
+# Set project root and import utilities
+# --------------------------------------------------------------
+my_relative_path <- "scripts/batched_projection.R"
+here::i_am(my_relative_path)
+source(here("scripts", "utils.R"))
+
+# --------------------------------------------------------------
+# Global setup
+# --------------------------------------------------------------
+threads <- 64
+options(RcppML.threads = threads)
+options(RcppML.verbose = TRUE)
+
+setup_log(prefix = "batched_projection")
+snapshot_script(here(my_relative_path))
+log_msg("===== Session Info =====")
+print(sessionInfo())
+print(session_info())
+log_msg(sprintf("Running batched projection with %d threads", threads))
+
+# --------------------------------------------------------------
+# Paths and parameters
+# --------------------------------------------------------------
+nmf_summary_tsv <- here("data", "batched_nmf", "summary.tsv")
+srt_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
+proj_outdir <- here("data", "batched_projection")
+summary_tsv <- file.path(proj_outdir, "summary.tsv")
+
+if (!dir.exists(proj_outdir)) {
+    dir.create(proj_outdir, recursive = TRUE)
+}
+
+# --------------------------------------------------------------
+# Load SRT once
+# --------------------------------------------------------------
+log_msg("===== Loading and processing SRT object =====")
+log_msg(paste("Loading SRT object from:", srt_path))
+load_and_rename(srt_path, new_names = "srt", verbose = TRUE)
+stopifnot(inherits(srt, "SpatialExperiment"))
+
+# The object uses Ensebml IDs as rownames
+# I should not ever WANT this,
+# so lets just replace them with the gene_names right now
+# Replace Ensembl IDs with gene_name as rownames
+log_msg("Replacing rownames(srt) with gene_name from rowData...")
+gene_names <- as.character(rowData(srt)$gene_name)
+na_idx <- which(is.na(gene_names) | gene_names == "")
+if (length(na_idx) > 0) {
+    gene_names[na_idx] <- rownames(srt)[na_idx] # fallback to Ensembl IDs
+    log_msg(sprintf("Replaced %d NA/blank gene_name entries with Ensembl IDs", length(na_idx)))
+}
+# Make names unique (adds .1, .2, etc. suffixes)
+gene_names <- make.unique(gene_names)
+
+# apply new rownames
+rownames(srt) <- gene_names
+log_msg("SRT preprocessing complete.")
+
+# --------------------------------------------------------------
+# Load NMF batch summary
+# --------------------------------------------------------------
+if (!file.exists(nmf_summary_tsv)) {
+    stop("NMF summary TSV not found at: ", nmf_summary_tsv)
+}
+nmf_summary <- read_tsv(nmf_summary_tsv, show_col_types = FALSE)
+log_msg(sprintf("Loaded %d NMF runs from summary.", nrow(nmf_summary)))
+
+# --------------------------------------------------------------
+# Setup for output summary TSV
+# --------------------------------------------------------------
+
+if (file.exists(summary_tsv)) {
+    summary_df <- read_tsv(summary_tsv, show_col_types = FALSE)
+    log_msg(sprintf("Loaded existing summary TSV with %d rows", nrow(summary_df)))
+} else {
+    summary_df <- tibble(
+        timestamp = character(),
+        k = integer(),
+        seed = integer(),
+        tol = numeric(),
+        L1 = numeric(),
+        elapsed_min = numeric(),
+        nmf_input = character(),
+        projection_output = character(),
+        n_common_genes = integer()
+    )
+    write_tsv(summary_df, summary_tsv)
+    log_msg(sprintf("Initialized empty summary TSV at: %s", summary_tsv))
+}
+
+
+# --------------------------------------------------------------
+# Run projections for each NMF result
+# --------------------------------------------------------------
+
+# --- Config ---
+skip_completed <- TRUE # set FALSE to force re-run even if already completed
+
+for (i in seq_len(nrow(nmf_summary))) {
+    nmf_path <- nmf_summary$output_path[i]
+    k <- nmf_summary$k[i]
+    seed <- nmf_summary$seed[i]
+    tol <- nmf_summary$tol[i]
+    L1 <- nmf_summary$L1[i]
+
+    run_prefix <- sprintf("proj_k%d_seed%d_tol%.0e_L1%.1f", k, seed, tol, L1)
+    proj_out_path <- file.path(proj_outdir, paste0(run_prefix, ".rds"))
+
+    log_msg("--------------------------------------------")
+    log_msg(sprintf(
+        "Starting projection %d / %d: k=%d, seed=%d, tol=%.0e, L1=%.1f",
+        i, nrow(nmf_summary), k, seed, tol, L1
+    ))
+    log_msg("--------------------------------------------")
+
+    # --- Check for completed run ---
+    already_done <- FALSE
+    if (skip_completed && nrow(summary_df) > 0) {
+        match_row <- summary_df |>
+            filter(k == !!k, seed == !!seed, tol == !!tol, L1 == !!L1)
+        if (nrow(match_row) > 0) {
+            already_done <- TRUE
+            ts <- lubridate::ymd_hms(match_row$timestamp, tz = "UTC")
+            ago <- lubridate::as.period(Sys.time() - ts, unit = "minute")
+            log_msg(sprintf(
+                "Skipping run (already completed)\n\tcompleted %s ago at %s UTC\n\tlocation: %s",
+                lubridate::time_length(ago, "hour") %>%
+                    {
+                        \(x) sprintf("%.1f hours", x)
+                    }(),
+                format(ts, "%Y-%m-%dT%H:%M:%SZ"),
+                match_row$projection_output
+            ))
+        }
+    }
+    if (already_done) next
+
+    start_time <- Sys.time()
+
+    # Load NMF model
+    nmf_x <- readRDS(nmf_path)
+    w <- nmf_x@w
+
+    # Match genes
+    common_genes <- intersect(rownames(w), rownames(srt))
+    log_msg(sprintf("Common genes: %d", length(common_genes)))
+
+    w <- w[common_genes, , drop = FALSE]
+    Y <- assay(srt, "logcounts")[common_genes, , drop = FALSE]
+
+    # Projection
+    log_msg("Projecting SRT into snRNA NMF basis...")
+    set.seed(seed)
+    proj <- project(w, Y, L1 = 0)
+    proj <- t(proj)
+
+    # Rescale so loadings per spot sum to 1
+    proj <- apply(proj, 2, function(z) z / sum(z))
+    log_msg("Projection complete and rescaled.")
+
+    # Save result
+    saveRDS(proj, proj_out_path)
+    log_msg(paste("Saved projection result to:", proj_out_path))
+
+    end_time <- Sys.time()
+    elapsed <- as.numeric(difftime(end_time, start_time, units = "mins"))
+
+    # --- Construct row ---
+    new_row <- tibble(
+        timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+        k = k, seed = seed, tol = tol, L1 = L1,
+        elapsed_min = elapsed,
+        nmf_input = nmf_path,
+        projection_output = proj_out_path,
+        n_common_genes = length(common_genes)
+    )
+    # --- Append to TSV file ---
+    write_tsv(new_row, summary_tsv, append = TRUE)
+    log_msg("Appended run metadata to summary.tsv")
+}
+
+log_msg("===== Finished batched projection =====")
+close_log()
+
+----- End Script Snapshot -----
+
+[2025-11-13 09:35:41] ===== Session Info =====
+R version 4.4.2 (2024-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+
+locale:
+[1] C
+
+time zone: America/New_York
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] readr_2.1.5                 duckplyr_1.1.3              dplyr_1.1.4                 sessioninfo_1.2.2          
+ [5] RcppML_0.5.5                SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0
+ [9] Biobase_2.66.0              GenomicRanges_1.58.0        GenomeInfoDb_1.42.1         IRanges_2.40.1             
+[13] S4Vectors_0.44.0            BiocGenerics_0.52.0         MatrixGenerics_1.18.0       matrixStats_1.5.0          
+[17] here_1.0.1                 
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4          SparseArray_1.6.0       lattice_0.22-5          hms_1.1.3              
+ [5] magrittr_2.0.4          RcppEigen_0.3.4.0.2     evaluate_1.0.5          grid_4.4.2             
+ [9] fastmap_1.2.0           rprojroot_2.1.1         jsonlite_2.0.0          Matrix_1.7-1           
+[13] DBI_1.2.3               httr_1.4.7              UCSC.utils_1.2.0        collections_0.3.8      
+[17] duckdb_1.4.1            abind_1.4-8             cli_3.6.5               rlang_1.1.6            
+[21] crayon_1.5.3            XVector_0.46.0          cachem_1.1.0            DelayedArray_0.32.0    
+[25] S4Arrays_1.6.0          tools_4.4.2             tzdb_0.4.0              memoise_2.0.1          
+[29] GenomeInfoDbData_1.2.13 vctrs_0.6.5             R6_2.6.1                lifecycle_1.0.4        
+[33] magick_2.8.6            zlibbioc_1.52.0         pkgconfig_2.0.3         pillar_1.11.1          
+[37] glue_1.8.0              Rcpp_1.1.0              xfun_0.53               tibble_3.3.0           
+[41] tidyselect_1.2.1        knitr_1.50              rjson_0.2.23            compiler_4.4.2         
+- Session info ---------------------------------------------------------------
+ setting  value
+ version  R version 4.4.2 (2024-10-31)
+ os       Ubuntu 22.04.5 LTS
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  C
+ ctype    C
+ tz       America/New_York
+ date     2025-11-13
+ pandoc   2.9.2.1 @ /usr/bin/pandoc
+
+- Packages -------------------------------------------------------------------
+ package              * version   date (UTC) lib source
+ abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
+ Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocGenerics         * 0.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ cachem                 1.1.0     2024-05-16 [1] CRAN (R 4.4.2)
+ cli                    3.6.5     2025-04-23 [1] CRAN (R 4.4.2)
+ collections            0.3.8     2025-05-08 [1] CRAN (R 4.4.2)
+ crayon                 1.5.3     2024-06-20 [1] CRAN (R 4.4.2)
+ DBI                    1.2.3     2024-06-02 [1] CRAN (R 4.4.2)
+ DelayedArray           0.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ dplyr                * 1.1.4     2023-11-17 [1] CRAN (R 4.4.2)
+ duckdb                 1.4.1     2025-10-16 [1] CRAN (R 4.4.2)
+ duckplyr             * 1.1.3     2025-11-04 [1] CRAN (R 4.4.2)
+ evaluate               1.0.5     2025-08-27 [1] CRAN (R 4.4.2)
+ fastmap                1.2.0     2024-05-15 [1] CRAN (R 4.4.2)
+ generics               0.1.4     2025-05-09 [1] CRAN (R 4.4.2)
+ GenomeInfoDb         * 1.42.1    2024-11-28 [1] Bioconductor 3.20 (R 4.4.2)
+ GenomeInfoDbData       1.2.13    2025-01-10 [1] Bioconductor
+ GenomicRanges        * 1.58.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ glue                   1.8.0     2024-09-30 [1] CRAN (R 4.4.2)
+ here                 * 1.0.1     2020-12-13 [1] CRAN (R 4.4.2)
+ hms                    1.1.3     2023-03-21 [1] CRAN (R 4.4.2)
+ httr                   1.4.7     2023-08-15 [1] CRAN (R 4.4.2)
+ IRanges              * 2.40.1    2024-12-05 [1] Bioconductor 3.20 (R 4.4.2)
+ jsonlite               2.0.0     2025-03-27 [1] CRAN (R 4.4.2)
+ knitr                  1.50      2025-03-16 [1] CRAN (R 4.4.2)
+ lattice                0.22-5    2023-10-24 [3] CRAN (R 4.3.1)
+ lifecycle              1.0.4     2023-11-07 [1] CRAN (R 4.4.2)
+ magick                 2.8.6     2025-03-23 [1] CRAN (R 4.4.2)
+ magrittr               2.0.4     2025-09-12 [1] CRAN (R 4.4.2)
+ Matrix                 1.7-1     2024-10-18 [3] CRAN (R 4.4.1)
+ MatrixGenerics       * 1.18.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ matrixStats          * 1.5.0     2025-01-07 [1] CRAN (R 4.4.2)
+ memoise                2.0.1     2021-11-26 [1] CRAN (R 4.4.2)
+ pillar                 1.11.1    2025-09-17 [1] CRAN (R 4.4.2)
+ pkgconfig              2.0.3     2019-09-22 [1] CRAN (R 4.4.2)
+ R6                     2.6.1     2025-02-15 [1] CRAN (R 4.4.2)
+ Rcpp                   1.1.0     2025-07-02 [1] CRAN (R 4.4.2)
+ RcppEigen              0.3.4.0.2 2024-08-24 [1] CRAN (R 4.4.2)
+ RcppML               * 0.5.5     2025-09-09 [1] Github (zdebruine/RcppML@c997bcd)
+ readr                * 2.1.5     2024-01-10 [1] CRAN (R 4.4.2)
+ rjson                  0.2.23    2024-09-16 [1] CRAN (R 4.4.2)
+ rlang                  1.1.6     2025-04-11 [1] CRAN (R 4.4.2)
+ rprojroot              2.1.1     2025-08-26 [1] CRAN (R 4.4.2)
+ S4Arrays               1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S4Vectors            * 0.44.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.4.2)
+ SingleCellExperiment * 1.28.1    2024-11-10 [1] Bioconductor 3.20 (R 4.4.2)
+ SparseArray            1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SpatialExperiment    * 1.16.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SummarizedExperiment * 1.36.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ tibble                 3.3.0     2025-06-08 [1] CRAN (R 4.4.2)
+ tidyselect             1.2.1     2024-03-11 [1] CRAN (R 4.4.2)
+ tzdb                   0.4.0     2023-05-12 [1] CRAN (R 4.4.2)
+ UCSC.utils             1.2.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ vctrs                  0.6.5     2023-12-01 [1] CRAN (R 4.4.2)
+ xfun                   0.53      2025-08-19 [1] CRAN (R 4.4.2)
+ XVector                0.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ zlibbioc               1.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+
+ [1] /usr/local/lib/R/site-library
+ [2] /usr/lib/R/site-library
+ [3] /usr/lib/R/library
+
+------------------------------------------------------------------------------
+[2025-11-13 09:35:41] Running batched projection with 64 threads
+[2025-11-13 09:35:41] ===== Loading and processing SRT object =====
+[2025-11-13 09:35:41] Loading SRT object from: /data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData
+Loading objects:
+  spe
+[2025-11-13 09:38:30] Replacing rownames(srt) with gene_name from rowData...
+[2025-11-13 09:38:30] SRT preprocessing complete.
+[2025-11-13 09:38:30] Loaded 236 NMF runs from summary.
+[2025-11-13 09:38:30] Loaded existing summary TSV with 179 rows
+[2025-11-13 09:38:30] --------------------------------------------
+[2025-11-13 09:38:30] Starting projection 1 / 236: k=10, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:30] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:27:40Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 2 / 236: k=20, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:27:51Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 3 / 236: k=30, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:28:02Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 4 / 236: k=40, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:28:10Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 5 / 236: k=50, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:28:20Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 6 / 236: k=60, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:28:31Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 7 / 236: k=70, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:28:45Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 8 / 236: k=80, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:28:54Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 9 / 236: k=90, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:29:11Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 10 / 236: k=100, seed=42, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:29:23Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 11 / 236: k=10, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.2 hours ago at 2025-11-12T18:29:30Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 12 / 236: k=20, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:29:36Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 13 / 236: k=30, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:29:44Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:31] Starting projection 14 / 236: k=40, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:31] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:29:54Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 15 / 236: k=50, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:30:02Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 16 / 236: k=60, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:30:11Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 17 / 236: k=70, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:30:20Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 18 / 236: k=80, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:30:34Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 19 / 236: k=90, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:30:48Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 20 / 236: k=100, seed=1029, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:31:02Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 21 / 236: k=10, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:31:10Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 22 / 236: k=20, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:31:17Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 23 / 236: k=30, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:31:26Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 24 / 236: k=40, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:31:35Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 25 / 236: k=50, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:31:45Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 26 / 236: k=60, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:31:53Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 27 / 236: k=70, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:32:05Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 28 / 236: k=80, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:32:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 29 / 236: k=90, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:32:30Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:32] Starting projection 30 / 236: k=100, seed=31415, tol=1e-05, L1=0.1
+[2025-11-13 09:38:32] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:32:39Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 31 / 236: k=10, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:32:43Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 32 / 236: k=20, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:32:48Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 33 / 236: k=30, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:32:56Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 34 / 236: k=40, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:01Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 35 / 236: k=50, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:06Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 36 / 236: k=60, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:12Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 37 / 236: k=70, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:19Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 38 / 236: k=80, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:26Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 39 / 236: k=90, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:36Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 40 / 236: k=100, seed=120301, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:44Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed120301_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 41 / 236: k=10, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:48Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 42 / 236: k=20, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:53Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 43 / 236: k=30, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:33:57Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 44 / 236: k=40, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:05Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 45 / 236: k=50, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:11Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 46 / 236: k=60, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:16Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 47 / 236: k=70, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:22Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 48 / 236: k=80, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:29Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 49 / 236: k=90, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:35Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:33] Starting projection 50 / 236: k=100, seed=2025, tol=1e-05, L1=0.1
+[2025-11-13 09:38:33] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:46Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed2025_tol1e-05_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 51 / 236: k=10, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:51Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 52 / 236: k=20, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:34:57Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 53 / 236: k=30, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:35:04Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 54 / 236: k=40, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:35:12Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 55 / 236: k=50, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:35:19Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 56 / 236: k=60, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.1 hours ago at 2025-11-12T18:35:26Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 57 / 236: k=70, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:35:42Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 58 / 236: k=80, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:35:52Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 59 / 236: k=90, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:36:04Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 60 / 236: k=100, seed=42, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:36:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 61 / 236: k=10, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:36:24Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 62 / 236: k=20, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:36:30Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 63 / 236: k=30, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:36:37Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 64 / 236: k=40, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:36:47Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 65 / 236: k=50, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:36:56Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 66 / 236: k=60, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:37:08Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 67 / 236: k=70, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:37:20Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:34] Starting projection 68 / 236: k=80, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:34] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:37:34Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 69 / 236: k=90, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:37:45Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 70 / 236: k=100, seed=1029, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:38:01Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 71 / 236: k=10, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:38:09Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 72 / 236: k=20, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:38:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 73 / 236: k=30, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:38:28Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 74 / 236: k=40, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:38:35Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 75 / 236: k=50, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:38:42Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 76 / 236: k=60, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:38:51Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 77 / 236: k=70, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:39:00Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 78 / 236: k=80, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:39:16Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 79 / 236: k=90, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:39:27Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 80 / 236: k=100, seed=31415, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:39:43Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 81 / 236: k=10, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:39:50Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 82 / 236: k=20, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:39:57Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 83 / 236: k=30, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:40:04Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 84 / 236: k=40, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:40:14Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:35] Starting projection 85 / 236: k=50, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:35] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:40:25Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 86 / 236: k=60, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:40:35Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 87 / 236: k=70, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:40:47Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 88 / 236: k=80, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:41:00Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 89 / 236: k=90, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:41:15Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 90 / 236: k=100, seed=120301, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 20.0 hours ago at 2025-11-12T18:41:32Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed120301_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 91 / 236: k=10, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:41:39Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 92 / 236: k=20, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:41:47Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 93 / 236: k=30, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:41:57Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 94 / 236: k=40, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:42:08Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 95 / 236: k=50, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:42:16Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 96 / 236: k=60, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:42:28Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 97 / 236: k=70, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:42:42Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 98 / 236: k=80, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:42:52Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 99 / 236: k=90, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:43:04Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 100 / 236: k=100, seed=2025, tol=1e-06, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:43:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed2025_tol1e-06_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 101 / 236: k=10, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:43:25Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 102 / 236: k=20, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:43:36Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:36] Starting projection 103 / 236: k=30, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:36] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:43:42Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 104 / 236: k=40, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:43:49Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 105 / 236: k=50, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:43:57Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 106 / 236: k=60, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:44:06Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 107 / 236: k=70, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:44:15Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 108 / 236: k=80, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:44:24Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 109 / 236: k=90, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:44:34Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 110 / 236: k=100, seed=42, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:44:44Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 111 / 236: k=10, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:44:50Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 112 / 236: k=20, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:44:55Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 113 / 236: k=30, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:45:02Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 114 / 236: k=40, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:45:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 115 / 236: k=50, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:45:29Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 116 / 236: k=60, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:45:39Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 117 / 236: k=70, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:45:52Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 118 / 236: k=80, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:46:04Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:37] Starting projection 119 / 236: k=90, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:37] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:46:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 120 / 236: k=100, seed=1029, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:46:33Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 121 / 236: k=10, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:46:40Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 122 / 236: k=20, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:46:49Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 123 / 236: k=30, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:46:58Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 124 / 236: k=40, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:47:08Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 125 / 236: k=50, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:47:25Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 126 / 236: k=60, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.9 hours ago at 2025-11-12T18:47:35Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 127 / 236: k=70, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:47:48Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 128 / 236: k=80, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:48:01Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 129 / 236: k=90, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:48:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 130 / 236: k=100, seed=31415, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:48:34Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 131 / 236: k=10, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:48:43Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 132 / 236: k=20, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:48:54Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 133 / 236: k=30, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:49:02Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 134 / 236: k=40, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:49:13Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 135 / 236: k=50, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:49:24Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 136 / 236: k=60, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:49:37Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 137 / 236: k=70, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:49:56Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:38] Starting projection 138 / 236: k=80, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:38] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:50:08Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 139 / 236: k=90, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:50:18Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 140 / 236: k=100, seed=120301, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:50:29Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed120301_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 141 / 236: k=10, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:50:35Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 142 / 236: k=20, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:50:42Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 143 / 236: k=30, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:50:48Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 144 / 236: k=40, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:50:55Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 145 / 236: k=50, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:51:03Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 146 / 236: k=60, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:51:11Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 147 / 236: k=70, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:51:25Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 148 / 236: k=80, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:51:35Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 149 / 236: k=90, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:51:45Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 150 / 236: k=100, seed=2025, tol=1e-07, L1=0.1
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:51:55Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed2025_tol1e-07_L10.1.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 151 / 236: k=10, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:52:00Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 152 / 236: k=20, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:52:04Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 153 / 236: k=30, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:52:09Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 154 / 236: k=40, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:52:15Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 155 / 236: k=50, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:52:23Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:39] Starting projection 156 / 236: k=60, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:39] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:52:30Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 157 / 236: k=70, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 19.8 hours ago at 2025-11-12T18:52:39Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 158 / 236: k=80, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:31:19Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 159 / 236: k=90, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:31:30Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 160 / 236: k=100, seed=42, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:31:38Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 161 / 236: k=10, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:31:42Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 162 / 236: k=20, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:31:48Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 163 / 236: k=30, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:31:53Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 164 / 236: k=40, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:31:58Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 165 / 236: k=50, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:03Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 166 / 236: k=60, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:11Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 167 / 236: k=70, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:21Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 168 / 236: k=80, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:29Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 169 / 236: k=90, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:39Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 170 / 236: k=100, seed=1029, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:49Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 171 / 236: k=10, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:53Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 172 / 236: k=20, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:32:59Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:40] Starting projection 173 / 236: k=30, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:40] --------------------------------------------
+[2025-11-13 09:38:41] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:33:08Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Starting projection 174 / 236: k=40, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:33:14Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Starting projection 175 / 236: k=50, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:33:20Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Starting projection 176 / 236: k=60, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:33:28Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Starting projection 177 / 236: k=70, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:33:36Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Starting projection 178 / 236: k=80, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:33:44Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Starting projection 179 / 236: k=90, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Skipping run (already completed)
+	completed 0.1 hours ago at 2025-11-13T14:33:56Z UTC
+	location: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:41] Starting projection 180 / 236: k=100, seed=31415, tol=1e-05, L1=0.0
+[2025-11-13 09:38:41] --------------------------------------------
+[2025-11-13 09:38:42] Common genes: 28907
+[2025-11-13 09:38:44] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:38:49] Projection complete and rescaled.
+[2025-11-13 09:38:51] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-05_L10.0.rds
+[2025-11-13 09:38:51] Appended run metadata to summary.tsv
+[2025-11-13 09:38:51] --------------------------------------------
+[2025-11-13 09:38:51] Starting projection 181 / 236: k=10, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:38:51] --------------------------------------------
+[2025-11-13 09:38:52] Common genes: 28907
+[2025-11-13 09:38:58] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:39:00] Projection complete and rescaled.
+[2025-11-13 09:39:01] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:39:01] Appended run metadata to summary.tsv
+[2025-11-13 09:39:01] --------------------------------------------
+[2025-11-13 09:39:01] Starting projection 182 / 236: k=20, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:39:01] --------------------------------------------
+[2025-11-13 09:39:01] Common genes: 28907
+[2025-11-13 09:39:07] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:39:09] Projection complete and rescaled.
+[2025-11-13 09:39:10] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:39:10] Appended run metadata to summary.tsv
+[2025-11-13 09:39:10] --------------------------------------------
+[2025-11-13 09:39:10] Starting projection 183 / 236: k=30, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:39:10] --------------------------------------------
+[2025-11-13 09:39:10] Common genes: 28907
+[2025-11-13 09:39:13] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:39:15] Projection complete and rescaled.
+[2025-11-13 09:39:16] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:39:16] Appended run metadata to summary.tsv
+[2025-11-13 09:39:16] --------------------------------------------
+[2025-11-13 09:39:16] Starting projection 184 / 236: k=40, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:39:16] --------------------------------------------
+[2025-11-13 09:39:16] Common genes: 28907
+[2025-11-13 09:39:23] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:39:26] Projection complete and rescaled.
+[2025-11-13 09:39:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:39:27] Appended run metadata to summary.tsv
+[2025-11-13 09:39:27] --------------------------------------------
+[2025-11-13 09:39:27] Starting projection 185 / 236: k=50, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:39:27] --------------------------------------------
+[2025-11-13 09:39:28] Common genes: 28907
+[2025-11-13 09:39:31] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:39:33] Projection complete and rescaled.
+[2025-11-13 09:39:35] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:39:35] Appended run metadata to summary.tsv
+[2025-11-13 09:39:35] --------------------------------------------
+[2025-11-13 09:39:35] Starting projection 186 / 236: k=60, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:39:35] --------------------------------------------
+[2025-11-13 09:39:36] Common genes: 28907
+[2025-11-13 09:39:39] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:39:41] Projection complete and rescaled.
+[2025-11-13 09:39:43] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:39:43] Appended run metadata to summary.tsv
+[2025-11-13 09:39:43] --------------------------------------------
+[2025-11-13 09:39:43] Starting projection 187 / 236: k=70, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:39:43] --------------------------------------------
+[2025-11-13 09:39:44] Common genes: 28907
+[2025-11-13 09:39:50] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:39:53] Projection complete and rescaled.
+[2025-11-13 09:39:55] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:39:55] Appended run metadata to summary.tsv
+[2025-11-13 09:39:55] --------------------------------------------
+[2025-11-13 09:39:55] Starting projection 188 / 236: k=80, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:39:55] --------------------------------------------
+[2025-11-13 09:39:56] Common genes: 28907
+[2025-11-13 09:39:58] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:02] Projection complete and rescaled.
+[2025-11-13 09:40:04] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:40:04] Appended run metadata to summary.tsv
+[2025-11-13 09:40:04] --------------------------------------------
+[2025-11-13 09:40:04] Starting projection 189 / 236: k=90, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:40:04] --------------------------------------------
+[2025-11-13 09:40:05] Common genes: 28907
+[2025-11-13 09:40:08] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:12] Projection complete and rescaled.
+[2025-11-13 09:40:14] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:40:14] Appended run metadata to summary.tsv
+[2025-11-13 09:40:14] --------------------------------------------
+[2025-11-13 09:40:14] Starting projection 190 / 236: k=100, seed=120301, tol=1e-05, L1=0.0
+[2025-11-13 09:40:14] --------------------------------------------
+[2025-11-13 09:40:15] Common genes: 28907
+[2025-11-13 09:40:18] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:22] Projection complete and rescaled.
+[2025-11-13 09:40:24] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed120301_tol1e-05_L10.0.rds
+[2025-11-13 09:40:24] Appended run metadata to summary.tsv
+[2025-11-13 09:40:24] --------------------------------------------
+[2025-11-13 09:40:24] Starting projection 191 / 236: k=10, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:40:24] --------------------------------------------
+[2025-11-13 09:40:25] Common genes: 28907
+[2025-11-13 09:40:27] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:29] Projection complete and rescaled.
+[2025-11-13 09:40:29] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:40:29] Appended run metadata to summary.tsv
+[2025-11-13 09:40:29] --------------------------------------------
+[2025-11-13 09:40:29] Starting projection 192 / 236: k=20, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:40:29] --------------------------------------------
+[2025-11-13 09:40:30] Common genes: 28907
+[2025-11-13 09:40:33] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:34] Projection complete and rescaled.
+[2025-11-13 09:40:35] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:40:35] Appended run metadata to summary.tsv
+[2025-11-13 09:40:35] --------------------------------------------
+[2025-11-13 09:40:35] Starting projection 193 / 236: k=30, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:40:35] --------------------------------------------
+[2025-11-13 09:40:35] Common genes: 28907
+[2025-11-13 09:40:43] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:45] Projection complete and rescaled.
+[2025-11-13 09:40:46] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:40:46] Appended run metadata to summary.tsv
+[2025-11-13 09:40:46] --------------------------------------------
+[2025-11-13 09:40:46] Starting projection 194 / 236: k=40, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:40:46] --------------------------------------------
+[2025-11-13 09:40:46] Common genes: 28907
+[2025-11-13 09:40:49] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:51] Projection complete and rescaled.
+[2025-11-13 09:40:52] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:40:52] Appended run metadata to summary.tsv
+[2025-11-13 09:40:52] --------------------------------------------
+[2025-11-13 09:40:52] Starting projection 195 / 236: k=50, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:40:52] --------------------------------------------
+[2025-11-13 09:40:53] Common genes: 28907
+[2025-11-13 09:40:56] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:40:58] Projection complete and rescaled.
+[2025-11-13 09:41:00] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:41:00] Appended run metadata to summary.tsv
+[2025-11-13 09:41:00] --------------------------------------------
+[2025-11-13 09:41:00] Starting projection 196 / 236: k=60, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:41:00] --------------------------------------------
+[2025-11-13 09:41:01] Common genes: 28907
+[2025-11-13 09:41:04] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:41:07] Projection complete and rescaled.
+[2025-11-13 09:41:09] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:41:09] Appended run metadata to summary.tsv
+[2025-11-13 09:41:09] --------------------------------------------
+[2025-11-13 09:41:09] Starting projection 197 / 236: k=70, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:41:09] --------------------------------------------
+[2025-11-13 09:41:09] Common genes: 28907
+[2025-11-13 09:41:13] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:41:16] Projection complete and rescaled.
+[2025-11-13 09:41:18] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:41:18] Appended run metadata to summary.tsv
+[2025-11-13 09:41:18] --------------------------------------------
+[2025-11-13 09:41:18] Starting projection 198 / 236: k=80, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:41:18] --------------------------------------------
+[2025-11-13 09:41:19] Common genes: 28907
+[2025-11-13 09:41:21] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:41:25] Projection complete and rescaled.
+[2025-11-13 09:41:27] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:41:27] Appended run metadata to summary.tsv
+[2025-11-13 09:41:27] --------------------------------------------
+[2025-11-13 09:41:27] Starting projection 199 / 236: k=90, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:41:27] --------------------------------------------
+[2025-11-13 09:41:28] Common genes: 28907
+[2025-11-13 09:41:37] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:41:41] Projection complete and rescaled.
+[2025-11-13 09:41:44] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:41:44] Appended run metadata to summary.tsv
+[2025-11-13 09:41:44] --------------------------------------------
+[2025-11-13 09:41:44] Starting projection 200 / 236: k=100, seed=2025, tol=1e-05, L1=0.0
+[2025-11-13 09:41:44] --------------------------------------------
+[2025-11-13 09:41:46] Common genes: 28907
+[2025-11-13 09:41:49] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:41:54] Projection complete and rescaled.
+[2025-11-13 09:41:57] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed2025_tol1e-05_L10.0.rds
+[2025-11-13 09:41:57] Appended run metadata to summary.tsv
+[2025-11-13 09:41:57] --------------------------------------------
+[2025-11-13 09:41:57] Starting projection 201 / 236: k=10, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:41:57] --------------------------------------------
+[2025-11-13 09:41:57] Common genes: 28907
+[2025-11-13 09:42:01] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:42:02] Projection complete and rescaled.
+[2025-11-13 09:42:03] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:42:03] Appended run metadata to summary.tsv
+[2025-11-13 09:42:03] --------------------------------------------
+[2025-11-13 09:42:03] Starting projection 202 / 236: k=20, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:42:03] --------------------------------------------
+[2025-11-13 09:42:03] Common genes: 28907
+[2025-11-13 09:42:07] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:42:09] Projection complete and rescaled.
+[2025-11-13 09:42:10] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:42:10] Appended run metadata to summary.tsv
+[2025-11-13 09:42:10] --------------------------------------------
+[2025-11-13 09:42:10] Starting projection 203 / 236: k=30, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:42:10] --------------------------------------------
+[2025-11-13 09:42:10] Common genes: 28907
+[2025-11-13 09:42:19] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:42:21] Projection complete and rescaled.
+[2025-11-13 09:42:22] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:42:22] Appended run metadata to summary.tsv
+[2025-11-13 09:42:22] --------------------------------------------
+[2025-11-13 09:42:22] Starting projection 204 / 236: k=40, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:42:22] --------------------------------------------
+[2025-11-13 09:42:23] Common genes: 28907
+[2025-11-13 09:42:25] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:42:28] Projection complete and rescaled.
+[2025-11-13 09:42:29] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:42:29] Appended run metadata to summary.tsv
+[2025-11-13 09:42:29] --------------------------------------------
+[2025-11-13 09:42:29] Starting projection 205 / 236: k=50, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:42:29] --------------------------------------------
+[2025-11-13 09:42:30] Common genes: 28907
+[2025-11-13 09:42:33] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:42:35] Projection complete and rescaled.
+[2025-11-13 09:42:37] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:42:37] Appended run metadata to summary.tsv
+[2025-11-13 09:42:37] --------------------------------------------
+[2025-11-13 09:42:37] Starting projection 206 / 236: k=60, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:42:37] --------------------------------------------
+[2025-11-13 09:42:37] Common genes: 28907
+[2025-11-13 09:42:42] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:42:45] Projection complete and rescaled.
+[2025-11-13 09:42:46] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:42:46] Appended run metadata to summary.tsv
+[2025-11-13 09:42:46] --------------------------------------------
+[2025-11-13 09:42:46] Starting projection 207 / 236: k=70, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:42:46] --------------------------------------------
+[2025-11-13 09:42:47] Common genes: 28907
+[2025-11-13 09:42:50] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:42:53] Projection complete and rescaled.
+[2025-11-13 09:42:54] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:42:54] Appended run metadata to summary.tsv
+[2025-11-13 09:42:54] --------------------------------------------
+[2025-11-13 09:42:54] Starting projection 208 / 236: k=80, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:42:54] --------------------------------------------
+[2025-11-13 09:42:55] Common genes: 28907
+[2025-11-13 09:42:59] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:43:02] Projection complete and rescaled.
+[2025-11-13 09:43:04] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:43:04] Appended run metadata to summary.tsv
+[2025-11-13 09:43:04] --------------------------------------------
+[2025-11-13 09:43:04] Starting projection 209 / 236: k=90, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:43:04] --------------------------------------------
+[2025-11-13 09:43:05] Common genes: 28907
+[2025-11-13 09:43:13] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:43:17] Projection complete and rescaled.
+[2025-11-13 09:43:20] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:43:20] Appended run metadata to summary.tsv
+[2025-11-13 09:43:20] --------------------------------------------
+[2025-11-13 09:43:20] Starting projection 210 / 236: k=100, seed=42, tol=1e-06, L1=0.0
+[2025-11-13 09:43:20] --------------------------------------------
+[2025-11-13 09:43:21] Common genes: 28907
+[2025-11-13 09:43:25] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:43:30] Projection complete and rescaled.
+[2025-11-13 09:43:33] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed42_tol1e-06_L10.0.rds
+[2025-11-13 09:43:33] Appended run metadata to summary.tsv
+[2025-11-13 09:43:33] --------------------------------------------
+[2025-11-13 09:43:33] Starting projection 211 / 236: k=10, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:43:33] --------------------------------------------
+[2025-11-13 09:43:33] Common genes: 28907
+[2025-11-13 09:43:36] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:43:38] Projection complete and rescaled.
+[2025-11-13 09:43:38] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:43:38] Appended run metadata to summary.tsv
+[2025-11-13 09:43:38] --------------------------------------------
+[2025-11-13 09:43:38] Starting projection 212 / 236: k=20, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:43:38] --------------------------------------------
+[2025-11-13 09:43:39] Common genes: 28907
+[2025-11-13 09:43:42] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:43:43] Projection complete and rescaled.
+[2025-11-13 09:43:44] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:43:44] Appended run metadata to summary.tsv
+[2025-11-13 09:43:44] --------------------------------------------
+[2025-11-13 09:43:44] Starting projection 213 / 236: k=30, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:43:44] --------------------------------------------
+[2025-11-13 09:43:45] Common genes: 28907
+[2025-11-13 09:43:47] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:43:49] Projection complete and rescaled.
+[2025-11-13 09:43:50] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:43:50] Appended run metadata to summary.tsv
+[2025-11-13 09:43:50] --------------------------------------------
+[2025-11-13 09:43:50] Starting projection 214 / 236: k=40, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:43:50] --------------------------------------------
+[2025-11-13 09:43:51] Common genes: 28907
+[2025-11-13 09:43:53] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:43:56] Projection complete and rescaled.
+[2025-11-13 09:43:57] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:43:57] Appended run metadata to summary.tsv
+[2025-11-13 09:43:57] --------------------------------------------
+[2025-11-13 09:43:57] Starting projection 215 / 236: k=50, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:43:57] --------------------------------------------
+[2025-11-13 09:43:58] Common genes: 28907
+[2025-11-13 09:44:05] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:44:07] Projection complete and rescaled.
+[2025-11-13 09:44:08] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:44:08] Appended run metadata to summary.tsv
+[2025-11-13 09:44:08] --------------------------------------------
+[2025-11-13 09:44:08] Starting projection 216 / 236: k=60, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:44:08] --------------------------------------------
+[2025-11-13 09:44:09] Common genes: 28907
+[2025-11-13 09:44:12] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:44:15] Projection complete and rescaled.
+[2025-11-13 09:44:16] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:44:16] Appended run metadata to summary.tsv
+[2025-11-13 09:44:16] --------------------------------------------
+[2025-11-13 09:44:16] Starting projection 217 / 236: k=70, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:44:16] --------------------------------------------
+[2025-11-13 09:44:17] Common genes: 28907
+[2025-11-13 09:44:20] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:44:23] Projection complete and rescaled.
+[2025-11-13 09:44:25] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:44:25] Appended run metadata to summary.tsv
+[2025-11-13 09:44:25] --------------------------------------------
+[2025-11-13 09:44:25] Starting projection 218 / 236: k=80, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:44:25] --------------------------------------------
+[2025-11-13 09:44:26] Common genes: 28907
+[2025-11-13 09:44:30] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:44:34] Projection complete and rescaled.
+[2025-11-13 09:44:36] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:44:36] Appended run metadata to summary.tsv
+[2025-11-13 09:44:36] --------------------------------------------
+[2025-11-13 09:44:36] Starting projection 219 / 236: k=90, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:44:36] --------------------------------------------
+[2025-11-13 09:44:36] Common genes: 28907
+[2025-11-13 09:44:40] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:44:50] Projection complete and rescaled.
+[2025-11-13 09:44:52] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:44:52] Appended run metadata to summary.tsv
+[2025-11-13 09:44:52] --------------------------------------------
+[2025-11-13 09:44:52] Starting projection 220 / 236: k=100, seed=1029, tol=1e-06, L1=0.0
+[2025-11-13 09:44:52] --------------------------------------------
+[2025-11-13 09:44:53] Common genes: 28907
+[2025-11-13 09:44:57] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:02] Projection complete and rescaled.
+[2025-11-13 09:45:05] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed1029_tol1e-06_L10.0.rds
+[2025-11-13 09:45:05] Appended run metadata to summary.tsv
+[2025-11-13 09:45:05] --------------------------------------------
+[2025-11-13 09:45:05] Starting projection 221 / 236: k=10, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:05] --------------------------------------------
+[2025-11-13 09:45:05] Common genes: 28907
+[2025-11-13 09:45:07] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:09] Projection complete and rescaled.
+[2025-11-13 09:45:09] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:45:09] Appended run metadata to summary.tsv
+[2025-11-13 09:45:09] --------------------------------------------
+[2025-11-13 09:45:09] Starting projection 222 / 236: k=20, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:09] --------------------------------------------
+[2025-11-13 09:45:09] Common genes: 28907
+[2025-11-13 09:45:12] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:14] Projection complete and rescaled.
+[2025-11-13 09:45:15] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:45:15] Appended run metadata to summary.tsv
+[2025-11-13 09:45:15] --------------------------------------------
+[2025-11-13 09:45:15] Starting projection 223 / 236: k=30, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:15] --------------------------------------------
+[2025-11-13 09:45:15] Common genes: 28907
+[2025-11-13 09:45:18] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:20] Projection complete and rescaled.
+[2025-11-13 09:45:21] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:45:21] Appended run metadata to summary.tsv
+[2025-11-13 09:45:21] --------------------------------------------
+[2025-11-13 09:45:21] Starting projection 224 / 236: k=40, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:21] --------------------------------------------
+[2025-11-13 09:45:22] Common genes: 28907
+[2025-11-13 09:45:25] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:27] Projection complete and rescaled.
+[2025-11-13 09:45:28] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:45:28] Appended run metadata to summary.tsv
+[2025-11-13 09:45:28] --------------------------------------------
+[2025-11-13 09:45:28] Starting projection 225 / 236: k=50, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:28] --------------------------------------------
+[2025-11-13 09:45:28] Common genes: 28907
+[2025-11-13 09:45:31] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:33] Projection complete and rescaled.
+[2025-11-13 09:45:35] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:45:35] Appended run metadata to summary.tsv
+[2025-11-13 09:45:35] --------------------------------------------
+[2025-11-13 09:45:35] Starting projection 226 / 236: k=60, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:35] --------------------------------------------
+[2025-11-13 09:45:35] Common genes: 28907
+[2025-11-13 09:45:39] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:42] Projection complete and rescaled.
+[2025-11-13 09:45:44] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:45:44] Appended run metadata to summary.tsv
+[2025-11-13 09:45:44] --------------------------------------------
+[2025-11-13 09:45:44] Starting projection 227 / 236: k=70, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:44] --------------------------------------------
+[2025-11-13 09:45:45] Common genes: 28907
+[2025-11-13 09:45:53] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:45:56] Projection complete and rescaled.
+[2025-11-13 09:45:57] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:45:57] Appended run metadata to summary.tsv
+[2025-11-13 09:45:57] --------------------------------------------
+[2025-11-13 09:45:57] Starting projection 228 / 236: k=80, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:45:57] --------------------------------------------
+[2025-11-13 09:45:58] Common genes: 28907
+[2025-11-13 09:46:02] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:46:06] Projection complete and rescaled.
+[2025-11-13 09:46:08] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:46:08] Appended run metadata to summary.tsv
+[2025-11-13 09:46:08] --------------------------------------------
+[2025-11-13 09:46:08] Starting projection 229 / 236: k=90, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:46:08] --------------------------------------------
+[2025-11-13 09:46:09] Common genes: 28907
+[2025-11-13 09:46:12] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:46:16] Projection complete and rescaled.
+[2025-11-13 09:46:19] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k90_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:46:19] Appended run metadata to summary.tsv
+[2025-11-13 09:46:19] --------------------------------------------
+[2025-11-13 09:46:19] Starting projection 230 / 236: k=100, seed=31415, tol=1e-06, L1=0.0
+[2025-11-13 09:46:19] --------------------------------------------
+[2025-11-13 09:46:20] Common genes: 28907
+[2025-11-13 09:46:24] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:46:29] Projection complete and rescaled.
+[2025-11-13 09:46:31] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k100_seed31415_tol1e-06_L10.0.rds
+[2025-11-13 09:46:32] Appended run metadata to summary.tsv
+[2025-11-13 09:46:32] --------------------------------------------
+[2025-11-13 09:46:32] Starting projection 231 / 236: k=10, seed=120301, tol=1e-06, L1=0.0
+[2025-11-13 09:46:32] --------------------------------------------
+[2025-11-13 09:46:32] Common genes: 28907
+[2025-11-13 09:46:35] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:46:36] Projection complete and rescaled.
+[2025-11-13 09:46:37] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed120301_tol1e-06_L10.0.rds
+[2025-11-13 09:46:37] Appended run metadata to summary.tsv
+[2025-11-13 09:46:37] --------------------------------------------
+[2025-11-13 09:46:37] Starting projection 232 / 236: k=20, seed=120301, tol=1e-06, L1=0.0
+[2025-11-13 09:46:37] --------------------------------------------
+[2025-11-13 09:46:37] Common genes: 28907
+[2025-11-13 09:46:41] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:46:43] Projection complete and rescaled.
+[2025-11-13 09:46:43] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed120301_tol1e-06_L10.0.rds
+[2025-11-13 09:46:43] Appended run metadata to summary.tsv
+[2025-11-13 09:46:43] --------------------------------------------
+[2025-11-13 09:46:43] Starting projection 233 / 236: k=30, seed=120301, tol=1e-06, L1=0.0
+[2025-11-13 09:46:43] --------------------------------------------
+[2025-11-13 09:46:44] Common genes: 28907
+[2025-11-13 09:46:51] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:46:53] Projection complete and rescaled.
+[2025-11-13 09:46:54] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed120301_tol1e-06_L10.0.rds
+[2025-11-13 09:46:54] Appended run metadata to summary.tsv
+[2025-11-13 09:46:54] --------------------------------------------
+[2025-11-13 09:46:54] Starting projection 234 / 236: k=40, seed=120301, tol=1e-06, L1=0.0
+[2025-11-13 09:46:54] --------------------------------------------
+[2025-11-13 09:46:54] Common genes: 28907
+[2025-11-13 09:46:57] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:46:59] Projection complete and rescaled.
+[2025-11-13 09:47:00] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed120301_tol1e-06_L10.0.rds
+[2025-11-13 09:47:00] Appended run metadata to summary.tsv
+[2025-11-13 09:47:00] --------------------------------------------
+[2025-11-13 09:47:00] Starting projection 235 / 236: k=50, seed=120301, tol=1e-06, L1=0.0
+[2025-11-13 09:47:00] --------------------------------------------
+[2025-11-13 09:47:01] Common genes: 28907
+[2025-11-13 09:47:04] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:47:06] Projection complete and rescaled.
+[2025-11-13 09:47:07] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed120301_tol1e-06_L10.0.rds
+[2025-11-13 09:47:07] Appended run metadata to summary.tsv
+[2025-11-13 09:47:07] --------------------------------------------
+[2025-11-13 09:47:07] Starting projection 236 / 236: k=60, seed=120301, tol=1e-06, L1=0.0
+[2025-11-13 09:47:07] --------------------------------------------
+[2025-11-13 09:47:08] Common genes: 28907
+[2025-11-13 09:47:11] Projecting SRT into snRNA NMF basis...
+[2025-11-13 09:47:14] Projection complete and rescaled.
+[2025-11-13 09:47:15] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed120301_tol1e-06_L10.0.rds
+[2025-11-13 09:47:15] Appended run metadata to summary.tsv
+[2025-11-13 09:47:15] ===== Finished batched projection =====

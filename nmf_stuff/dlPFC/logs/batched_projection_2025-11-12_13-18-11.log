@@ -1,0 +1,396 @@
+[2025-11-12 13:18:11] Log file created: /zata/zippy/kresgeb/nmf_stuff/dlPFC/logs/batched_projection_2025-11-12_13-18-11.log
+[2025-11-12 13:18:11] ======Snapshot of script: batched_projection.R======
+
+----- Begin Script Snapshot -----
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages({
+    library(here)
+    library(SpatialExperiment)
+    library(SingleCellExperiment)
+    library(RcppML)
+    library(sessioninfo)
+    library(duckplyr)
+    library(readr)
+})
+
+# --------------------------------------------------------------
+# Set project root and import utilities
+# --------------------------------------------------------------
+my_relative_path <- "scripts/batched_projection.R"
+here::i_am(my_relative_path)
+source(here("scripts", "utils.R"))
+
+# --------------------------------------------------------------
+# Global setup
+# --------------------------------------------------------------
+threads <- 64
+options(RcppML.threads = threads)
+options(RcppML.verbose = TRUE)
+
+setup_log(prefix = "batched_projection")
+snapshot_script(here(my_relative_path))
+log_msg("===== Session Info =====")
+print(sessionInfo())
+print(session_info())
+log_msg(sprintf("Running batched projection with %d threads", threads))
+
+# --------------------------------------------------------------
+# Paths and parameters
+# --------------------------------------------------------------
+nmf_summary_tsv <- here("data", "batched_nmf", "summary.tsv")
+srt_path <- "/data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData"
+proj_outdir <- here("data", "batched_projection")
+summary_tsv <- file.path(proj_outdir, "summary.tsv")
+
+if (!dir.exists(proj_outdir)) {
+    dir.create(proj_outdir, recursive = TRUE)
+}
+
+# --------------------------------------------------------------
+# Load SRT once
+# --------------------------------------------------------------
+log_msg("===== Loading and processing SRT object =====")
+log_msg(paste("Loading SRT object from:", srt_path))
+load_and_rename(srt_path, new_names = "srt", verbose = TRUE)
+stopifnot(inherits(srt, "SpatialExperiment"))
+
+# The object uses Ensebml IDs as rownames
+# I should not ever WANT this,
+# so lets just replace them with the gene_names right now
+# Replace Ensembl IDs with gene_name as rownames
+log_msg("Replacing rownames(srt) with gene_name from rowData...")
+gene_names <- as.character(rowData(srt)$gene_name)
+na_idx <- which(is.na(gene_names) | gene_names == "")
+if (length(na_idx) > 0) {
+    gene_names[na_idx] <- rownames(srt)[na_idx] # fallback to Ensembl IDs
+    log_msg(sprintf("Replaced %d NA/blank gene_name entries with Ensembl IDs", length(na_idx)))
+}
+# Make names unique (adds .1, .2, etc. suffixes)
+gene_names <- make.unique(gene_names)
+
+# apply new rownames
+rownames(srt) <- gene_names
+log_msg("SRT preprocessing complete.")
+
+# --------------------------------------------------------------
+# Load NMF batch summary
+# --------------------------------------------------------------
+if (!file.exists(nmf_summary_tsv)) {
+    stop("NMF summary TSV not found at: ", nmf_summary_tsv)
+}
+nmf_summary <- read_tsv(nmf_summary_tsv, show_col_types = FALSE)
+log_msg(sprintf("Loaded %d NMF runs from summary.", nrow(nmf_summary)))
+
+# --------------------------------------------------------------
+# Setup for output summary TSV
+# --------------------------------------------------------------
+
+if (file.exists(summary_tsv)) {
+    summary_df <- read_tsv(summary_tsv, show_col_types = FALSE)
+    log_msg(sprintf("Loaded existing summary TSV with %d rows", nrow(summary_df)))
+} else {
+    summary_df <- tibble(
+        timestamp = character(),
+        k = integer(),
+        seed = integer(),
+        tol = numeric(),
+        L1 = numeric(),
+        elapsed_min = numeric(),
+        nmf_input = character(),
+        projection_output = character(),
+        n_common_genes = integer()
+    )
+    write_tsv(summary_df, summary_tsv)
+    log_msg(sprintf("Initialized empty summary TSV at: %s", summary_tsv))
+}
+
+
+# --------------------------------------------------------------
+# Run projections for each NMF result
+# --------------------------------------------------------------
+
+# --- Config ---
+skip_completed <- TRUE # set FALSE to force re-run even if already completed
+
+for (i in seq_len(nrow(nmf_summary))) {
+    nmf_path <- nmf_summary$output_path[i]
+    k <- nmf_summary$k[i]
+    seed <- nmf_summary$seed[i]
+    tol <- nmf_summary$tol[i]
+    L1 <- nmf_summary$L1[i]
+
+    run_prefix <- sprintf("proj_k%d_seed%d_tol%.0e_L1%.1f", k, seed, tol, L1)
+    proj_out_path <- file.path(proj_outdir, paste0(run_prefix, ".rds"))
+
+    log_msg("--------------------------------------------")
+    log_msg(sprintf(
+        "Starting projection %d / %d: k=%d, seed=%d, tol=%.0e, L1=%.1f",
+        i, nrow(nmf_summary), k, seed, tol, L1
+    ))
+    log_msg("--------------------------------------------")
+
+    # --- Check for completed run ---
+    already_done <- FALSE
+    if (skip_completed && nrow(summary_df) > 0) {
+        match_row <- summary_df |>
+            filter(k == !!k, seed == !!seed, tol == !!tol, L1 == !!L1)
+        if (nrow(match_row) > 0) {
+            already_done <- TRUE
+            ts <- lubridate::ymd_hms(match_row$timestamp, tz = "UTC")
+            ago <- lubridate::as.period(Sys.time() - ts, unit = "minute")
+            log_msg(sprintf(
+                "Skipping run (already completed)\n\tcompleted %s ago at %s UTC\n\tlocation: %s",
+                lubridate::time_length(ago, "hour") %>%
+                    {
+                        \(x) sprintf("%.1f hours", x)
+                    }(),
+                format(ts, "%Y-%m-%dT%H:%M:%SZ"),
+                match_row$output_path
+            ))
+        }
+    }
+    if (already_done) next
+
+    start_time <- Sys.time()
+
+    # Load NMF model
+    nmf_x <- readRDS(nmf_path)
+    w <- nmf_x@w
+
+    # Match genes
+    common_genes <- intersect(rownames(w), rownames(srt))
+    log_msg(sprintf("Common genes: %d", length(common_genes)))
+
+    w <- w[common_genes, , drop = FALSE]
+    Y <- assay(srt, "logcounts")[common_genes, , drop = FALSE]
+
+    # Projection
+    log_msg("Projecting SRT into snRNA NMF basis...")
+    set.seed(seed)
+    proj <- project(w, Y, L1 = 0)
+    proj <- t(proj)
+
+    # Rescale so loadings per spot sum to 1
+    proj <- apply(proj, 2, function(z) z / sum(z))
+    log_msg("Projection complete and rescaled.")
+
+    # Save result
+    saveRDS(proj, proj_out_path)
+    log_msg(paste("Saved projection result to:", proj_out_path))
+
+    end_time <- Sys.time()
+    elapsed <- as.numeric(difftime(end_time, start_time, units = "mins"))
+
+    # --- Construct row ---
+    new_row <- tibble(
+        timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+        k = k, seed = seed, tol = tol, L1 = L1,
+        elapsed_min = elapsed,
+        nmf_input = nmf_path,
+        projection_output = proj_out_path,
+        n_common_genes = length(common_genes)
+    )
+    # --- Append to TSV file ---
+    write_tsv(new_row, summary_tsv, append = TRUE)
+    log_msg("Appended run metadata to summary.tsv")
+}
+
+log_msg("===== Finished batched projection =====")
+close_log()
+
+----- End Script Snapshot -----
+
+[2025-11-12 13:18:11] ===== Session Info =====
+R version 4.4.2 (2024-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0 
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
+
+locale:
+[1] C
+
+time zone: America/New_York
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] readr_2.1.5                 duckplyr_1.1.3              dplyr_1.1.4                 sessioninfo_1.2.2          
+ [5] RcppML_0.5.5                SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0
+ [9] Biobase_2.66.0              GenomicRanges_1.58.0        GenomeInfoDb_1.42.1         IRanges_2.40.1             
+[13] S4Vectors_0.44.0            BiocGenerics_0.52.0         MatrixGenerics_1.18.0       matrixStats_1.5.0          
+[17] here_1.0.1                 
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4          SparseArray_1.6.0       lattice_0.22-5          hms_1.1.3              
+ [5] magrittr_2.0.4          RcppEigen_0.3.4.0.2     evaluate_1.0.5          grid_4.4.2             
+ [9] fastmap_1.2.0           rprojroot_2.1.1         jsonlite_2.0.0          Matrix_1.7-1           
+[13] DBI_1.2.3               httr_1.4.7              UCSC.utils_1.2.0        collections_0.3.8      
+[17] duckdb_1.4.1            abind_1.4-8             cli_3.6.5               rlang_1.1.6            
+[21] crayon_1.5.3            XVector_0.46.0          cachem_1.1.0            DelayedArray_0.32.0    
+[25] S4Arrays_1.6.0          tools_4.4.2             tzdb_0.4.0              memoise_2.0.1          
+[29] GenomeInfoDbData_1.2.13 vctrs_0.6.5             R6_2.6.1                lifecycle_1.0.4        
+[33] magick_2.8.6            zlibbioc_1.52.0         pkgconfig_2.0.3         pillar_1.11.1          
+[37] glue_1.8.0              Rcpp_1.1.0              xfun_0.53               tibble_3.3.0           
+[41] tidyselect_1.2.1        knitr_1.50              rjson_0.2.23            compiler_4.4.2         
+- Session info -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ setting  value
+ version  R version 4.4.2 (2024-10-31)
+ os       Ubuntu 22.04.5 LTS
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  C
+ ctype    C
+ tz       America/New_York
+ date     2025-11-12
+ pandoc   2.9.2.1 @ /usr/bin/pandoc
+
+- Packages -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ package              * version   date (UTC) lib source
+ abind                  1.4-8     2024-09-12 [1] CRAN (R 4.4.2)
+ Biobase              * 2.66.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ BiocGenerics         * 0.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ cachem                 1.1.0     2024-05-16 [1] CRAN (R 4.4.2)
+ cli                    3.6.5     2025-04-23 [1] CRAN (R 4.4.2)
+ collections            0.3.8     2025-05-08 [1] CRAN (R 4.4.2)
+ crayon                 1.5.3     2024-06-20 [1] CRAN (R 4.4.2)
+ DBI                    1.2.3     2024-06-02 [1] CRAN (R 4.4.2)
+ DelayedArray           0.32.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ dplyr                * 1.1.4     2023-11-17 [1] CRAN (R 4.4.2)
+ duckdb                 1.4.1     2025-10-16 [1] CRAN (R 4.4.2)
+ duckplyr             * 1.1.3     2025-11-04 [1] CRAN (R 4.4.2)
+ evaluate               1.0.5     2025-08-27 [1] CRAN (R 4.4.2)
+ fastmap                1.2.0     2024-05-15 [1] CRAN (R 4.4.2)
+ generics               0.1.4     2025-05-09 [1] CRAN (R 4.4.2)
+ GenomeInfoDb         * 1.42.1    2024-11-28 [1] Bioconductor 3.20 (R 4.4.2)
+ GenomeInfoDbData       1.2.13    2025-01-10 [1] Bioconductor
+ GenomicRanges        * 1.58.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ glue                   1.8.0     2024-09-30 [1] CRAN (R 4.4.2)
+ here                 * 1.0.1     2020-12-13 [1] CRAN (R 4.4.2)
+ hms                    1.1.3     2023-03-21 [1] CRAN (R 4.4.2)
+ httr                   1.4.7     2023-08-15 [1] CRAN (R 4.4.2)
+ IRanges              * 2.40.1    2024-12-05 [1] Bioconductor 3.20 (R 4.4.2)
+ jsonlite               2.0.0     2025-03-27 [1] CRAN (R 4.4.2)
+ knitr                  1.50      2025-03-16 [1] CRAN (R 4.4.2)
+ lattice                0.22-5    2023-10-24 [3] CRAN (R 4.3.1)
+ lifecycle              1.0.4     2023-11-07 [1] CRAN (R 4.4.2)
+ magick                 2.8.6     2025-03-23 [1] CRAN (R 4.4.2)
+ magrittr               2.0.4     2025-09-12 [1] CRAN (R 4.4.2)
+ Matrix                 1.7-1     2024-10-18 [3] CRAN (R 4.4.1)
+ MatrixGenerics       * 1.18.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ matrixStats          * 1.5.0     2025-01-07 [1] CRAN (R 4.4.2)
+ memoise                2.0.1     2021-11-26 [1] CRAN (R 4.4.2)
+ pillar                 1.11.1    2025-09-17 [1] CRAN (R 4.4.2)
+ pkgconfig              2.0.3     2019-09-22 [1] CRAN (R 4.4.2)
+ R6                     2.6.1     2025-02-15 [1] CRAN (R 4.4.2)
+ Rcpp                   1.1.0     2025-07-02 [1] CRAN (R 4.4.2)
+ RcppEigen              0.3.4.0.2 2024-08-24 [1] CRAN (R 4.4.2)
+ RcppML               * 0.5.5     2025-09-09 [1] Github (zdebruine/RcppML@c997bcd)
+ readr                * 2.1.5     2024-01-10 [1] CRAN (R 4.4.2)
+ rjson                  0.2.23    2024-09-16 [1] CRAN (R 4.4.2)
+ rlang                  1.1.6     2025-04-11 [1] CRAN (R 4.4.2)
+ rprojroot              2.1.1     2025-08-26 [1] CRAN (R 4.4.2)
+ S4Arrays               1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ S4Vectors            * 0.44.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ sessioninfo          * 1.2.2     2021-12-06 [1] CRAN (R 4.4.2)
+ SingleCellExperiment * 1.28.1    2024-11-10 [1] Bioconductor 3.20 (R 4.4.2)
+ SparseArray            1.6.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SpatialExperiment    * 1.16.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ SummarizedExperiment * 1.36.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ tibble                 3.3.0     2025-06-08 [1] CRAN (R 4.4.2)
+ tidyselect             1.2.1     2024-03-11 [1] CRAN (R 4.4.2)
+ tzdb                   0.4.0     2023-05-12 [1] CRAN (R 4.4.2)
+ UCSC.utils             1.2.0     2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ vctrs                  0.6.5     2023-12-01 [1] CRAN (R 4.4.2)
+ xfun                   0.53      2025-08-19 [1] CRAN (R 4.4.2)
+ XVector                0.46.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+ zlibbioc               1.52.0    2024-10-29 [1] Bioconductor 3.20 (R 4.4.2)
+
+ [1] /usr/local/lib/R/site-library
+ [2] /usr/lib/R/site-library
+ [3] /usr/lib/R/library
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[2025-11-12 13:18:11] Running batched projection with 64 threads
+[2025-11-12 13:18:11] ===== Loading and processing SRT object =====
+[2025-11-12 13:18:11] Loading SRT object from: /data/zusers/kresgeb/psych_encode/spatialLIBD_fetch_data/2024.RData
+Loading objects:
+  spe
+[2025-11-12 13:21:12] Replacing rownames(srt) with gene_name from rowData...
+[2025-11-12 13:21:12] SRT preprocessing complete.
+[2025-11-12 13:21:12] Loaded 157 NMF runs from summary.
+[2025-11-12 13:21:12] Loaded existing summary TSV with 0 rows
+[2025-11-12 13:21:12] --------------------------------------------
+[2025-11-12 13:21:12] Starting projection 1 / 157: k=10, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:21:12] --------------------------------------------
+[2025-11-12 13:21:13] Common genes: 28907
+[2025-11-12 13:21:15] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:21:17] Projection complete and rescaled.
+[2025-11-12 13:21:17] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k10_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:21:17] Appended run metadata to summary.tsv
+[2025-11-12 13:21:17] --------------------------------------------
+[2025-11-12 13:21:17] Starting projection 2 / 157: k=20, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:21:17] --------------------------------------------
+[2025-11-12 13:21:18] Common genes: 28907
+[2025-11-12 13:21:23] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:21:25] Projection complete and rescaled.
+[2025-11-12 13:21:26] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k20_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:21:26] Appended run metadata to summary.tsv
+[2025-11-12 13:21:26] --------------------------------------------
+[2025-11-12 13:21:26] Starting projection 3 / 157: k=30, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:21:26] --------------------------------------------
+[2025-11-12 13:21:26] Common genes: 28907
+[2025-11-12 13:21:29] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:21:34] Projection complete and rescaled.
+[2025-11-12 13:21:35] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k30_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:21:35] Appended run metadata to summary.tsv
+[2025-11-12 13:21:35] --------------------------------------------
+[2025-11-12 13:21:35] Starting projection 4 / 157: k=40, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:21:35] --------------------------------------------
+[2025-11-12 13:21:35] Common genes: 28907
+[2025-11-12 13:21:38] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:21:40] Projection complete and rescaled.
+[2025-11-12 13:21:41] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k40_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:21:41] Appended run metadata to summary.tsv
+[2025-11-12 13:21:41] --------------------------------------------
+[2025-11-12 13:21:41] Starting projection 5 / 157: k=50, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:21:41] --------------------------------------------
+[2025-11-12 13:21:41] Common genes: 28907
+[2025-11-12 13:21:44] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:21:47] Projection complete and rescaled.
+[2025-11-12 13:21:48] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k50_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:21:48] Appended run metadata to summary.tsv
+[2025-11-12 13:21:48] --------------------------------------------
+[2025-11-12 13:21:48] Starting projection 6 / 157: k=60, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:21:48] --------------------------------------------
+[2025-11-12 13:21:49] Common genes: 28907
+[2025-11-12 13:21:51] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:21:55] Projection complete and rescaled.
+[2025-11-12 13:21:56] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k60_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:21:56] Appended run metadata to summary.tsv
+[2025-11-12 13:21:56] --------------------------------------------
+[2025-11-12 13:21:56] Starting projection 7 / 157: k=70, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:21:56] --------------------------------------------
+[2025-11-12 13:21:57] Common genes: 28907
+[2025-11-12 13:21:59] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:22:03] Projection complete and rescaled.
+[2025-11-12 13:22:05] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k70_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:22:05] Appended run metadata to summary.tsv
+[2025-11-12 13:22:05] --------------------------------------------
+[2025-11-12 13:22:05] Starting projection 8 / 157: k=80, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:22:05] --------------------------------------------
+[2025-11-12 13:22:06] Common genes: 28907
+[2025-11-12 13:22:09] Projecting SRT into snRNA NMF basis...
+[2025-11-12 13:22:13] Projection complete and rescaled.
+[2025-11-12 13:22:15] Saved projection result to: /zata/zippy/kresgeb/nmf_stuff/dlPFC/data/batched_projection/proj_k80_seed42_tol1e-05_L10.1.rds
+[2025-11-12 13:22:15] Appended run metadata to summary.tsv
+[2025-11-12 13:22:15] --------------------------------------------
+[2025-11-12 13:22:15] Starting projection 9 / 157: k=90, seed=42, tol=1e-05, L1=0.1
+[2025-11-12 13:22:15] --------------------------------------------
+[2025-11-12 13:22:15] Common genes: 28907
