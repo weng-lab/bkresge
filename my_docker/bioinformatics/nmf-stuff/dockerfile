@@ -9,6 +9,7 @@ RUN apt update && apt install -y \
     curl \
     gpg \
     git \
+    gh \
     vim \
     wget \
     cmake \
@@ -34,6 +35,7 @@ RUN R -e "options(warn=2); install.packages(c('languageserver'))"
 # Needed to load and convert paper data
 RUN R -e "options(warn=2); install.packages(c('magick'))"
 RUN R -e "options(warn=2); BiocManager::install(c('spatialLIBD', 'SpatialExperiment', 'zellkonverter'))"
+
 # Verified the save version with the live container that pulled the first time (where it is pulling from could change I suppose)
 # Clone Bioconductor repo and checkout exact version for HPC data
 RUN git clone https://git.bioconductor.org/packages/humanHippocampus2024 /tmp/hh \
@@ -49,15 +51,11 @@ RUN R -e "options(warn=2); install.packages(c('tidyverse', 'duckplyr', 'ape', 'p
 # NMF packages
 RUN R -e "options(warn=2); remotes::install_github('zdebruine/RcppML@c997bcdd205cf03e105efa91c944da0e2c9068e0')"
 
-# # Needed, otherwise pip tries to uninstall packaging which is a core dependency (with no RECORD)
-# RUN pip install --no-cache-dir --break-system-packages \
-#     packaging==24.0
-#PIP_NO_UNINSTALL=packaging \
 # Have to use --break-system-packages due to PEP 668 enforcement since this is a system Python (base image) and I do not want to use a virtualenv
 # Note the removed `pip install --upgrade pip --break-system-packages &&` since there is no RECORD file (the version of pip the base image comes with is fine)
 # Install core Python packages (curated from Christian's base image)
 RUN pip install --no-cache-dir --break-system-packages\
-    # Pin packaging at top to prevent uninstalling it (core dependency with no RECORD file)
+    # Pin packaging at top to prevent uninstalling it as a part of updating it (core dependency with no RECORD file) -- not sure which package is trying to update it
     packaging==24.0 \
     # Jupyter 
     jupyterlab \
