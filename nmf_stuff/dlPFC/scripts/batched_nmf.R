@@ -51,7 +51,12 @@ tolerances <- c(1e-05, 1e-06, 1e-07)
 L1s <- c(0, 0.1, 0.2, 0.5, 0.7)
 # L1s <- c(0.1)
 
-param_grid <- expand.grid(k = k_values, seed = seeds, tol = tolerances, L1 = L1s)
+param_grid <- expand.grid(
+    k = k_values,
+    seed = seeds,
+    tol = tolerances,
+    L1 = L1s
+)
 
 # --------------------------------------------------------------
 # Load data once
@@ -67,7 +72,8 @@ if (!inherits(snrna, "SingleCellExperiment")) {
 log_msg("Data successfully loaded.")
 log_msg(sprintf(
     "Dimensions of logcounts: %d genes x %d cells",
-    nrow(assay(snrna, "logcounts")), ncol(assay(snrna, "logcounts"))
+    nrow(assay(snrna, "logcounts")),
+    ncol(assay(snrna, "logcounts"))
 ))
 log_msg(sprintf(
     "Memory footprint: %.2f MB",
@@ -116,7 +122,12 @@ for (i in seq_len(nrow(param_grid))) {
     log_msg("--------------------------------------------")
     log_msg(sprintf(
         "Starting run %d / %d: k=%d, seed=%d, tol=%.0e, L1=%.1f",
-        i, nrow(param_grid), k, seed, tol, L1
+        i,
+        nrow(param_grid),
+        k,
+        seed,
+        tol,
+        L1
     ))
     log_msg("--------------------------------------------")
 
@@ -140,7 +151,9 @@ for (i in seq_len(nrow(param_grid))) {
             ))
         }
     }
-    if (already_done) next
+    if (already_done) {
+        next
+    }
 
     # --- Run NMF ---
     start_time <- Sys.time()
@@ -169,8 +182,12 @@ for (i in seq_len(nrow(param_grid))) {
     # Construct new row for summary TSV
     new_row <- tibble(
         timestamp = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
-        k = k, seed = seed, tol = tol, L1 = L1,
-        elapsed_min = elapsed, output_path = out_path
+        k = k,
+        seed = seed,
+        tol = tol,
+        L1 = L1,
+        elapsed_min = elapsed,
+        output_path = out_path
     )
 
     # Save to summary TSV

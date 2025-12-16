@@ -44,7 +44,7 @@ close_log <- function() {
 #---------------------------------------------------------------
 # Utility: load_and_rename
 #---------------------------------------------------------------
-# Loads R objects from a .RData/.rda file and renames them in the target environment
+# Loads R objects from a .RData/.rda (can handle .rds as well, but those should really use readRDS()) file and renames them in the target environment
 # Provides detailed messages when verbose = TRUE
 load_and_rename <- function(path, new_names = NULL, envir = .GlobalEnv, overwrite = FALSE, verbose = FALSE) {
     if (!file.exists(path)) {
@@ -52,6 +52,49 @@ load_and_rename <- function(path, new_names = NULL, envir = .GlobalEnv, overwrit
     }
 
     if (verbose) message(sprintf("Loading objects from: %s", path))
+
+    is_rds <- grepl("\\.rds$", path, ignore.case = TRUE)
+
+    #------------------------------------------------------------
+    # CASE 1: .rds FILE
+    #------------------------------------------------------------
+    if (is_rds) {
+        if (verbose) message(sprintf("Reading .rds object from: %s", path))
+
+        obj <- readRDS(path)
+
+        # If name not provided, derive from filename
+        if (is.null(new_names)) {
+            new_names <- tools::file_path_sans_ext(basename(path))
+        } else if (length(new_names) != 1) {
+            stop("When loading an .rds file, 'new_names' must be length 1.")
+        }
+
+        # Check for overwrite protection
+        pre_existing <- ls(envir = envir)
+        existed_before <- new_names %in% pre_existing
+
+        if (existed_before && !overwrite) {
+            stop(sprintf(
+                "Object '%s' already existed in the target environment before loading.",
+                new_names
+            ))
+        }
+
+        assign(new_names, obj, envir = envir)
+
+        if (verbose) {
+            message(sprintf(
+                "Loaded .rds object as '%s' | Class: %s | Size: %.2f MB",
+                new_names,
+                paste(class(obj), collapse = "/"),
+                object.size(obj) / 1024^2
+            ))
+            message("Finished loading .rds object.\n")
+        }
+
+        return(invisible(list(obj)))
+    }
 
     # Capture objects that already exist before loading
     pre_existing <- ls(envir = envir)

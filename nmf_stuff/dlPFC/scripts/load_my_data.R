@@ -4,8 +4,8 @@ library(humanHippocampus2024)
 library(ExperimentHub)
 
 # Paths
-dlpfc_spe_path <- "/zata/zippy/kresgeb/nmf_stuff/dlPFC/srt_with_nmf.rda"
-dlpfc_sce_path <- "/zata/zippy/kresgeb/nmf_stuff/dlPFC/snrna_with_nmf.rda"
+dlpfc_spe_path <- "/zata/zippy/kresgeb/nmf_stuff/dlPFC/data/srt_with_nmf.rda"
+dlpfc_sce_path <- "/zata/zippy/kresgeb/nmf_stuff/dlPFC/data/snrna_with_nmf.rda"
 
 message("Loading from files...")
 

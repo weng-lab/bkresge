@@ -46,7 +46,7 @@ RUN git clone https://git.bioconductor.org/packages/humanHippocampus2024 /tmp/hh
     && rm -rf /tmp/hh
 
 # Normal R things (plotting, data handling, etc.)
-RUN R -e "options(warn=2); install.packages(c('tidyverse', 'duckplyr', 'arrow', 'ape', 'phylotools', 'ggsci', 'ggstatsplot', 'gganimate', 'ggthemes', 'ggrepel', 'ggforce', 'cowplot', 'tidytree', 'data.table', 'scales', 'DT', 'pheatmap', 'ggwordcloud', 'wordcloud', 'wordcloud2', 'microplot', 'rmeta', 'plotly', 'ggstar', 'ggnewscale', 'ggalluvial', 'TDbook', 'aplot', 'patchwork', 'igraph', 'ggraph', 'R.utils', 'ggpubr', 'UpSetR', 'ComplexUpset', 'ggVennDiagram', 'IRkernel'))"
+RUN R -e "options(warn=2); install.packages(c('tidyverse', 'duckplyr', 'ape', 'phylotools', 'ggsci', 'ggstatsplot', 'gganimate', 'ggthemes', 'ggrepel', 'ggforce', 'cowplot', 'tidytree', 'data.table', 'scales', 'DT', 'pheatmap', 'ggwordcloud', 'wordcloud', 'wordcloud2', 'microplot', 'rmeta', 'plotly', 'ggstar', 'ggnewscale', 'ggalluvial', 'TDbook', 'aplot', 'patchwork', 'igraph', 'ggraph', 'R.utils', 'ggpubr', 'UpSetR', 'ComplexUpset', 'ggVennDiagram', 'IRkernel'))"
 
 # NMF packages
 RUN R -e "options(warn=2); remotes::install_github('zdebruine/RcppML@c997bcdd205cf03e105efa91c944da0e2c9068e0')"
@@ -121,13 +121,23 @@ RUN pip install --no-cache-dir --break-system-packages \
 #    spatialde \
 #    SpaGCN
 
-# For use in UMAP notebooks
-RUN pip install --no-cache-dir --break-system-packages \
-    umap-learn[plot]
+# Install Miniconda 
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /miniconda.sh \
+    && bash /miniconda.sh -b -p /opt/conda \
+    && rm /miniconda.sh
 
-# Some clustering for large heatmaps gets quite slow without fastcluster
-RUN pip install --no-cache-dir --break-system-packages \
-    fastcluster
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Accept Anaconda TOS for required channels
+RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
+# Install CellPie from GitHub
+RUN git clone https://github.com/ManchesterBioinference/CellPie /tmp/CellPie \
+    && cd /tmp/CellPie \
+    && conda env create -f environment_cellpie.yml \
+    && conda clean -afy \
+    && rm -rf /tmp/CellPie
 
 # Mount points
 RUN mkdir -p /data /zata

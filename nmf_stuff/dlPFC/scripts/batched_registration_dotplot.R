@@ -157,14 +157,36 @@ for (i in seq_len(nrow(joined_summary_df))) {
     run_prefix <- sprintf("k%d_seed%d_tol%.0e_L1%.1f", k, seed, tol, L1)
     run_outdir <- file.path(output_root, paste0("run_", run_prefix))
 
-    dir.create(run_outdir, recursive = TRUE, showWarnings = FALSE)
-    plots_dir <- file.path(run_outdir, "plots")
-    dir.create(plots_dir, recursive = TRUE, showWarnings = FALSE)
-
     log_msg("--------------------------------------------")
     log_msg(sprintf("Starting run %d / %d: %s", i, nrow(joined_summary_df), run_prefix))
     log_msg(paste("nmf_path:", nmf_path))
     log_msg(paste("projection path:", proj_path))
+
+    # Check for completed run
+    already_done <- FALSE
+    if (skip_completed && nrow(summary_df) > 0) {
+        match_row <- summary_df %>%
+            filter(k == !!k, seed == !!seed, tol == !!tol, L1 == !!L1)
+        if (nrow(match_row) > 0) {
+            already_done <- TRUE
+            ts <- lubridate::ymd_hms(match_row$timestamp, tz = "UTC")
+            ago <- lubridate::as.period(Sys.time() - ts, unit = "minute")
+            log_msg(sprintf(
+                "Skipping run (already completed)\n\tcompleted %s ago at %s UTC\n\tlocation: %s",
+                lubridate::time_length(ago, "hour") %>%
+                    {
+                        \(x) sprintf("%.1f hours", x)
+                    }(),
+                format(ts, "%Y-%m-%dT%H:%M:%SZ"),
+                match_row$output_dir
+            ))
+        }
+    }
+    if (already_done) next
+
+    dir.create(run_outdir, recursive = TRUE, showWarnings = FALSE)
+    plots_dir <- file.path(run_outdir, "plots")
+    dir.create(plots_dir, recursive = TRUE, showWarnings = FALSE)
 
     # Load NMF object (RcppML nmf)
     nmf_obj <- readRDS(nmf_path)

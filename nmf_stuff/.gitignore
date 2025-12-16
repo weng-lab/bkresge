@@ -3,6 +3,7 @@
 *.RData
 *.Rdata
 *.rds
+*.parquet
 # Ignore batched plots for now
 dlPFC/output/registration_dotplot
 dlPFC/output/batched_registration_dotplot

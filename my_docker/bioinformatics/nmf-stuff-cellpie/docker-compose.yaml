@@ -1,0 +1,14 @@
+services:
+  dev-container:
+    # image: autumnusomega/bioinformatics:nmf-stuff
+    image: autumnusomega/bioinformatics:nmf-stuff-cellpie
+    # build: .
+    # container_name: nmf-stuff-dev-container
+    container_name: nmf-stuff-cellpie-dev-container
+    volumes:
+      - /zata:/zata
+      - /data:/data
+    stdin_open: true
+    working_dir: /zata/zippy/kresgeb
+    tty: true
+    restart: unless-stopped
